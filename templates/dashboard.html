@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot and Resume Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        #chatbot-container {
+            width: 30%;
+            background-color: #f2f2f2;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        #resume-container {
+            flex: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        #resume-content {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbot-container">
+        <h2>BillBot</h2>
+        <div id="chat-messages">
+            <!-- Chat messages will be dynamically added here -->
+        </div>
+        <textarea type="text" id="user-input" placeholder="Type your instruction..." style="width: 100%;margin-bottom: 5px;"></textarea>
+      
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <div id="resume-container">
+        <h2>{{user_name}}'s Resume  <a href="/logout">Logout</a></h2>
+        <div id="resume-content">
+          {{ resume_html_code | safe }}
+            
+
+        </div>
+    </div>
+    <div id="loader" style="display: none;"><h3>Processing...</h3></div>
+    <script>
+      const chatMessages = document.getElementById('chat-messages');
+      const resumeContent = document.getElementById('resume-content');
+      const loader = document.getElementById('loader');
+
+      function createUserMessage(userInput){
+        const userMessage = document.createElement('div');
+            userMessage.textContent = `User: ${userInput}`;
+            chatMessages.appendChild(userMessage);
+      }
+      function createBotMessage(message){
+        const botResponse = document.createElement('div');
+            botResponse.textContent = `BillBot: ${message}`; // You can replace this with the actual bot response
+            chatMessages.appendChild(botResponse);
+      }
+        async function sendMessage() {
+            // Add your logic to handle user input and update chat messages
+            const userInput = document.getElementById('user-input').value;
+            const requestBody = {
+                userInput: userInput,
+            };
+            createUserMessage(userInput)
+            loader.style.display = 'block'; // Show loader
+            try {
+                // Make a POST request to the /billbot route
+                const response = await fetch('/billbot', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get response from the server');
+                }
+
+                const responseData = await response.json();
+
+                // Update the resume content with the HTML response
+                resumeContent.innerHTML = responseData.html;
+
+                createBotMessage("Done Processing!")
+            } catch (error) {
+                console.error('Error:', error);
+                // Handle errors, display a message, etc.
+            } finally {
+                loader.style.display = 'none'; // Hide loader
+            }
+            // createBotMessage()
+
+            
+        }
+        createBotMessage("Hi. I am BillBot. Beside is your resume. Provide Details of your projects/achievements and other instruction as per your need. I will update the resume accordingly.")
+    </script>
+</body>
+</html>
