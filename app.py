@@ -42,10 +42,23 @@ def login_is_required(function):
 def start():
     if session.get('google_id') is None:
         user_name = session.get("name")
-        resp = make_response(render_template("login.html", user_name=user_name))
+        resp = make_response(render_template("index.html", user_name=user_name))
         return resp
     else:
         return redirect("/dashboard")
+    
+@app.route("/jobs", methods = ['GET'])
+def job_listing():
+    return render_template("job_listing.html")
+
+@app.route("/about", methods = ['GET'])
+def about():
+    return render_template("about.html")
+
+@app.route("/contact", methods = ['GET'])
+def contact():
+    return render_template("contact.html")
+
 
 @app.route("/dashboard", methods = ['GET'])
 @login_is_required
