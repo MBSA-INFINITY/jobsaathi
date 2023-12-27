@@ -47,23 +47,6 @@ def start():
     else:
         return redirect("/dashboard")
     
-@app.route("/jobs", methods = ['GET'])
-def job_listing():
-    return render_template("job_listing.html")
-
-@app.route("/about", methods = ['GET'])
-def about():
-    return render_template("about.html")
-
-@app.route("/contact", methods = ['GET'])
-def contact():
-    return render_template("contact.html")
-
-@app.route("/job_details", methods = ['GET'])
-def job_details():
-    return render_template("job_details.html")
-
-
 @app.route("/dashboard", methods = ['GET'])
 @login_is_required
 def dashboard():
