@@ -52,8 +52,7 @@ def start():
 def dashboard():
     user_name = session.get("name")
     user_id = session.get("google_id")
-    html_code = get_resume_html_db(user_id)
-    return render_template('dashboard.html', user_name=user_name, resume_html_code=html_code)
+    return render_template('dashboard.html', user_name=user_name)
 
 @app.route("/login")
 def login():
@@ -105,13 +104,8 @@ def callback():
             "user_id": id_info.get("sub"),
             "user_name": id_info.get("name"),
             "email": id_info.get("email"),
-            "joined_at": datetime.now()
-        }
-        resume_data = {
-            "user_id": id_info.get("sub"),
-            "resume_html": initial_html
-
+            "joined_at": datetime.now(),
+            "onboarded": False
         }
         user_details_collection.insert_one(user_data)
-        resume_details_collection.insert_one(resume_data)
     return redirect("/")

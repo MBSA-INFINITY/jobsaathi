@@ -4,7 +4,7 @@ import pymongo
 ENVIRONMENT = os.environ["ENVIRONMENT"]
 if ENVIRONMENT == "local":
     connection_string = "mongodb://localhost:27017"
-    DB_NAME = "jobsaathi"
+    DB_NAME = "jobsaathi-prod"
 else:    
     MONGO_CLUSTER = os.environ["MONGO_URI"]
     MONGO_USERNAME = os.environ["MONGO_USERNAME"]
