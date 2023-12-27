@@ -59,6 +59,10 @@ def about():
 def contact():
     return render_template("contact.html")
 
+@app.route("/job_details", methods = ['GET'])
+def job_details():
+    return render_template("job_details.html")
+
 
 @app.route("/dashboard", methods = ['GET'])
 @login_is_required
