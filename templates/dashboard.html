@@ -1,113 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot and Resume Interface</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-        }
-
-        #chatbot-container {
-            width: 30%;
-            background-color: #f2f2f2;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-
-        #resume-container {
-            flex: 1;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-
-        #resume-content {
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div id="chatbot-container">
-        <h2>BillBot</h2>
-        <div id="chat-messages">
-            <!-- Chat messages will be dynamically added here -->
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JobSaathi | Dashboards</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">JobSaathi</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <textarea type="text" id="user-input" placeholder="Type your instruction..." style="width: 100%;margin-bottom: 5px;"></textarea>
+      </nav>
+
+    <div class="container">
+        <h1 class="text-center">
+            Welcome to JobSaathi 
+        </h1>
+        <br>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Username</label>
+            <input type="text" class="form-control" value="{{user_name}}">
       
-        <button onclick="sendMessage()">Send</button>
-    </div>
-
-    <div id="resume-container">
-        <h2>{{user_name}}'s Resume  <a href="/logout">Logout</a></h2>
-        <div id="resume-content">
-          {{ resume_html_code | safe }}
-            
-
+          </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Purpose</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="purpose" value="candidate" onclick="selectPurpose('candidateform')" checked>
+                <label class="form-check-label" for="flexRadioDefault2">
+                  Job Seeker
+                </label>
+              </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="purpose" value="hirer" onclick="selectPurpose('hirerform')">
+                <label class="form-check-label" for="flexRadioDefault2">
+                  Hire Talent
+                </label>
+              </div>
+      
+          </div>
+          <div id="candidateform" style="display: block;">
+            <h2>candidate form In Progress</h2>
         </div>
+        <div id="hirerform" style="display: none;">
+            <h2>hirerform form In Progress</h2>
+          </div>
+       
+         
     </div>
-    <div id="loader" style="display: none;"><h3>Processing...</h3></div>
     <script>
-      const chatMessages = document.getElementById('chat-messages');
-      const resumeContent = document.getElementById('resume-content');
-      const loader = document.getElementById('loader');
-
-      function createUserMessage(userInput){
-        const userMessage = document.createElement('div');
-            userMessage.textContent = `User: ${userInput}`;
-            chatMessages.appendChild(userMessage);
-      }
-      function createBotMessage(message){
-        const botResponse = document.createElement('div');
-            botResponse.textContent = `BillBot: ${message}`; // You can replace this with the actual bot response
-            chatMessages.appendChild(botResponse);
-      }
-        async function sendMessage() {
-            // Add your logic to handle user input and update chat messages
-            const userInput = document.getElementById('user-input').value;
-            const requestBody = {
-                userInput: userInput,
-            };
-            createUserMessage(userInput)
-            loader.style.display = 'block'; // Show loader
-            try {
-                // Make a POST request to the /billbot route
-                const response = await fetch('/billbot', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestBody),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to get response from the server');
-                }
-
-                const responseData = await response.json();
-
-                // Update the resume content with the HTML response
-                resumeContent.innerHTML = responseData.html;
-
-                createBotMessage("Done Processing!")
-            } catch (error) {
-                console.error('Error:', error);
-                // Handle errors, display a message, etc.
-            } finally {
-                loader.style.display = 'none'; // Hide loader
+        function selectPurpose(purpose){
+            if(purpose==="candidateform"){
+                document.getElementById("candidateform").style.display = "block"
+                document.getElementById("hirerform").style.display = "none"
+                
             }
-            // createBotMessage()
+            else if(purpose==="hirerform")
+            document.getElementById("hirerform").style.display = "block"
+            document.getElementById("candidateform").style.display = "none"
 
-            
+
         }
-        createBotMessage("Hi. I am BillBot. Beside is your resume. Provide Details of your projects/achievements and other instruction as per your need. I will update the resume accordingly.")
     </script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  </body>
 </html>
