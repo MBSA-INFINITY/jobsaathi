@@ -83,7 +83,7 @@
                 {% set counter = 1 %}
                 {% for job in all_jobs %}
               <tr>
-                <th scope="row">{{counter}}</th>
+                <th scope="row">{{loop.index}}</th>
                 <td>{{job['job_title']}}</td>
                 <td>{{job['job_location']}}</td>
                 <td><button class="btn btn-sm btn-secondary">{{job['status']}}</button></td>
