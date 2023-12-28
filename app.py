@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from helpers import query_update_billbot, add_html_to_db, get_resume_html_db
 from client_secret import client_secret, initial_html
-from db import user_details_collection, resume_details_collection
+from db import user_details_collection, resume_details_collection, oboarding_details_collection
 import os
 from datetime import datetime
 import requests
@@ -51,7 +51,10 @@ def start():
 @login_is_required
 def dashboard():
     user_name = session.get("name")
+    onboarded = session.get("onboarded")
     user_id = session.get("google_id")
+    if onboarded == False:
+        return render_template('onboarding.html', user_name=user_name)   
     return render_template('dashboard.html', user_name=user_name)
 
 @app.route("/login")
@@ -98,7 +101,7 @@ def callback():
     session["name"] = id_info.get("name")
     session["email"] = id_info.get("email")
     if user_details := user_details_collection.find_one({"user_id": id_info.get("sub")},{"_id":0}):
-        pass
+        session["onboarded"] = user_details.get("onboarded")
     else:
         user_data = {
             "user_id": id_info.get("sub"),
@@ -107,5 +110,30 @@ def callback():
             "joined_at": datetime.now(),
             "onboarded": False
         }
+        session["onboarded"] = user_data.get("onboarded")
         user_details_collection.insert_one(user_data)
     return redirect("/")
+
+@app.route("/onboarding", methods=['GET', 'POST'])
+def onboarding():
+    if request.method == 'POST':
+        user_id = session.get('google_id')
+        if  user_id is None:
+            abort(401)
+        else:
+            onboarding_details = dict(request.form)
+            onboarding_details['user_id'] = user_id
+            if user_details := user_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+                if user_details.get("onboarded") == False:
+                    oboarding_details_collection.insert_one(onboarding_details)
+                    user_details_collection.update_one({"user_id": user_id},{"$set":{"onboarded": True}})
+                    session['onboarded'] = True
+                    return redirect("/dashboard")
+                else:
+                    abort(500, {"message": "User already Onboarded."})
+    else:
+        onboarded = session.get('onboarded')
+        if onboarded == True:
+            return redirect("/dashboard")
+        user_name = session.get("name")
+        return render_template('onboarding.html', user_name=user_name)

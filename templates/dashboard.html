@@ -9,7 +9,7 @@
   <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">JobSaathi</a>
+          <a class="navbar-brand" href="#">JobSaathi | Dashboard</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -19,59 +19,21 @@
                 <a class="nav-link active" aria-current="page" href="#">Home</a>
               </li>
             </ul>
+            <form class="d-flex" role="search">
+              <!-- <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"> -->
+            <button class="btn btn-outline-success">  <a href="/logout" style="text-decoration: none;color: black;">Logout</a></button>
+            </form>
           </div>
+          
         </div>
       </nav>
 
     <div class="container">
         <h1 class="text-center">
             Welcome to JobSaathi 
-        </h1>
-        <br>
-        <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Username</label>
-            <input type="text" class="form-control" value="{{user_name}}">
-      
-          </div>
-        <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Purpose</label>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="purpose" value="candidate" onclick="selectPurpose('candidateform')" checked>
-                <label class="form-check-label" for="flexRadioDefault2">
-                  Job Seeker
-                </label>
-              </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="purpose" value="hirer" onclick="selectPurpose('hirerform')">
-                <label class="form-check-label" for="flexRadioDefault2">
-                  Hire Talent
-                </label>
-              </div>
-      
-          </div>
-          <div id="candidateform" style="display: block;">
-            <h2>candidate form In Progress</h2>
-        </div>
-        <div id="hirerform" style="display: none;">
-            <h2>hirerform form In Progress</h2>
-          </div>
-       
-         
+        </h1>   
     </div>
-    <script>
-        function selectPurpose(purpose){
-            if(purpose==="candidateform"){
-                document.getElementById("candidateform").style.display = "block"
-                document.getElementById("hirerform").style.display = "none"
-                
-            }
-            else if(purpose==="hirerform")
-            document.getElementById("hirerform").style.display = "block"
-            document.getElementById("candidateform").style.display = "none"
-
-
-        }
-    </script>
+ 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   </body>
 </html>

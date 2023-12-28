@@ -18,4 +18,5 @@ db_client = db_client.get_database(DB_NAME)
 
 user_details_collection = db_client['user_details']
 resume_details_collection = db_client['resume']
+oboarding_details_collection = db_client['onboarding_details']
 
