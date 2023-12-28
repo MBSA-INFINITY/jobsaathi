@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from helpers import query_update_billbot, add_html_to_db, get_resume_html_db
 from client_secret import client_secret, initial_html
-from db import user_details_collection, resume_details_collection, oboarding_details_collection
+from db import user_details_collection, resume_details_collection, onboarding_details_collection, jobs_details_collection
 import os
 from datetime import datetime
 import requests
@@ -27,16 +27,40 @@ flow = Flow.from_client_config(
     redirect_uri=f"{url_}/callback"
 )
 
-reserved_keywords = ['dashboard','login', 'logout','callback','shorten-url','change_data','delete_data']
-
 def login_is_required(function):
     def wrapper(*args, **kwargs):
         if "google_id" not in session:
-            return abort(401)  # Authorization required
+            return abort(401)  
         else:
-            return function()
-
+            return function(*args, **kwargs)
     return wrapper
+
+def is_candidate(function):
+    def wrapper(*args, **kwargs):
+        if "purpose" not in session:
+            return abort(500)  
+        else:
+            purpose = session.get('purpose')
+            if purpose == "candidate":
+                return function(*args, **kwargs)
+            else:
+                abort(500, {"message":{"You are not a candidate."}})
+    return wrapper
+
+def is_hirer(function):
+    def wrapper(*args, **kwargs):
+        if "purpose" not in session:
+            return abort(500)  
+        else:
+            purpose = session.get('purpose')
+            print(purpose)
+            if purpose == "hirer":
+                return function(*args, **kwargs)
+            else:
+                abort(500, {"message":{"You are not a Hirer."}})
+    return wrapper
+
+
 
 @app.route("/", methods = ['GET'])
 def start():
@@ -47,7 +71,7 @@ def start():
     else:
         return redirect("/dashboard")
     
-@app.route("/dashboard", methods = ['GET'])
+@app.route("/dashboard", methods = ['GET'], endpoint='dashboard')
 @login_is_required
 def dashboard():
     user_name = session.get("name")
@@ -55,7 +79,15 @@ def dashboard():
     user_id = session.get("google_id")
     if onboarded == False:
         return render_template('onboarding.html', user_name=user_name)   
-    return render_template('dashboard.html', user_name=user_name)
+    onboarding_details = onboarding_details_collection.find_one({"user_id": user_id},{"_id": 0})
+    purpose = onboarding_details.get("purpose")
+    if purpose == 'hirer':
+        all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
+        return render_template('dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+    else:
+        return render_template('dashboard.html', user_name=user_name, onboarding_details=onboarding_details)
+
+
 
 @app.route("/login")
 def login():
@@ -102,6 +134,9 @@ def callback():
     session["email"] = id_info.get("email")
     if user_details := user_details_collection.find_one({"user_id": id_info.get("sub")},{"_id":0}):
         session["onboarded"] = user_details.get("onboarded")
+        if onboarding_details := onboarding_details_collection.find_one({"user_id": id_info.get("sub")},{"_id":0}):
+            session["purpose"] = onboarding_details.get("purpose")
+        
     else:
         user_data = {
             "user_id": id_info.get("sub"),
@@ -125,7 +160,8 @@ def onboarding():
             onboarding_details['user_id'] = user_id
             if user_details := user_details_collection.find_one({"user_id": user_id},{"_id": 0}):
                 if user_details.get("onboarded") == False:
-                    oboarding_details_collection.insert_one(onboarding_details)
+                    onboarding_details_collection.insert_one(onboarding_details)
+                    session['purpose'] = onboarding_details.get("purpose")
                     user_details_collection.update_one({"user_id": user_id},{"$set":{"onboarded": True}})
                     session['onboarded'] = True
                     return redirect("/dashboard")
@@ -137,3 +173,14 @@ def onboarding():
             return redirect("/dashboard")
         user_name = session.get("name")
         return render_template('onboarding.html', user_name=user_name)
+    
+
+@app.route('/create_job',methods=['POST'], endpoint="create_job")
+@is_hirer
+def create_job():
+    user_id = session.get("google_id")
+    job_details = dict(request.form)
+    job_details['user_id'] = user_id
+    job_details['status'] = "draft"
+    jobs_details_collection.insert_one(job_details)
+    return redirect("/dashboard")

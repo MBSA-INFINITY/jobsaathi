@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+    {% set purpose = onboarding_details['purpose'] %}
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +10,7 @@
   <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">JobSaathi | Dashboard</a>
+          <a class="navbar-brand" href="/">JobSaathi |  <b>({{purpose}} dashboard)</b> </a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -19,20 +20,82 @@
                 <a class="nav-link active" aria-current="page" href="#">Home</a>
               </li>
             </ul>
-            <form class="d-flex" role="search">
-              <!-- <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"> -->
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/jobs">Jobs</a>
+              </li>
+            </ul>
+            <!-- <form class="d-flex" role="search"> -->
+ 
             <button class="btn btn-outline-success">  <a href="/logout" style="text-decoration: none;color: black;">Logout</a></button>
-            </form>
+            <!-- </form> -->
           </div>
           
         </div>
       </nav>
-
+{% if purpose == 'hirer' %}
     <div class="container">
-        <h1 class="text-center">
-            Welcome to JobSaathi 
-        </h1>   
+        <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#exampleModal" style="float: right;">
+    Create a Job 
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Create a Job</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="/create_job" method="post">
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Job Title</label>
+                <input type="text" class="form-control" placeholder="Title of Job" name="job_title" required>
+              </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Job Location</label>
+                <input type="text" class="form-control" placeholder="Location of Job" name="job_location" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </form>
     </div>
+  </div>  
+    </div>
+    <div class="container" id="alljobs">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Job Title</th>
+                <th scope="col">Job Location</th>
+                <th scope="col">Job Status</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+                {% set counter = 1 %}
+                {% for job in all_jobs %}
+              <tr>
+                <th scope="row">{{counter}}</th>
+                <td>{{job['job_title']}}</td>
+                <td>{{job['job_location']}}</td>
+                <td><button class="btn btn-sm btn-secondary">{{job['status']}}</button></td>
+                <td><button class="btn btn-sm btn-success">Edit</button></td>
+
+              </tr>
+              {% set counter = counter+1 %}
+              {% endfor %}
+            </tbody>
+          </table>
+    </div>
+    {% endif %}
  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   </body>
