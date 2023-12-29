@@ -198,3 +198,12 @@ def edit_job(job_id):
         return redirect('/dashboard')
     if job_details := jobs_details_collection.find_one({"user_id": str(user_id), "job_id": str(job_id)},{"_id": 0}):
         return render_template("job_details.html", job_details=job_details)
+    
+@app.route('/delete/job/<string:job_id>', methods=['POST'], endpoint="delete_job")
+@login_is_required
+@is_hirer
+def delete_job(job_id):
+    user_id = session.get("google_id")
+    if request.method == 'POST':
+        jobs_details_collection.delete_one({"user_id": str(user_id), "job_id": str(job_id)})
+        return redirect('/dashboard')

@@ -71,7 +71,8 @@
                 <th scope="col">Job Title</th>
                 <th scope="col">Job Location</th>
                 <th scope="col">Job Status</th>
-                <th scope="col"></th>
+                <th scope="col">--</th>
+                <th scope="col">--</th>
               </tr>
             </thead>
             <tbody>
@@ -86,7 +87,8 @@
                 {% elif job['status'] == "published" %}
                 <td><button class="btn btn-sm btn-success">{{job['status']}}</button></td>
                 {% endif %}
-                <td><a href="/edit/job/{{job['job_id']}}" style="text-decoration: none;color: white;"><button class="btn btn-sm btn-success">Edit</button></a></td>
+                <td><a href="/edit/job/{{job['job_id']}}" style="text-decoration: none;color: white;"><button class="btn btn-sm btn-success">Edit</button></a> </td>
+                <td><form action="/delete/job/{{job['job_id']}}" method="post" onsubmit="return deleteJob()"><button class="btn btn-sm btn-danger" type="submit">Delete</button></form> </td>
 
               </tr>
               {% set counter = counter+1 %}
@@ -95,6 +97,17 @@
           </table>
     </div>
     {% endif %}
+    <script>
+      function deleteJob(){
+        let a = confirm("Are you sure you want to delete this job?")
+        if(a){
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+    </script>
  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   </body>
