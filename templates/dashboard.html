@@ -88,7 +88,7 @@
                 <td>{{job['job_location']}}</td>
                 {% if job['status'] == "draft" %}
                 <td><button class="btn btn-sm btn-secondary">{{job['status']}}</button></td>
-                {% elif job['status'] == "publised" %}
+                {% elif job['status'] == "published" %}
                 <td><button class="btn btn-sm btn-success">{{job['status']}}</button></td>
                 {% endif %}
                 <td><button class="btn btn-sm btn-success"><a href="/edit/job/{{job['job_id']}}" style="text-decoration: none;color: white;">Edit</a></button></td>
