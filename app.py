@@ -86,6 +86,7 @@ def dashboard():
         return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
     else:
         pipeline = [
+            {"$match": {"status": "published"}},
     {
         '$lookup': {
             'from': 'onboarding_details', 
@@ -222,3 +223,20 @@ def delete_job(job_id):
     if request.method == 'POST':
         jobs_details_collection.delete_one({"user_id": str(user_id), "job_id": str(job_id)})
         return redirect('/dashboard')
+    
+
+@app.route('/apply/job/<string:job_id>', methods=['GET', 'POST'], endpoint="apply_job")
+@login_is_required
+@is_candidate
+def apply_job(job_id):
+    user_id = session.get("google_id")
+    if job_details := jobs_details_collection.find_one({"job_id": str(job_id)},{"_id": 0}):
+        if job_details.get("status") == "published":
+            return render_template("apply_job.html", job_details=job_details)
+        else:
+            abort(500, {"message": f"JOB with job_id {job_id} not found!"})
+    else:
+        abort(500, {"message": f"JOB with job_id {job_id} not found!"})
+    # if request.method == 'POST':
+    #     jobs_details_collection.delete_one({"user_id": str(user_id), "job_id": str(job_id)})
+    #     return redirect('/dashboard')
