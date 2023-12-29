@@ -78,7 +78,7 @@ def dashboard():
     onboarded = session.get("onboarded")
     user_id = session.get("google_id")
     if onboarded == False:
-        return render_template('onboarding.html', user_name=user_name)   
+        return redirect("/onboarding")
     onboarding_details = onboarding_details_collection.find_one({"user_id": user_id},{"_id": 0})
     purpose = onboarding_details.get("purpose")
     if purpose == 'hirer':
