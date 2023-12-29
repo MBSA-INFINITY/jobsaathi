@@ -1,7 +1,6 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
-from helpers import query_update_billbot, add_html_to_db, get_resume_html_db
-from client_secret import client_secret, initial_html
-from db import user_details_collection, resume_details_collection, onboarding_details_collection, jobs_details_collection
+from client_secret import client_secret
+from db import user_details_collection, onboarding_details_collection, jobs_details_collection
 import os
 from datetime import datetime
 import requests
@@ -10,6 +9,7 @@ from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
+import uuid
 
 app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET']
@@ -179,8 +179,22 @@ def onboarding():
 @is_hirer
 def create_job():
     user_id = session.get("google_id")
+    job_id = str(uuid.uuid4())
     job_details = dict(request.form)
     job_details['user_id'] = user_id
+    job_details['job_id'] = job_id
     job_details['status'] = "draft"
     jobs_details_collection.insert_one(job_details)
     return redirect("/dashboard")
+
+@app.route('/edit/job/<string:job_id>', methods=['GET', 'POST'], endpoint="edit_job")
+@login_is_required
+@is_hirer
+def edit_job(job_id):
+    user_id = session.get("google_id")
+    if request.method == 'POST':
+        incoming_details = dict(request.form)
+        jobs_details_collection.update_one({"user_id": str(user_id), "job_id": str(job_id)},{"$set": incoming_details})
+        return redirect('/dashboard')
+    if job_details := jobs_details_collection.find_one({"user_id": str(user_id), "job_id": str(job_id)},{"_id": 0}):
+        return render_template("job_details.html", job_details=job_details)

@@ -86,8 +86,12 @@
                 <th scope="row">{{loop.index}}</th>
                 <td>{{job['job_title']}}</td>
                 <td>{{job['job_location']}}</td>
+                {% if job['status'] == "draft" %}
                 <td><button class="btn btn-sm btn-secondary">{{job['status']}}</button></td>
-                <td><button class="btn btn-sm btn-success">Edit</button></td>
+                {% elif job['status'] == "publised" %}
+                <td><button class="btn btn-sm btn-success">{{job['status']}}</button></td>
+                {% endif %}
+                <td><button class="btn btn-sm btn-success"><a href="/edit/job/{{job['job_id']}}" style="text-decoration: none;color: white;">Edit</a></button></td>
 
               </tr>
               {% set counter = counter+1 %}
