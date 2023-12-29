@@ -83,9 +83,24 @@ def dashboard():
     purpose = onboarding_details.get("purpose")
     if purpose == 'hirer':
         all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
-        return render_template('dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+        return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
     else:
-        return render_template('dashboard.html', user_name=user_name, onboarding_details=onboarding_details)
+        pipeline = [
+    {
+        '$lookup': {
+            'from': 'onboarding_details', 
+            'localField': 'user_id', 
+            'foreignField': 'user_id', 
+            'as': 'user_details'
+        }
+    }, {
+        '$project': {
+            '_id': 0
+        }
+    }
+]
+        all_jobs = list(jobs_details_collection.aggregate(pipeline))
+        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
 
 
 
