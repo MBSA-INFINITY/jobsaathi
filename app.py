@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret
-from db import user_details_collection, onboarding_details_collection, jobs_details_collection
+from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection
 import os
 from datetime import datetime
 import requests
@@ -230,9 +230,23 @@ def delete_job(job_id):
 @is_candidate
 def apply_job(job_id):
     user_id = session.get("google_id")
+    if request.method == 'POST':
+        job_apply_data = {
+            "job_id": job_id,
+            "user_id": user_id,
+            "applied_on": datetime.now(),
+            "status": "applied",
+        }
+        candidate_job_application_collection.insert_one(job_apply_data)
+        flash("Successfully Applied for the Job. Recruiters will get back to you soon, if you are a good fit.")
+        return redirect(f'/apply/job/{job_id}')
     if job_details := jobs_details_collection.find_one({"job_id": str(job_id)},{"_id": 0}):
         if job_details.get("status") == "published":
-            return render_template("apply_job.html", job_details=job_details)
+            if candidate_job_application_collection.find_one({"user_id": user_id, "job_id": job_id},{"_id": 0}):
+               applied = True 
+            else:
+                applied = False
+            return render_template("apply_job.html", job_details=job_details, applied=applied)
         else:
             abort(500, {"message": f"JOB with job_id {job_id} not found!"})
     else:

@@ -9,8 +9,20 @@
   </head>
   <body>
     <div class="container">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+    <a href="/dashboard" class="btn btn-info my-3" type="submit">Dashboard</a>
   <h6 class="text-center my-3"><u>JOB ID - {{job_id}}</u></h6>
-  <form action="/apply/job/{{job_id}}" method="post">
+  <form action="/apply/job/{{job_id}}" method="post" onsubmit="return applySubmitForm()">
       <div class="mb-3">
           <label for="exampleFormControlInput1" class="form-label"><b>Job Title</b></label>
           <input type="text" class="form-control" value="{{job_details['job_title']}}" name="job_title" placeholder="Job Title" disabled>
@@ -23,9 +35,24 @@
           <label for="exampleFormControlInput1" class="form-label"><b>Job Description</b></label>
           <textarea type="text" class="form-control"  name="job_description" placeholder="Job Description" rows="7"  disabled>{{job_details['job_description']}}</textarea>
         </div>
-        <!-- <button class="btn btn-primary" type="submit">APPLY</button> -->
+        {% if applied %}
+        <button class="btn btn-success my-3" disabled>APPLIED</button>
+        {% else %}
+        <button class="btn btn-primary my-3" type="submit">APPLY</button>
+        {% endif %}
   </form>
     </div>
+    <script>
+      function applySubmitForm(){
+        let a = confirm("Are you sure you want to aplly for this job?");
+        if (a){
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+    </script>
 
 
  
