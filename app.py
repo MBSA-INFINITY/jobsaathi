@@ -60,6 +60,14 @@ def is_hirer(function):
                 abort(500, {"message":{"You are not a Hirer."}})
     return wrapper
 
+def is_onboarded(function):
+    def wrapper(*args, **kwargs):
+        onboarded = session.get("onboarded")
+        if onboarded:
+            return function(*args, **kwargs)
+        else:
+            return redirect("/dashboard")
+    return wrapper
 
 
 @app.route("/", methods = ['GET'])
@@ -251,6 +259,30 @@ def apply_job(job_id):
             abort(500, {"message": f"JOB with job_id {job_id} not found!"})
     else:
         abort(500, {"message": f"JOB with job_id {job_id} not found!"})
-    # if request.method == 'POST':
-    #     jobs_details_collection.delete_one({"user_id": str(user_id), "job_id": str(job_id)})
-    #     return redirect('/dashboard')
+
+@app.route('/responses/job/<string:job_id>', methods=['GET', 'POST'], endpoint="job_responses")
+@login_is_required
+@is_hirer
+@is_onboarded
+def job_responses(job_id):
+    pipeline = [
+            {
+                "$match": {"job_id": job_id}
+            },
+            {
+                '$lookup': {
+                    'from': 'onboarding_details', 
+                    'localField': 'user_id', 
+                    'foreignField': 'user_id', 
+                    'as': 'user_details'
+                }
+            },
+           {
+        '$project': {
+            '_id': 0, 
+            'user_details._id': 0
+        }
+    }
+        ]
+    all_responses = list(candidate_job_application_collection.aggregate(pipeline))
+    return render_template("job_responses.html", job_id=job_id, all_responses=all_responses)
