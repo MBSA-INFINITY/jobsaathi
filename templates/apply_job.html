@@ -28,6 +28,18 @@
           <input type="text" class="form-control" value="{{job_details['job_title']}}" name="job_title" placeholder="Job Title" disabled>
         </div>
       <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label"><b>Job Type</b></label>
+          {% if job_details['job_type'] == "part_time" %}
+          <input type="text" class="form-control" value="Part Time" name="job_title" placeholder="Job Type" disabled>
+          {% else %}
+          <input type="text" class="form-control" value="Full Time" name="job_title" placeholder="Job Type" disabled>
+          {% endif %}
+        </div>
+      <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label"><b>Mode of Work</b></label>
+          <input type="text" class="form-control" value="{{job_details['mode_of_work']}}" name="mode_of_work" placeholder="Mode of Work" disabled>
+        </div>
+      <div class="mb-3">
           <label for="exampleFormControlInput1" class="form-label"><b>Job Location</b></label>
           <input type="text" class="form-control" value="{{job_details['job_location']}}" name="job_location" placeholder="Job Location" disabled>
         </div>
