@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret
-from db import user_details_collection, onboarding_details_collection, jobs_details_collection
+from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection
 import os
 from datetime import datetime
 import requests
@@ -60,6 +60,14 @@ def is_hirer(function):
                 abort(500, {"message":{"You are not a Hirer."}})
     return wrapper
 
+def is_onboarded(function):
+    def wrapper(*args, **kwargs):
+        onboarded = session.get("onboarded")
+        if onboarded:
+            return function(*args, **kwargs)
+        else:
+            return redirect("/dashboard")
+    return wrapper
 
 
 @app.route("/", methods = ['GET'])
@@ -83,9 +91,25 @@ def dashboard():
     purpose = onboarding_details.get("purpose")
     if purpose == 'hirer':
         all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
-        return render_template('dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+        return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
     else:
-        return render_template('dashboard.html', user_name=user_name, onboarding_details=onboarding_details)
+        pipeline = [
+            {"$match": {"status": "published"}},
+    {
+        '$lookup': {
+            'from': 'onboarding_details', 
+            'localField': 'user_id', 
+            'foreignField': 'user_id', 
+            'as': 'user_details'
+        }
+    }, {
+        '$project': {
+            '_id': 0
+        }
+    }
+]
+        all_jobs = list(jobs_details_collection.aggregate(pipeline))
+        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
 
 
 
@@ -198,3 +222,67 @@ def edit_job(job_id):
         return redirect('/dashboard')
     if job_details := jobs_details_collection.find_one({"user_id": str(user_id), "job_id": str(job_id)},{"_id": 0}):
         return render_template("job_details.html", job_details=job_details)
+    
+@app.route('/delete/job/<string:job_id>', methods=['POST'], endpoint="delete_job")
+@login_is_required
+@is_hirer
+def delete_job(job_id):
+    user_id = session.get("google_id")
+    if request.method == 'POST':
+        jobs_details_collection.delete_one({"user_id": str(user_id), "job_id": str(job_id)})
+        return redirect('/dashboard')
+    
+
+@app.route('/apply/job/<string:job_id>', methods=['GET', 'POST'], endpoint="apply_job")
+@login_is_required
+@is_candidate
+def apply_job(job_id):
+    user_id = session.get("google_id")
+    if request.method == 'POST':
+        job_apply_data = {
+            "job_id": job_id,
+            "user_id": user_id,
+            "applied_on": datetime.now(),
+            "status": "applied",
+        }
+        candidate_job_application_collection.insert_one(job_apply_data)
+        flash("Successfully Applied for the Job. Recruiters will get back to you soon, if you are a good fit.")
+        return redirect(f'/apply/job/{job_id}')
+    if job_details := jobs_details_collection.find_one({"job_id": str(job_id)},{"_id": 0}):
+        if job_details.get("status") == "published":
+            if candidate_job_application_collection.find_one({"user_id": user_id, "job_id": job_id},{"_id": 0}):
+               applied = True 
+            else:
+                applied = False
+            return render_template("apply_job.html", job_details=job_details, applied=applied)
+        else:
+            abort(500, {"message": f"JOB with job_id {job_id} not found!"})
+    else:
+        abort(500, {"message": f"JOB with job_id {job_id} not found!"})
+
+@app.route('/responses/job/<string:job_id>', methods=['GET', 'POST'], endpoint="job_responses")
+@login_is_required
+@is_hirer
+@is_onboarded
+def job_responses(job_id):
+    pipeline = [
+            {
+                "$match": {"job_id": job_id}
+            },
+            {
+                '$lookup': {
+                    'from': 'onboarding_details', 
+                    'localField': 'user_id', 
+                    'foreignField': 'user_id', 
+                    'as': 'user_details'
+                }
+            },
+           {
+        '$project': {
+            '_id': 0, 
+            'user_details._id': 0
+        }
+    }
+        ]
+    all_responses = list(candidate_job_application_collection.aggregate(pipeline))
+    return render_template("job_responses.html", job_id=job_id, all_responses=all_responses)

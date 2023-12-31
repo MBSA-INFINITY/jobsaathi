@@ -20,20 +20,13 @@
                 <a class="nav-link active" aria-current="page" href="#">Home</a>
               </li>
             </ul>
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/jobs">Jobs</a>
-              </li>
-            </ul>
             <!-- <form class="d-flex" role="search"> -->
  
-            <button class="btn btn-outline-success">  <a href="/logout" style="text-decoration: none;color: black;">Logout</a></button>
-            <!-- </form> -->
+              <a href="/logout" class="btn btn-outline-success" style="text-decoration: none;color: black;">Logout</a>
           </div>
           
         </div>
       </nav>
-{% if purpose == 'hirer' %}
     <div class="container">
         <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#exampleModal" style="float: right;">
@@ -69,6 +62,7 @@
   </div>  
     </div>
     <div class="container" id="alljobs">
+      {% if all_jobs !=[] %}
         <table class="table">
             <thead>
               <tr>
@@ -76,7 +70,8 @@
                 <th scope="col">Job Title</th>
                 <th scope="col">Job Location</th>
                 <th scope="col">Job Status</th>
-                <th scope="col"></th>
+                <th scope="col">--</th>
+                <th scope="col">--</th>
               </tr>
             </thead>
             <tbody>
@@ -91,15 +86,32 @@
                 {% elif job['status'] == "published" %}
                 <td><button class="btn btn-sm btn-success">{{job['status']}}</button></td>
                 {% endif %}
-                <td><button class="btn btn-sm btn-success"><a href="/edit/job/{{job['job_id']}}" style="text-decoration: none;color: white;">Edit</a></button></td>
+                <td><a href="/edit/job/{{job['job_id']}}" style="text-decoration: none;color: white;"><button class="btn btn-sm btn-success">View / Edit</button></a> </td>
+                <td><form action="/delete/job/{{job['job_id']}}" method="post" onsubmit="return deleteJob()"><button class="btn btn-sm btn-danger" type="submit">Delete</button></form> </td>
 
               </tr>
               {% set counter = counter+1 %}
               {% endfor %}
             </tbody>
           </table>
+      {% else %}
+      <br><br>
+      <br><br>
+      <h5 class="text-muted text-center">No Jobs created! Click on Create Job and get the top talents around the world.</h5>
+      {% endif %}
     </div>
-    {% endif %}
+   
+    <script>
+      function deleteJob(){
+        let a = confirm("Are you sure you want to delete this job?")
+        if(a){
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+    </script>
  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   </body>

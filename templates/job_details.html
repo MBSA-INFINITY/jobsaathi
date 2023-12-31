@@ -17,7 +17,7 @@
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                <a class="nav-link active" aria-current="page" href="/">Home</a>
               </li>
             </ul>
             <!-- <form class="d-flex" role="search"> -->
@@ -29,15 +29,56 @@
         </div>
       </nav>
     <div class="container">
-  <h6 class="text-center my-3"><u>JOB ID - {{job_id}}</u></h6>
+    <div class="row my-2">
+      <div class="col-3"></div>
+      <div class="col-3"></div>
+      <div class="col-3"></div>
+      <div class="col-3"><a href="/responses/job/{{job_id}}" type="submit" class="btn btn-info" style="float: right;">Responses</a></div></div>
+  <div class="row">
+    <h6 class="text-center my-3"><u>JOB ID - {{job_id}}</u></h6>
+  </div>
   <form action="/edit/job/{{job_id}}" method="post">
       <div class="mb-3">
           <label for="exampleFormControlInput1" class="form-label"><b>Job Title</b></label>
           <input type="text" class="form-control" value="{{job_details['job_title']}}" name="job_title" placeholder="Job Title" required>
         </div>
-      <div class="mb-3">
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label">Mode of Work</label>
+          <div class="form-check">
+              <input class="form-check-input" type="radio" name="mode_of_work" value="remote" id="remote_job" checked>
+              <label class="form-check-label" for="flexRadioDefault2">
+                Remote
+              </label>
+            </div>
+          <div class="form-check">
+              <input class="form-check-input" type="radio" name="mode_of_work" value="onsite" id="onsite_job">
+              <label class="form-check-label" for="flexRadioDefault2">
+                Onsite
+              </label>
+            </div>
+    
+        </div>
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label"><b>Job Type</b></label>
+          <select class="form-select" aria-label="Default select example" name="job_type">
+              {% if job_details['job_type'] == "part_time" %}
+              <option value="part_time" selected>Part Time</option>
+              <option value="full_time" >Full Time</option>
+              {% elif job_details['job_type'] == "full_time" %}
+              <option value="full_time" selected>Full Time</option>
+              <option value="part_time" >Part Time</option>
+
+              {% endif %}
+
+          </select>
+      </div>
+      <div class="mb-3" id="job_location_div" style="display: none;">
           <label for="exampleFormControlInput1" class="form-label"><b>Job Location</b></label>
           <input type="text" class="form-control" value="{{job_details['job_location']}}" name="job_location" placeholder="Job Location" required>
+        </div>
+      <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label"><b>Salary Range</b></label>
+          <input type="text" class="form-control" value="{{job_details['salary_range']}}" name="salary_range" placeholder="Salary Range" required>
         </div>
       <div class="mb-3">
           <label for="exampleFormControlInput1" class="form-label"><b>Job Description</b></label>
@@ -61,10 +102,23 @@
 
             </select>
         </div>
+
         <button class="btn btn-primary" type="submit">SAVE</button>
   </form>
     </div>
+<script>
+      const remote_job = document.getElementById('remote_job');
+    const onsite_job = document.getElementById('onsite_job');
+    const job_location_div = document.getElementById("job_location_div")
+    // Add event listener to each radio button
+    remote_job.addEventListener('change', function() {
+      job_location_div.style.display = "none"
+    });
 
+    onsite_job.addEventListener('change', function() {
+      job_location_div.style.display = "block"
+    });
+</script>
 
  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
