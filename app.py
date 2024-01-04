@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret
-from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection
+from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection
 import os
 from datetime import datetime
 import requests
@@ -132,6 +132,17 @@ def logout():
     for key in all_keys:
         session.pop(key)
     return redirect("/")
+
+@app.route("/chatbot", methods = ['GET', 'POST'])
+def chatbot():
+    if request.method == 'POST':
+        form_data = dict(request.form)
+        userMsg = form_data.get("msg")
+        # analysis of the user message and bot response
+        return str(userMsg)
+    phase = "onboarding"
+    messages = [{"user":"billbot", "msg": "Hi, I am BillBot! Are you a job seeker or want to hire talent?😄"}, {"user":"user", "msg": "MBSA"}]
+    return render_template('chatbot.html', phase=phase, messages=messages)
 
 
 @app.route("/callback")
