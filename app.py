@@ -128,8 +128,9 @@ def login():
 def logout():
     if "google_id" not in session:
         return redirect("/")
-    session.pop("google_id")
-    session.pop("name")
+    all_keys = list(session.keys())
+    for key in all_keys:
+        session.pop(key)
     return redirect("/")
 
 
