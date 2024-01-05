@@ -90,13 +90,13 @@ def dashboard():
         return redirect("/onboarding")
     onboarding_details = onboarding_details_collection.find_one({"user_id": user_id},{"_id": 0})
     purpose = onboarding_details.get("purpose")
-    resume_built = onboarding_details.get("phase")
+    resume_built = onboarding_details.get("resume_built")
     if purpose == 'hirer':
         all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
         return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
     else:
         if not resume_built:
-            pass
+            return redirect("/billbot")
         pipeline = [
             {"$match": {"status": "published"}},
     {
@@ -137,7 +137,8 @@ def logout():
         session.pop(key)
     return redirect("/")
 
-@app.route("/chatbot", methods = ['GET', 'POST'])
+@app.route("/billbot", methods = ['GET', 'POST'], endpoint='chatbot')
+@is_candidate
 def chatbot():
     if request.method == 'POST':
         form_data = dict(request.form)

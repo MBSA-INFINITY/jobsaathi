@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,15 +7,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 
 <body>
+  <div id="chat-container">
 
  
     <!-- partial:index.partial.html -->
-    <section class="msger">
+    <section class="msger" id="billbot">
       <header class="msger-header">
         <div class="msger-header-title">
           <i class="fas fa-bug"></i> BillBot <i class="fas fa-bug"></i>
@@ -36,7 +34,12 @@
       </form>
     </section>
   
-
+    <section class="msger1" id="resume">
+    
+     {{resume_html}}
+ 
+    </section>
+  </div>
   <!-- partial -->
   <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
   <script>
