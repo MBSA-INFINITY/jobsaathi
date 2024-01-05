@@ -90,10 +90,13 @@ def dashboard():
         return redirect("/onboarding")
     onboarding_details = onboarding_details_collection.find_one({"user_id": user_id},{"_id": 0})
     purpose = onboarding_details.get("purpose")
+    resume_built = onboarding_details.get("phase")
     if purpose == 'hirer':
         all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
         return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
     else:
+        if not resume_built:
+            pass
         pipeline = [
             {"$match": {"status": "published"}},
     {
@@ -181,6 +184,10 @@ def callback():
         session["onboarded"] = user_details.get("onboarded")
         if onboarding_details := onboarding_details_collection.find_one({"user_id": id_info.get("sub")},{"_id":0}):
             session["purpose"] = onboarding_details.get("purpose")
+            purpose = session["purpose"]
+            if purpose and purpose == "candidate":
+                session["resume_built"] = onboarding_details.get("resume_built")
+
         
     else:
         user_data = {
@@ -205,19 +212,25 @@ def onboarding():
             onboarding_details['user_id'] = user_id
             if user_details := user_details_collection.find_one({"user_id": user_id},{"_id": 0}):
                 if user_details.get("onboarded") == False:
+                    purpose = onboarding_details.get("purpose")
+                    session['purpose'] = purpose
+                    data = {"onboarded": True}
+                    if purpose and purpose == "candidate":
+                        onboarding_details['phase'] = "1"
+                        onboarding_details['resume_built'] = False
+                        session['resume_built'] = False
                     onboarding_details_collection.insert_one(onboarding_details)
-                    session['purpose'] = onboarding_details.get("purpose")
-                    user_details_collection.update_one({"user_id": user_id},{"$set":{"onboarded": True}})
+                    user_details_collection.update_one({"user_id": user_id},{"$set":data})
                     session['onboarded'] = True
-                    return redirect("/dashboard")
+                    return redirect("/dashboard") 
                 else:
                     abort(500, {"message": "User already Onboarded."})
-    else:
-        onboarded = session.get('onboarded')
-        if onboarded == True:
-            return redirect("/dashboard")
-        user_name = session.get("name")
-        return render_template('onboarding.html', user_name=user_name)
+    onboarded = session.get('onboarded')
+    if onboarded == True:
+        purpose = session.get("purpose")
+        return redirect("/dashboard")
+    user_name = session.get("name")
+    return render_template('onboarding.html', user_name=user_name)
     
 
 @app.route('/create_job',methods=['POST'], endpoint="create_job")
