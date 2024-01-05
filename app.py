@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret
 from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection
+from helpers import query__billbot
 import os
 from datetime import datetime
 import requests
@@ -140,9 +141,14 @@ def chatbot():
         userMsg = form_data.get("msg")
         user_data = {"user":"user", "msg": userMsg}
         # analysis of the user message and bot response
-        bot_data = {"user":"billbot", "msg": str(userMsg)}
+        botMsg = query__billbot(userMsg)
+        if botMsg == "yes":
+            botMsg = "Cool, go on and upload it <br><br> <input type=file />"
+        else:
+            botMsg = "No worries, lets develop one!"
+        bot_data = {"user":"billbot", "msg": str(botMsg)}
         chatbot_collection.insert_many([user_data, bot_data])
-        return str(userMsg)
+        return botMsg
     phase = "onboarding"
     messages = list(chatbot_collection.find({},{"_id": 0}))
     return render_template('chatbot.html', phase=phase, messages=messages)

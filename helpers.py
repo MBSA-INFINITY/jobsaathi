@@ -27,3 +27,15 @@ def get_resume_html_db(user_id):
 
 def add_html_to_db(user_id, html_code):
     resume_details_collection.update_one({"user_id": user_id},{"$set": {"resume_html": html_code}})
+
+
+resume_question_template = """I have asked a person whether he/she has a portfolio/resume or not.{statement} is the person's reponse. Analyse the statement and return me 'yes' if he has a resume and 'no' if he doesn't have one and if the response is something weird like not a clear cut yes or no return me 'weird'
+"""
+
+resume_question_prompt = PromptTemplate(template=resume_question_template, input_variables=["statement"])
+resume_question_llm_chain = LLMChain(prompt=resume_question_prompt, llm=llm)
+
+
+def query__billbot(statement):
+    resp = resume_question_llm_chain.run(statement) 
+    return str(resp).strip().lower()
