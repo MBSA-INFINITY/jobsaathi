@@ -138,10 +138,13 @@ def chatbot():
     if request.method == 'POST':
         form_data = dict(request.form)
         userMsg = form_data.get("msg")
+        user_data = {"user":"user", "msg": userMsg}
         # analysis of the user message and bot response
+        bot_data = {"user":"billbot", "msg": str(userMsg)}
+        chatbot_collection.insert_many([user_data, bot_data])
         return str(userMsg)
     phase = "onboarding"
-    messages = [{"user":"billbot", "msg": "Hi, I am BillBot! Are you a job seeker or want to hire talent?😄"}, {"user":"user", "msg": "MBSA"}]
+    messages = list(chatbot_collection.find({},{"_id": 0}))
     return render_template('chatbot.html', phase=phase, messages=messages)
 
 
