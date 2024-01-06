@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret, initial_html
-from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection
+from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection
 from helpers import  query_update_billbot, add_html_to_db, analyze_resume
 import os
 from datetime import datetime
@@ -99,22 +99,33 @@ def dashboard():
         if not resume_built: 
             return redirect("/billbot")
         pipeline = [
-            {"$match": {"status": "published"}},
-    {
-        '$lookup': {
-            'from': 'onboarding_details', 
-            'localField': 'user_id', 
-            'foreignField': 'user_id', 
-            'as': 'user_details'
-        }
-    }, {
-        '$project': {
-            '_id': 0
-        }
-    }
-]
+                    {"$match": {"status": "published"}},
+            {
+                '$lookup': {
+                    'from': 'onboarding_details', 
+                    'localField': 'user_id', 
+                    'foreignField': 'user_id', 
+                    'as': 'user_details'
+                }
+            }, {
+                '$project': {
+                    '_id': 0
+                }
+            }
+        ]
         all_jobs = list(jobs_details_collection.aggregate(pipeline))
-        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+        profile_details = profile_details_collection.find_one({"user_id": user_id},{"_id": 0})
+        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs, profile_details=profile_details)
+
+
+@app.route("/profile", methods=['POST'], endpoint='profile_update')
+@login_is_required
+@is_candidate
+def profile_update():
+    user_id = session.get("google_id")
+    profile_data = dict(request.form)
+    profile_details_collection.update_one({"user_id": user_id},{"$set": profile_data})
+    return redirect('/dashboard')
 
 
 
@@ -142,15 +153,6 @@ def logout():
 @is_candidate
 def chatbot():
     user_id = session.get("google_id")
-    # if request.method == 'POST':
-    #     form_data = dict(request.form)
-    #     userMsg = form_data.get("msg")
-    #     # botMsg = query__billbot(userMsg)
-    #     if userMsg == "yes":
-    #         botMsg = "Cool, go on and upload it <br><br> <input type=file />"
-    #     else:
-    #         botMsg = "No worries, lets develop one!<br><br><form action=/have_resume methods=post> <button class=msger-send-btn type=submit>click here</button></form>"
-    #     return botMsg
     if onboarding_details := onboarding_details_collection.find_one({"user_id": user_id}, {"_id": 0}):
         phase = onboarding_details.get('phase')
         if phase == "1":
@@ -169,8 +171,6 @@ def chatbot():
 @app.route("/resume_build", methods = ['POST'], endpoint='resume_build')
 @is_candidate
 def resume_build():
-    # time.sleep(7)
-    # return initial_html
     user_id = session.get("google_id")
     form_data = dict(request.form)
     userMsg = form_data.get("msg")
@@ -258,6 +258,12 @@ def onboarding():
                         onboarding_details['phase'] = "1"
                         onboarding_details['resume_built'] = False
                         session['resume_built'] = False
+                    profile_data = {
+                        "user_id": user_details.get("user_id"),
+                        "name": user_details.get("user_name"),
+                        "email": user_details.get("email")
+                    }
+                    profile_details_collection.insert_one(profile_data)
                     onboarding_details_collection.insert_one(onboarding_details)
                     user_details_collection.update_one({"user_id": user_id},{"$set":data})
                     session['onboarded'] = True

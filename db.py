@@ -22,4 +22,5 @@ onboarding_details_collection = db_client['onboarding_details']
 jobs_details_collection = db_client['jobs_details']
 candidate_job_application_collection = db_client['candidate_job_application']
 chatbot_collection = db_client['chatbot']
+profile_details_collection = db_client['profile_details']
 
