@@ -160,7 +160,8 @@ def chatbot():
             messages = [{"user":"billbot","msg": "Hi, The right side of your screen will display your resume. You can give me instruction to build it in the chat."},{"user":"billbot","msg": "You can give me information regarding your inroduction, skills, experiences, achievements and projects. I will create a professional resume for you!"}]
             if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
                 resume_html = resume_details.get("resume_html")
-                return render_template('resume_builder.html', messages=messages, resume_html=resume_html) 
+                resume_built = session.get("resume_built")
+                return render_template('resume_builder.html', messages=messages, resume_html=resume_html, resume_built=resume_built) 
             else:
                 abort(500,{"message":"Something went wrong! Contact ADMIN!"})
         
@@ -176,6 +177,13 @@ def resume_build():
     html_code = query_update_billbot(user_id, userMsg)
     add_html_to_db(user_id, html_code)
     return str(html_code)
+
+@app.route("/resume_built", methods = ['POST'], endpoint='resume_built')
+@is_candidate
+def resume_built():
+    user_id = session.get("google_id")
+    onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"resume_built": True}})
+    return redirect("/dashboard")
   
 @app.route("/have_resume", methods = ['POST'], endpoint='have_resume')
 @is_candidate
