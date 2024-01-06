@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret, initial_html
 from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection
-from helpers import  query_update_billbot, add_html_to_db
+from helpers import  query_update_billbot, add_html_to_db, analyze_resume
 import os
 from datetime import datetime
 import requests
@@ -183,6 +183,7 @@ def resume_build():
 def resume_built():
     user_id = session.get("google_id")
     onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"resume_built": True}})
+    analyze_resume(user_id)
     return redirect("/dashboard")
   
 @app.route("/have_resume", methods = ['POST'], endpoint='have_resume')
