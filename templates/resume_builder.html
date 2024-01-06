@@ -13,6 +13,7 @@
 
 <body>
   <div id="chat-container">
+   
 
  
     <!-- partial:index.partial.html -->
@@ -20,6 +21,7 @@
       <header class="msger-header">
         <div class="msger-header-title">
           <i class="fas fa-bug"></i> BillBot <i class="fas fa-bug"></i>
+          <div id="loader" style="display: none;"><h3>Processing...</h3></div>
         </div>
       </header>
   
@@ -36,7 +38,7 @@
   
     <section class="msger1" id="resume">
     
-     {{resume_html}}
+     {{resume_html | safe}}
  
     </section>
   </div>
@@ -51,6 +53,8 @@
     const msgerForm = get(".msger-inputarea");
     const msgerInput = get(".msger-input");
     const msgerChat = get(".msger-chat");
+    const loader = document.getElementById('loader');
+    const resume_section = document.getElementById("resume")
 
 
     // Icons made by Freepik from www.flaticon.com
@@ -110,19 +114,26 @@
       msgerChat.insertAdjacentHTML("beforeend", msgHTML);
       msgerChat.scrollTop += 500;
     }
+    
+    async function botResponse(rawText) {
+      loader.style.display = 'block'
+  try {
+    // Bot Response
+    const data = await $.post("/resume_build", { msg: rawText });
 
-    function botResponse(rawText) {
+    console.log(rawText);
+    console.log(data);
 
-      // Bot Response
-      $.post("/chatbot", { msg: rawText }).done(function (data) {
-        console.log(rawText);
-        console.log(data);
-        const msgText = data;
-        appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
-
-      });
-
-    }
+    const resume_html = data;
+    resume_section.innerHTML = data
+    appendMessage(BOT_NAME, BOT_IMG, "left", "Resume Updated!");
+  } catch (error) {
+    console.error('Error:', error);
+    // Handle the error as needed
+  } finally{
+    loader.style.display = 'none'
+  }
+}
 
 
     // Utils

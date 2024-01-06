@@ -27,6 +27,10 @@ initial_html = """
   <title>Document</title>
 </head>
 <body>
-  
+  <ul><li>Introduction</li>
+  <li>Skills</li>
+  <li>Experiences</li>
+  <li>Projects</li>
+  <li>Achievements</li></ul>
 </body>
 </html>"""

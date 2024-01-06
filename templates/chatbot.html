@@ -60,6 +60,7 @@
     all_messages = decodeHtmlEntities(all_messages)
     var all_messages = all_messages.replace(/'/g, '"');
     all_messages = JSON.parse(all_messages)
+    console.log(all_messages)
     for(var key in all_messages){
         user = all_messages[key]['user']
         msg = all_messages[key]['msg']
@@ -83,9 +84,18 @@
       const msgText = msgerInput.value;
       if (!msgText) return;
 
-      appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
-      msgerInput.value = "";
-      botResponse(msgText);
+      else if(msgText == "yes"){
+        appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
+        appendMessage(BOT_NAME, BOT_IMG, "left", `Cool, go on and upload it <br><br> <input type=file />`);
+      }
+      else{
+        appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
+        appendMessage(BOT_NAME, BOT_IMG, "left", `No worries, lets develop one!<br><br><form action=/have_resume method=post> <button class=msger-send-btn type=submit>click here</button></form>`);
+
+      }
+
+    msgerInput.value = "";
+      // botResponse(msgText);
     });
 
     function appendMessage(name, img, side, text) {
@@ -111,7 +121,7 @@
     function botResponse(rawText) {
 
       // Bot Response
-      $.post("/chatbot", { msg: rawText }).done(function (data) {
+      $.post("/billbot", { msg: rawText }).done(function (data) {
         console.log(rawText);
         console.log(data);
         const msgText = data;

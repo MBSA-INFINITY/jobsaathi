@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
-from client_secret import client_secret
-from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection
-from helpers import query__billbot
+from client_secret import client_secret, initial_html
+from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection
+from helpers import  query_update_billbot, add_html_to_db
 import os
 from datetime import datetime
 import requests
@@ -11,6 +11,7 @@ from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
 import uuid
+import time
 
 app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET']
@@ -95,7 +96,7 @@ def dashboard():
         all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
         return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
     else:
-        if not resume_built:
+        if not resume_built: 
             return redirect("/billbot")
         pipeline = [
             {"$match": {"status": "published"}},
@@ -140,22 +141,50 @@ def logout():
 @app.route("/billbot", methods = ['GET', 'POST'], endpoint='chatbot')
 @is_candidate
 def chatbot():
-    if request.method == 'POST':
-        form_data = dict(request.form)
-        userMsg = form_data.get("msg")
-        user_data = {"user":"user", "msg": userMsg}
-        # analysis of the user message and bot response
-        botMsg = query__billbot(userMsg)
-        if botMsg == "yes":
-            botMsg = "Cool, go on and upload it <br><br> <input type=file />"
-        else:
-            botMsg = "No worries, lets develop one!"
-        bot_data = {"user":"billbot", "msg": str(botMsg)}
-        chatbot_collection.insert_many([user_data, bot_data])
-        return botMsg
-    phase = "onboarding"
-    messages = list(chatbot_collection.find({},{"_id": 0}))
-    return render_template('chatbot.html', phase=phase, messages=messages)
+    user_id = session.get("google_id")
+    # if request.method == 'POST':
+    #     form_data = dict(request.form)
+    #     userMsg = form_data.get("msg")
+    #     # botMsg = query__billbot(userMsg)
+    #     if userMsg == "yes":
+    #         botMsg = "Cool, go on and upload it <br><br> <input type=file />"
+    #     else:
+    #         botMsg = "No worries, lets develop one!<br><br><form action=/have_resume methods=post> <button class=msger-send-btn type=submit>click here</button></form>"
+    #     return botMsg
+    if onboarding_details := onboarding_details_collection.find_one({"user_id": user_id}, {"_id": 0}):
+        phase = onboarding_details.get('phase')
+        if phase == "1":
+            messages = list(chatbot_collection.find({},{"_id": 0}))
+            return render_template('chatbot.html', messages=messages)
+        elif phase == "2":
+            messages = [{"user":"billbot","msg": "Hi, The right side of your screen will display your resume. You can give me instruction to build it in the chat."},{"user":"billbot","msg": "You can give me information regarding your inroduction, skills, experiences, achievements and projects. I will create a professional resume for you!"}]
+            if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+                resume_html = resume_details.get("resume_html")
+                return render_template('resume_builder.html', messages=messages, resume_html=resume_html) 
+            else:
+                abort(500,{"message":"Something went wrong! Contact ADMIN!"})
+        
+
+@app.route("/resume_build", methods = ['POST'], endpoint='resume_build')
+@is_candidate
+def resume_build():
+    # time.sleep(7)
+    # return initial_html
+    user_id = session.get("google_id")
+    form_data = dict(request.form)
+    userMsg = form_data.get("msg")
+    html_code = query_update_billbot(user_id, userMsg)
+    add_html_to_db(user_id, html_code)
+    return str(html_code)
+  
+@app.route("/have_resume", methods = ['POST'], endpoint='have_resume')
+@is_candidate
+def have_resume():
+    user_id = session.get("google_id")
+    onboarding_details_collection.update_one({"user_id": user_id}, {"$set": {"phase": "2"}})
+    resume_data = {"user_id": user_id,"resume_html":initial_html}
+    resume_details_collection.insert_one(resume_data)
+    return redirect("/billbot")
 
 
 @app.route("/callback")
