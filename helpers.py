@@ -41,7 +41,7 @@ def analyze_resume(user_id):
         skills = skills_analyze_llm_chain.run(resume_html) 
         skills = skills.strip()
         skills_list = json.loads(skills)
-        resume_details_collection.update_one({"user_id": user_id},{"$set": {"skills": skills_list}})
+        resume_details_collection.update_one({"user_id": user_id},{"$set": skills_list})
         return skills_list
     else:
         []
