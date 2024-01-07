@@ -26,9 +26,6 @@
                 <a class="nav-link active" aria-current="page" href="/applied_jobs">Applied Jobs</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" data-bs-toggle="modal" data-bs-target="#exampleModal" style="cursor: pointer;">Profile</a>
-              </li>
-              <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="/logout">Logout</a>
               </li>
 
@@ -40,54 +37,27 @@
       <!-- Button trigger modal -->
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">User Profile</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form action="/profile" method="post">
-          <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Name</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Your Name" value="{{profile_details['name']}}">
-          </div>
-          <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Email</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Your Name" value="{{profile_details['email']}}" disabled>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
+
     <div class="container my-3" id="alljobs">
-      <h4 class="text-center my-3">All Curated Jobs for Your skill set.</h4>
-      {% if all_jobs !=[] %}
+      <h4 class="text-center my-3">Applied Jobs</h4>
+      {% if all_applied_jobs !=[] %}
         <table class="table">
             <thead>
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">Job Title</th>
                 <th scope="col">Job Location</th>
-                <th scope="col">Company Name</th>
                 <th scope="col">--</th>
               </tr>
             </thead>
             <tbody>
-                {% for job in all_jobs %}
+                {% for job in all_applied_jobs %}
               <tr>
                 <th scope="row">{{loop.index}}</th>
-                <td>{{job['job_title']}}</td>
-                <td>{{job['job_location']}}</td>
-                <td>{{job['user_details'][0]['company_name']}}</td>
+                <td>{{job['job_details'][0]['job_title']}}</td>
+                <td>{{job['job_details'][0]['job_location']}}</td>
                 <td>
-                <a href="/apply/job/{{job['job_id']}}" class="btn btn-sm btn-success" style="text-decoration: none;color: white;" type="button">Apply</a>
+                <a href="/apply/job/{{job['job_id']}}" class="btn btn-sm btn-success" style="text-decoration: none;color: white;" type="button">Applied</a>
                  </td>
 
               </tr>

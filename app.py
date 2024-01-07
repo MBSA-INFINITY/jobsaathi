@@ -98,8 +98,19 @@ def dashboard():
     else:
         if not resume_built: 
             return redirect("/billbot")
+        resume_skills = resume_details_collection.find_one({'user_id': user_id}, {'skills': 1})['skills']
+        regex_pattern = '|'.join(resume_skills)
         pipeline = [
-                    {"$match": {"status": "published"}},
+                 {
+        '$match': {
+            'status': 'published',
+               '$or': [
+                {'job_title': {'$regex': regex_pattern, '$options': 'i'}},
+                {'job_description': {'$regex': regex_pattern, '$options': 'i'}},
+                {'job_topics': {'$regex': regex_pattern, '$options': 'i'}},
+            ]  # You may add other conditions to filter jobs if needed
+        }
+    },
             {
                 '$lookup': {
                     'from': 'onboarding_details', 
@@ -115,13 +126,48 @@ def dashboard():
             }
         ]
         all_jobs = list(jobs_details_collection.aggregate(pipeline))
+        all_updated_jobs = []
         for idx, job in enumerate(all_jobs):
             if applied := candidate_job_application_collection.find_one({"job_id": job.get("job_id"),"user_id":  user_id},{"_id": 0}):
-                all_jobs[idx]['job_applied'] = True
+                pass
             else:
-                all_jobs[idx]['job_applied'] = False
+                all_updated_jobs.append(job)
         profile_details = profile_details_collection.find_one({"user_id": user_id},{"_id": 0})
-        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs, profile_details=profile_details)
+        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_updated_jobs, profile_details=profile_details)
+    
+@app.route("/applied_jobs", methods = ['GET'], endpoint='applied_jobs')
+@login_is_required
+@is_candidate
+def applied_jobs():
+    user_name = session.get("name")
+    onboarded = session.get("onboarded")
+    user_id = session.get("google_id")
+    if onboarded == False:
+        return redirect("/onboarding")
+    onboarding_details = onboarding_details_collection.find_one({"user_id": user_id},{"_id": 0})
+    resume_built = onboarding_details.get("resume_built")
+    if not resume_built: 
+        return redirect("/billbot")
+    pipeline = [
+                {"$match": {"user_id": user_id}},
+        {
+            '$lookup': {
+                'from': 'jobs_details', 
+                'localField': 'job_id', 
+                'foreignField': 'job_id', 
+                'as': 'job_details'
+            }
+        }, 
+        {
+            '$project': {
+                '_id': 0,
+                'job_details._id': 0
+            }
+        }
+    ]
+    all_applied_jobs = list(candidate_job_application_collection.aggregate(pipeline))
+    # return all_applied_jobs
+    return render_template('applied_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_applied_jobs=all_applied_jobs)
 
 
 @app.route("/profile", methods=['POST'], endpoint='profile_update')
@@ -333,7 +379,25 @@ def apply_job(job_id):
         candidate_job_application_collection.insert_one(job_apply_data)
         flash("Successfully Applied for the Job. Recruiters will get back to you soon, if you are a good fit.")
         return redirect(f'/apply/job/{job_id}')
-    if job_details := jobs_details_collection.find_one({"job_id": str(job_id)},{"_id": 0}):
+    pipeline = [
+              {"$match": {"job_id": str(job_id)}},
+                {
+                    '$lookup': {
+                        'from': 'onboarding_details', 
+                        'localField': 'user_id', 
+                        'foreignField': 'user_id', 
+                        'as': 'user_details'
+                    }
+                }, 
+                {
+                    '$project': {
+                        '_id': 0,
+                        'user_details._id': 0
+                    }
+                }
+            ]
+    if job_details := list(jobs_details_collection.aggregate(pipeline)):
+        job_details = job_details[0]
         if job_details.get("status") == "published":
             if candidate_job_application_collection.find_one({"user_id": user_id, "job_id": job_id},{"_id": 0}):
                applied = True 

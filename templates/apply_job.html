@@ -24,6 +24,10 @@
   <h6 class="text-center my-3"><u>JOB ID - {{job_id}}</u></h6>
   <form action="/apply/job/{{job_id}}" method="post" onsubmit="return applySubmitForm()">
       <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label"><b>Company Name</b></label>
+          <input type="text" class="form-control" value="{{job_details['user_details'][0]['company_name']}}" name="job_title" placeholder="Job Title" disabled>
+        </div>
+      <div class="mb-3">
           <label for="exampleFormControlInput1" class="form-label"><b>Job Title</b></label>
           <input type="text" class="form-control" value="{{job_details['job_title']}}" name="job_title" placeholder="Job Title" disabled>
         </div>
