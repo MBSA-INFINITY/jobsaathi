@@ -82,7 +82,13 @@
                 <td>{{job['job_title']}}</td>
                 <td>{{job['job_location']}}</td>
                 <td>{{job['user_details'][0]['company_name']}}</td>
-                <td><a href="/apply/job/{{job['job_id']}}" class="btn btn-sm btn-success" style="text-decoration: none;color: white;" type="button">Apply</a> </td>
+                <td>
+                {% if job['job_applied'] %}
+                <button href="/apply/job/{{job['job_id']}}" class="btn btn-sm btn-success" style="text-decoration: none;color: white;" type="button" disabled>Applied</button>
+                {% else %}
+                <a href="/apply/job/{{job['job_id']}}" class="btn btn-sm btn-success" style="text-decoration: none;color: white;" type="button">Apply</a>
+                {% endif %}
+                 </td>
 
               </tr>
               {% endfor %}

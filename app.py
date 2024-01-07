@@ -115,6 +115,11 @@ def dashboard():
             }
         ]
         all_jobs = list(jobs_details_collection.aggregate(pipeline))
+        for idx, job in enumerate(all_jobs):
+            if applied := candidate_job_application_collection.find_one({"job_id": job.get("job_id"),"user_id":  user_id},{"_id": 0}):
+                all_jobs[idx]['job_applied'] = True
+            else:
+                all_jobs[idx]['job_applied'] = False
         profile_details = profile_details_collection.find_one({"user_id": user_id},{"_id": 0})
         return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs, profile_details=profile_details)
 
