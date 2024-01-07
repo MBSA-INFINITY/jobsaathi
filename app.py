@@ -107,7 +107,8 @@ def dashboard():
                     'foreignField': 'user_id', 
                     'as': 'user_details'
                 }
-            }, {
+            }, 
+            {
                 '$project': {
                     '_id': 0
                 }
@@ -258,12 +259,12 @@ def onboarding():
                         onboarding_details['phase'] = "1"
                         onboarding_details['resume_built'] = False
                         session['resume_built'] = False
-                    profile_data = {
-                        "user_id": user_details.get("user_id"),
-                        "name": user_details.get("user_name"),
-                        "email": user_details.get("email")
-                    }
-                    profile_details_collection.insert_one(profile_data)
+                        profile_data = {
+                            "user_id": user_details.get("user_id"),
+                            "name": onboarding_details.get("candidate_name"),
+                            "email": user_details.get("email")
+                        }
+                        profile_details_collection.insert_one(profile_data)
                     onboarding_details_collection.insert_one(onboarding_details)
                     user_details_collection.update_one({"user_id": user_id},{"$set":data})
                     session['onboarded'] = True
