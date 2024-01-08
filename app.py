@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret, initial_html
 from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection
-from helpers import  query_update_billbot, add_html_to_db, analyze_resume
+from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase
 import os
 from datetime import datetime
 import requests
@@ -80,7 +80,7 @@ def start():
         return resp
     else:
         return redirect("/dashboard")
-    
+
 @app.route("/dashboard", methods = ['GET'], endpoint='dashboard')
 @login_is_required
 def dashboard():
@@ -176,6 +176,10 @@ def applied_jobs():
 def profile_update():
     user_id = session.get("google_id")
     profile_data = dict(request.form)
+    if 'profile_pic' in request.files:
+        profile_pic = request.files['profile_pic']
+        profile_pic_link = upload_file_firebase(profile_pic, f"{user_id}/profile_pic.png")
+    profile_data['profile_pic'] = profile_pic_link
     profile_details_collection.update_one({"user_id": user_id},{"$set": profile_data})
     return redirect('/dashboard')
 

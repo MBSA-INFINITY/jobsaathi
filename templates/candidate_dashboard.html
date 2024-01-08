@@ -48,7 +48,16 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="/profile" method="post">
+        <form action="/profile" method="post" enctype="multipart/form-data">
+          <div class="row">
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4">
+              <img src="{{profile_details['profile_pic']}}" alt="" width="140" height="140" class="bd-placeholder-img rounded-circle">
+              <input class="my-2" type="file" name="profile_pic" id="profile_pic" accept=".jpg, .jpeg, .png">
+              <!-- <svg class=""  xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-color)"/></svg> -->
+            </div><!-- /.col-lg-4 -->
+            <div class="col-lg-4"></div>
+          </div><!-- /.row -->
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Name</label>
             <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Your Name" value="{{profile_details['name']}}">
@@ -57,12 +66,12 @@
             <label for="exampleFormControlInput1" class="form-label">Email</label>
             <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Your Name" value="{{profile_details['email']}}" disabled>
           </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button class="btn btn-primary" type="submit">Save changes</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

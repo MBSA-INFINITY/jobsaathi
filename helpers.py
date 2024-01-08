@@ -3,7 +3,27 @@ from langchain import PromptTemplate, LLMChain
 from db import resume_details_collection
 import os
 import json
+import cloudinary
+from firebase import Firebase
+
+firebaseConfig = {
+  "apiKey": os.environ.get("FIREBASE_APIKEY"),
+  "authDomain": os.environ.get("FIREBASE_AUTHDOMAIN"),
+  "databaseURL": os.environ.get("FIREBASE_DATABASEURL"),
+  "projectId": os.environ.get("FIREBASE_PROJECT_ID"),
+  "storageBucket": os.environ.get("FIREBASE_STORAGE_BUCKET"),
+  "messagingSenderId": os.environ.get("FIREBASE_MESSAGING_SENDER_ID"),
+  "appId": os.environ.get("FIREBASE_APP_ID"),
+  "measurementId": os.environ.get("FIREBASE_MEASUREMENT_ID")
+  }
+
+
+firebase = Firebase(firebaseConfig)
+storage = firebase.storage()
+
 OPENAIKEY=os.environ['OPENAIKEY']
+
+
 llm = OpenAI(openai_api_key=OPENAIKEY,  max_tokens=-1)
 
 template = """You are a chatbot who helps people to build their resume/portfolio. This is the HTML of the portfolio {html}. Analyze the HTML properly.The following statement "{statement}" would be an instruction or information related to skills, achievements, education, projects or any other section in the resume. Analyze the statement and update the HTML code according to statement. You are free to add or remove a section as per the scenario. Make the portfolio attractive in styling. Return me only the HTML Code.
@@ -45,6 +65,11 @@ def analyze_resume(user_id):
         return skills_list
     else:
         []
+
+def upload_file_firebase(obj, path):
+    storage.child(path).put(obj)
+    link = storage.child(path).get_url(None)
+    return link
 
 
 
