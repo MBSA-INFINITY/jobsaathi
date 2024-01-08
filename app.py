@@ -241,6 +241,22 @@ def resume_built():
     onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"resume_built": True}})
     analyze_resume(user_id)
     return redirect("/dashboard")
+
+@app.route('/resume_upload',methods = ['POST'], endpoint='resume_upload')
+@is_candidate
+def resume_upload():
+    user_id = session.get("google_id")
+    if 'resume' in request.files:
+        resume = request.files['resume']
+        resume_link = upload_file_firebase(resume, f"{user_id}/resume.pdf")
+        data = {"resume_link": resume_link}
+        if resume_details := resume_details_collection.find({"user_id": user_id}):
+            resume_details_collection.update_one({"user_id": user_id},{"$set": data})
+        else:
+            resume_details_collection.insert_one({"user_id": user_id, "resume_link": resume_link})
+        profile_details_collection.update_one({"user_id": user_id},{"$set": data})
+        onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"resume_built": True}})
+        return redirect("/dashboard")
   
 @app.route("/have_resume", methods = ['POST'], endpoint='have_resume')
 @is_candidate

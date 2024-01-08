@@ -30,11 +30,13 @@
   
       </main>
   
-      <form class="msger-inputarea">
-        <input type="text" class="msger-input" id="textInput" placeholder="Enter your message...">
-        <button type="submit" class="msger-send-btn">Send</button>
+      <form class="msger-inputarea" id="response_form">
+        <input type="text" class="msger-input" id="textInput" placeholder="Enter your message..." style="display: none;">
+        <button class="msger-send-btn" onclick="submitForm('yes')">Yes</button>
+        <button class="msger-send-btn" onclick="submitForm('no')">No</button>
       </form>
     </section>
+   
   
 
   <!-- partial -->
@@ -86,7 +88,10 @@
 
       else if(msgText == "yes"){
         appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
-        appendMessage(BOT_NAME, BOT_IMG, "left", `Cool, go on and upload it <br><br> <input type=file />`);
+        appendMessage(BOT_NAME, BOT_IMG, "left", `Cool, go on and upload it <br><br>  <form action="/resume_upload" method="post" enctype="multipart/form-data">
+      <input name='resume' type=file accept='.pdf'/ required> <br><br>
+      <button type="submit">Upload</button>
+    </form>`);
       }
       else{
         appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
@@ -97,7 +102,13 @@
     msgerInput.value = "";
       // botResponse(msgText);
     });
+   
+     function submitForm(msg){
 
+        document.getElementById('textInput').value = msg.toString()
+        document.getElementById('msgerForm').submit()
+        
+     }
     function appendMessage(name, img, side, text) {
       //   Simple solution for small apps
       const msgHTML = `
