@@ -100,7 +100,12 @@ def dashboard():
             return redirect("/billbot")
         resume_skills_string = resume_details_collection.find_one({'user_id': user_id}, {'skills': 1})['skills']
         resume_skills = [skill.strip() for skill in resume_skills_string.split(',')]
-        regex_pattern = '|'.join(resume_skills)
+        regex_patterns = []
+        for skill in resume_skills:
+            skill_words = skill.split()
+            skill_pattern = '|'.join(skill_words)
+            regex_patterns.append(skill_pattern)
+        regex_pattern = '|'.join(regex_patterns)
         pipeline = [
                  {
         '$match': {
@@ -251,9 +256,11 @@ def resume_upload():
         resume = request.files['resume']
         resume_link = upload_file_firebase(resume, f"{user_id}/resume.pdf")
         data = {"resume_link": resume_link}
-        if resume_details := resume_details_collection.find({"user_id": user_id}):
+        if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+            print("user exists resume_details_collection")
             resume_details_collection.update_one({"user_id": user_id},{"$set": data})
         else:
+            print("user does not exists resume_details_collection")
             resume_details_collection.insert_one({"user_id": user_id, "resume_link": resume_link})
         profile_details_collection.update_one({"user_id": user_id},{"$set": data})
         onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"resume_built": True}})

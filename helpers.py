@@ -69,7 +69,7 @@ def analyze_resume(user_id, text=False):
         skills = skills_analyze_llm_chain.run(text) 
         print(skills)
         skills = skills.strip()
-        resume_details_collection.update_one({"user_id": user_id},{"$set": skills})
+        resume_details_collection.update_one({"user_id": user_id},{"$set": {"skills": skills}})
         return 
 
 def extract_text_pdf(path):
