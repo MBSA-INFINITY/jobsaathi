@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret, initial_html
 from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection
-from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase
+from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf
 import os
 from datetime import datetime
 import requests
@@ -98,7 +98,8 @@ def dashboard():
     else:
         if not resume_built: 
             return redirect("/billbot")
-        resume_skills = resume_details_collection.find_one({'user_id': user_id}, {'skills': 1})['skills']
+        resume_skills_string = resume_details_collection.find_one({'user_id': user_id}, {'skills': 1})['skills']
+        resume_skills = [skill.strip() for skill in resume_skills_string.split(',')]
         regex_pattern = '|'.join(resume_skills)
         pipeline = [
                  {
@@ -256,6 +257,8 @@ def resume_upload():
             resume_details_collection.insert_one({"user_id": user_id, "resume_link": resume_link})
         profile_details_collection.update_one({"user_id": user_id},{"$set": data})
         onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"resume_built": True}})
+        resume_text = extract_text_pdf(resume)
+        analyze_resume(user_id, resume_text)
         return redirect("/dashboard")
   
 @app.route("/have_resume", methods = ['POST'], endpoint='have_resume')

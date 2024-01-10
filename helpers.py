@@ -1,10 +1,12 @@
-from langchain.llms import OpenAI
-from langchain import PromptTemplate, LLMChain
+from langchain_community.llms.openai import OpenAI
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 from db import resume_details_collection
 import os
 import json
-import cloudinary
 from firebase import Firebase
+from PyPDF2 import PdfReader 
+from icecream import ic
 
 firebaseConfig = {
   "apiKey": os.environ.get("FIREBASE_APIKEY"),
@@ -29,10 +31,7 @@ llm = OpenAI(openai_api_key=OPENAIKEY,  max_tokens=-1)
 template = """You are a chatbot who helps people to build their resume/portfolio. This is the HTML of the portfolio {html}. Analyze the HTML properly.The following statement "{statement}" would be an instruction or information related to skills, achievements, education, projects or any other section in the resume. Analyze the statement and update the HTML code according to statement. You are free to add or remove a section as per the scenario. Make the portfolio attractive in styling. Return me only the HTML Code.
 """
 
-skills_analyze_template = """You are a chatbot who helps people to build their resume/portfolio. This is the HTML of the portfolio {html}. Analyze the HTML properly and find all the skills of the person from the resume and return me the data in the following format.
-JSON(
-"skills" : list of all the skills from the resume.
-)
+skills_analyze_template = """You are a chatbot who helps people to build their resume/portfolio. This is the text of the portfolio {html}. Analyze the text properly and find all the skills of the person from the resume and return me the all skills in comma seperated formated.
 """
 prompt = PromptTemplate(template=template, input_variables=["html", "statement"])
 llm_chain = LLMChain(prompt=prompt, llm=llm)
@@ -55,16 +54,30 @@ def get_resume_html_db(user_id):
 def add_html_to_db(user_id, html_code):
     resume_details_collection.update_one({"user_id": user_id},{"$set": {"resume_html": html_code}})
 
-def analyze_resume(user_id):
-    if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
-        resume_html = resume_details.get("resume_html")
-        skills = skills_analyze_llm_chain.run(resume_html) 
-        skills = skills.strip()
-        skills_list = json.loads(skills)
-        resume_details_collection.update_one({"user_id": user_id},{"$set": skills_list})
-        return skills_list
+def analyze_resume(user_id, text=False):
+    if not text:
+        if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+            resume_html = resume_details.get("resume_html")
+            skills = skills_analyze_llm_chain.run(resume_html)
+            print(skills)
+            skills = skills.strip()
+            resume_details_collection.update_one({"user_id": user_id},{"$set": {"skills": skills}})
+            return 
+        else:
+            return
     else:
-        []
+        skills = skills_analyze_llm_chain.run(text) 
+        print(skills)
+        skills = skills.strip()
+        resume_details_collection.update_one({"user_id": user_id},{"$set": skills})
+        return 
+
+def extract_text_pdf(path):
+    reader = PdfReader(path) 
+    print(len(reader.pages)) 
+    page = reader.pages[0] 
+    text = page.extract_text() 
+    return text 
 
 def upload_file_firebase(obj, path):
     storage.child(path).put(obj)
