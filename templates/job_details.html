@@ -60,18 +60,15 @@
         </div>
         <div class="mb-3">
           <label for="exampleFormControlInput1" class="form-label"><b>Job Type</b></label>
-          <select class="form-select" aria-label="Default select example" name="job_type">
-              {% if job_details['job_type'] == "part_time" %}
-              <option value="part_time" selected>Part Time</option>
-              <option value="full_time" >Full Time</option>
-              {% elif job_details['job_type'] == "full_time" %}
-              <option value="full_time" selected>Full Time</option>
-              <option value="part_time" >Part Time</option>
-
-              {% endif %}
-
+          <select class="form-select" aria-label="Default select example" name="job_type" id="job_type">
+              <option value="part_time">Part Time</option>
+              <option value="full_time">Full Time</option>
+              <option value="internship">Internship</option>
           </select>
       </div>
+      <script>
+          document.getElementById("job_type").value = "{{job_details['job_type']}}"
+      </script>
       <div class="mb-3" id="job_location_div" style="display: none;">
           <label for="exampleFormControlInput1" class="form-label"><b>Job Location</b></label>
           <input type="text" class="form-control" value="{{job_details['job_location']}}" name="job_location" placeholder="Job Location" required>

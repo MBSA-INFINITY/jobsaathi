@@ -17,17 +17,66 @@
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                <a class="nav-link active" aria-current="page" href="/">Home</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/billbot">BillBot</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/applied_jobs">Applied Jobs</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" data-bs-toggle="modal" data-bs-target="#exampleModal" style="cursor: pointer;">Profile</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/logout">Logout</a>
+              </li>
+
             </ul>
-            <!-- <form class="d-flex" role="search"> -->
- 
-              <a href="/logout" class="btn btn-outline-success" style="text-decoration: none;color: black;">Logout</a>
           </div>
           
         </div>
       </nav>
+      <!-- Button trigger modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">User Profile</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/profile" method="post" enctype="multipart/form-data">
+          <div class="row">
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4">
+              <img src="{{profile_details['profile_pic']}}" alt="" width="140" height="140" class="bd-placeholder-img rounded-circle">
+              <input class="my-2" type="file" name="profile_pic" id="profile_pic" accept=".jpg, .jpeg, .png">
+              <!-- <svg class=""  xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-color)"/></svg> -->
+            </div><!-- /.col-lg-4 -->
+            <div class="col-lg-4"></div>
+          </div><!-- /.row -->
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Name</label>
+            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Your Name" value="{{profile_details['name']}}">
+          </div>
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Email</label>
+            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Your Name" value="{{profile_details['email']}}" disabled>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button class="btn btn-primary" type="submit">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
     <div class="container my-3" id="alljobs">
+      <h4 class="text-center my-3">All Curated Jobs for Your skill set.</h4>
       {% if all_jobs !=[] %}
         <table class="table">
             <thead>
@@ -46,7 +95,9 @@
                 <td>{{job['job_title']}}</td>
                 <td>{{job['job_location']}}</td>
                 <td>{{job['user_details'][0]['company_name']}}</td>
-                <td><a href="/apply/job/{{job['job_id']}}" class="btn btn-sm btn-success" style="text-decoration: none;color: white;" type="button">Apply</a> </td>
+                <td>
+                <a href="/apply/job/{{job['job_id']}}" class="btn btn-sm btn-success" style="text-decoration: none;color: white;" type="button">Apply</a>
+                 </td>
 
               </tr>
               {% endfor %}

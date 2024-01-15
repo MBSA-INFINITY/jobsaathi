@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
-from client_secret import client_secret
-from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection
+from client_secret import client_secret, initial_html
+from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection
+from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf
 import os
 from datetime import datetime
 import requests
@@ -10,6 +11,7 @@ from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
 import uuid
+import time
 
 app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET']
@@ -79,6 +81,15 @@ def start():
     else:
         return redirect("/dashboard")
     
+@app.route("/signup", methods = ['GET'])
+def signup():
+    if session.get('google_id') is None:
+        user_name = session.get("name")
+        resp = make_response(render_template("signup.html", user_name=user_name))
+        return resp
+    else:
+        return redirect("/dashboard")
+
 @app.route("/dashboard", methods = ['GET'], endpoint='dashboard')
 @login_is_required
 def dashboard():
@@ -89,27 +100,103 @@ def dashboard():
         return redirect("/onboarding")
     onboarding_details = onboarding_details_collection.find_one({"user_id": user_id},{"_id": 0})
     purpose = onboarding_details.get("purpose")
+    resume_built = onboarding_details.get("resume_built")
     if purpose == 'hirer':
         all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
         return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
     else:
+        if not resume_built: 
+            return redirect("/billbot")
+        resume_skills_string = resume_details_collection.find_one({'user_id': user_id}, {'skills': 1})['skills']
+        resume_skills = [skill.strip() for skill in resume_skills_string.split(',')]
+        regex_patterns = []
+        for skill in resume_skills:
+            skill_words = skill.split()
+            skill_pattern = '|'.join(skill_words)
+            regex_patterns.append(skill_pattern)
+        regex_pattern = '|'.join(regex_patterns)
         pipeline = [
-            {"$match": {"status": "published"}},
-    {
-        '$lookup': {
-            'from': 'onboarding_details', 
-            'localField': 'user_id', 
-            'foreignField': 'user_id', 
-            'as': 'user_details'
+                 {
+        '$match': {
+            'status': 'published',
+               '$or': [
+                {'job_title': {'$regex': regex_pattern, '$options': 'i'}},
+                {'job_description': {'$regex': regex_pattern, '$options': 'i'}},
+                {'job_topics': {'$regex': regex_pattern, '$options': 'i'}},
+            ]  # You may add other conditions to filter jobs if needed
         }
-    }, {
-        '$project': {
-            '_id': 0
-        }
-    }
-]
+    },
+            {
+                '$lookup': {
+                    'from': 'onboarding_details', 
+                    'localField': 'user_id', 
+                    'foreignField': 'user_id', 
+                    'as': 'user_details'
+                }
+            }, 
+            {
+                '$project': {
+                    '_id': 0
+                }
+            }
+        ]
         all_jobs = list(jobs_details_collection.aggregate(pipeline))
-        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+        all_updated_jobs = []
+        for idx, job in enumerate(all_jobs):
+            if applied := candidate_job_application_collection.find_one({"job_id": job.get("job_id"),"user_id":  user_id},{"_id": 0}):
+                pass
+            else:
+                all_updated_jobs.append(job)
+        profile_details = profile_details_collection.find_one({"user_id": user_id},{"_id": 0})
+        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_updated_jobs, profile_details=profile_details)
+    
+@app.route("/applied_jobs", methods = ['GET'], endpoint='applied_jobs')
+@login_is_required
+@is_candidate
+def applied_jobs():
+    user_name = session.get("name")
+    onboarded = session.get("onboarded")
+    user_id = session.get("google_id")
+    if onboarded == False:
+        return redirect("/onboarding")
+    onboarding_details = onboarding_details_collection.find_one({"user_id": user_id},{"_id": 0})
+    resume_built = onboarding_details.get("resume_built")
+    if not resume_built: 
+        return redirect("/billbot")
+    pipeline = [
+                {"$match": {"user_id": user_id}},
+        {
+            '$lookup': {
+                'from': 'jobs_details', 
+                'localField': 'job_id', 
+                'foreignField': 'job_id', 
+                'as': 'job_details'
+            }
+        }, 
+        {
+            '$project': {
+                '_id': 0,
+                'job_details._id': 0
+            }
+        }
+    ]
+    all_applied_jobs = list(candidate_job_application_collection.aggregate(pipeline))
+    # return all_applied_jobs
+    return render_template('applied_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_applied_jobs=all_applied_jobs)
+
+
+@app.route("/profile", methods=['POST'], endpoint='profile_update')
+@login_is_required
+@is_candidate
+def profile_update():
+    user_id = session.get("google_id")
+    profile_data = dict(request.form)
+    if 'profile_pic' in request.files:
+        profile_pic = request.files['profile_pic']
+        profile_pic_link = upload_file_firebase(profile_pic, f"{user_id}/profile_pic.png")
+    profile_data['profile_pic'] = profile_pic_link
+    profile_details_collection.update_one({"user_id": user_id},{"$set": profile_data})
+    return redirect('/dashboard')
 
 
 
@@ -128,9 +215,76 @@ def login():
 def logout():
     if "google_id" not in session:
         return redirect("/")
-    session.pop("google_id")
-    session.pop("name")
+    all_keys = list(session.keys())
+    for key in all_keys:
+        session.pop(key)
     return redirect("/")
+
+@app.route("/billbot", methods = ['GET', 'POST'], endpoint='chatbot')
+@is_candidate
+def chatbot():
+    user_id = session.get("google_id")
+    if onboarding_details := onboarding_details_collection.find_one({"user_id": user_id}, {"_id": 0}):
+        phase = onboarding_details.get('phase')
+        if phase == "1":
+            messages = list(chatbot_collection.find({},{"_id": 0}))
+            return render_template('chatbot.html', messages=messages)
+        elif phase == "2":
+            messages = [{"user":"billbot","msg": "Hi, The right side of your screen will display your resume. You can give me instruction to build it in the chat."},{"user":"billbot","msg": "You can give me information regarding your inroduction, skills, experiences, achievements and projects. I will create a professional resume for you!"}]
+            if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+                resume_html = resume_details.get("resume_html")
+                resume_built = session.get("resume_built")
+                return render_template('resume_builder.html', messages=messages, resume_html=resume_html, resume_built=resume_built) 
+            else:
+                abort(500,{"message":"Something went wrong! Contact ADMIN!"})
+        
+
+@app.route("/resume_build", methods = ['POST'], endpoint='resume_build')
+@is_candidate
+def resume_build():
+    user_id = session.get("google_id")
+    form_data = dict(request.form)
+    userMsg = form_data.get("msg")
+    html_code = query_update_billbot(user_id, userMsg)
+    add_html_to_db(user_id, html_code)
+    return str(html_code)
+
+@app.route("/resume_built", methods = ['POST'], endpoint='resume_built')
+@is_candidate
+def resume_built():
+    user_id = session.get("google_id")
+    onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"resume_built": True}})
+    analyze_resume(user_id)
+    return redirect("/dashboard")
+
+@app.route('/resume_upload',methods = ['POST'], endpoint='resume_upload')
+@is_candidate
+def resume_upload():
+    user_id = session.get("google_id")
+    if 'resume' in request.files:
+        resume = request.files['resume']
+        resume_link = upload_file_firebase(resume, f"{user_id}/resume.pdf")
+        data = {"resume_link": resume_link}
+        if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+            print("user exists resume_details_collection")
+            resume_details_collection.update_one({"user_id": user_id},{"$set": data})
+        else:
+            print("user does not exists resume_details_collection")
+            resume_details_collection.insert_one({"user_id": user_id, "resume_link": resume_link})
+        profile_details_collection.update_one({"user_id": user_id},{"$set": data})
+        onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"resume_built": True}})
+        resume_text = extract_text_pdf(resume)
+        analyze_resume(user_id, resume_text)
+        return redirect("/dashboard")
+  
+@app.route("/have_resume", methods = ['POST'], endpoint='have_resume')
+@is_candidate
+def have_resume():
+    user_id = session.get("google_id")
+    onboarding_details_collection.update_one({"user_id": user_id}, {"$set": {"phase": "2"}})
+    resume_data = {"user_id": user_id,"resume_html":initial_html}
+    resume_details_collection.insert_one(resume_data)
+    return redirect("/billbot")
 
 
 @app.route("/callback")
@@ -160,6 +314,10 @@ def callback():
         session["onboarded"] = user_details.get("onboarded")
         if onboarding_details := onboarding_details_collection.find_one({"user_id": id_info.get("sub")},{"_id":0}):
             session["purpose"] = onboarding_details.get("purpose")
+            purpose = session["purpose"]
+            if purpose and purpose == "candidate":
+                session["resume_built"] = onboarding_details.get("resume_built")
+
         
     else:
         user_data = {
@@ -184,19 +342,31 @@ def onboarding():
             onboarding_details['user_id'] = user_id
             if user_details := user_details_collection.find_one({"user_id": user_id},{"_id": 0}):
                 if user_details.get("onboarded") == False:
+                    purpose = onboarding_details.get("purpose")
+                    session['purpose'] = purpose
+                    data = {"onboarded": True}
+                    if purpose and purpose == "candidate":
+                        onboarding_details['phase'] = "1"
+                        onboarding_details['resume_built'] = False
+                        session['resume_built'] = False
+                        profile_data = {
+                            "user_id": user_details.get("user_id"),
+                            "name": onboarding_details.get("candidate_name"),
+                            "email": user_details.get("email")
+                        }
+                        profile_details_collection.insert_one(profile_data)
                     onboarding_details_collection.insert_one(onboarding_details)
-                    session['purpose'] = onboarding_details.get("purpose")
-                    user_details_collection.update_one({"user_id": user_id},{"$set":{"onboarded": True}})
+                    user_details_collection.update_one({"user_id": user_id},{"$set":data})
                     session['onboarded'] = True
-                    return redirect("/dashboard")
+                    return redirect("/dashboard") 
                 else:
                     abort(500, {"message": "User already Onboarded."})
-    else:
-        onboarded = session.get('onboarded')
-        if onboarded == True:
-            return redirect("/dashboard")
-        user_name = session.get("name")
-        return render_template('onboarding.html', user_name=user_name)
+    onboarded = session.get('onboarded')
+    if onboarded == True:
+        purpose = session.get("purpose")
+        return redirect("/dashboard")
+    user_name = session.get("name")
+    return render_template('onboarding.html', user_name=user_name)
     
 
 @app.route('/create_job',methods=['POST'], endpoint="create_job")
@@ -248,7 +418,25 @@ def apply_job(job_id):
         candidate_job_application_collection.insert_one(job_apply_data)
         flash("Successfully Applied for the Job. Recruiters will get back to you soon, if you are a good fit.")
         return redirect(f'/apply/job/{job_id}')
-    if job_details := jobs_details_collection.find_one({"job_id": str(job_id)},{"_id": 0}):
+    pipeline = [
+              {"$match": {"job_id": str(job_id)}},
+                {
+                    '$lookup': {
+                        'from': 'onboarding_details', 
+                        'localField': 'user_id', 
+                        'foreignField': 'user_id', 
+                        'as': 'user_details'
+                    }
+                }, 
+                {
+                    '$project': {
+                        '_id': 0,
+                        'user_details._id': 0
+                    }
+                }
+            ]
+    if job_details := list(jobs_details_collection.aggregate(pipeline)):
+        job_details = job_details[0]
         if job_details.get("status") == "published":
             if candidate_job_application_collection.find_one({"user_id": user_id, "job_id": job_id},{"_id": 0}):
                applied = True 
