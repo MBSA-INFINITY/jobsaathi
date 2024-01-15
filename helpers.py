@@ -1,6 +1,6 @@
-from langchain_community.llms.openai import OpenAI
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
+from langchain.llms import OpenAI
+from langchain import PromptTemplate, LLMChain
+# from langchain.chains import LLMChain
 from db import resume_details_collection
 import os
 import json
