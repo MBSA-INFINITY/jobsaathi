@@ -80,6 +80,15 @@ def start():
         return resp
     else:
         return redirect("/dashboard")
+    
+@app.route("/signup", methods = ['GET'])
+def signup():
+    if session.get('google_id') is None:
+        user_name = session.get("name")
+        resp = make_response(render_template("signup.html", user_name=user_name))
+        return resp
+    else:
+        return redirect("/dashboard")
 
 @app.route("/dashboard", methods = ['GET'], endpoint='dashboard')
 @login_is_required
