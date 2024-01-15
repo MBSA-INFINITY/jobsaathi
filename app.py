@@ -312,46 +312,54 @@ def callback():
     print(id_info)
     # return redirect("/mbsa")
     user_id = id_info.get("sub")
-    user_name = id_info.get("name")
-    email = id_info.get("email")
-
-    user_details = user_details_collection.find_one({"user_id": user_id}, {"_id": 0})
-
-    if user_details:
-        session.update({
-            "google_id": user_id,
-            "name": user_name,
-            "email": email,
-            "onboarded": user_details.get("onboarded")
-        })
-
-        onboarding_details = onboarding_details_collection.find_one({"user_id": user_id}, {"_id": 0})
-
+    user_name = id_info.get("sub")
+    user_email = id_info.get("sub")
+    data = {
+        "google_id": user_id,
+        "name": user_name,
+        "email": user_email,
+    }
+    session.update(data)
+    pipeline = [
+            {
+                '$match': {
+                    'user_id': str(user_id)
+                }
+            }, {
+                '$lookup': {
+                    'from': 'onboarding_details', 
+                    'localField': 'user_id', 
+                    'foreignField': 'user_id', 
+                    'as': 'onboarding_details'
+                }
+            }, {
+                '$project': {
+                    '_id': 0, 
+                    'onboarding_details._id': 0
+                }
+            }
+        ]
+    
+    if user_details := list(user_details_collection.aggregate(pipeline)):
+        user_details = user_details[0]
+        session["onboarded"] = user_details.get("onboarded")
+        onboarding_details = user_details.get("onboarding_details")
         if onboarding_details:
+            onboarding_details = onboarding_details[0]
             session["purpose"] = onboarding_details.get("purpose")
-            purpose = session.get("purpose")
-
-            if purpose == "candidate":
+            purpose = session["purpose"]
+            if purpose and purpose == "candidate":
                 session["resume_built"] = onboarding_details.get("resume_built")
-
     else:
         user_data = {
-            "user_id": user_id,
-            "user_name": user_name,
-            "email": email,
+            "user_id": id_info.get("sub"),
+            "user_name": id_info.get("name"),
+            "email": id_info.get("email"),
             "joined_at": datetime.now(),
             "onboarded": False
         }
-
-        session.update({
-            "google_id": user_id,
-            "name": user_name,
-            "email": email,
-            "onboarded": user_data.get("onboarded")
-        })
-
+        session["onboarded"] = user_data.get("onboarded")
         user_details_collection.insert_one(user_data)
-
     return redirect("/")
 
 @app.route("/onboarding", methods=['GET', 'POST'])
