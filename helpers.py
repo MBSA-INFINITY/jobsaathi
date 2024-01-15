@@ -7,7 +7,6 @@ import os
 import json
 from firebase import Firebase
 from PyPDF2 import PdfReader 
-from icecream import ic
 
 firebaseConfig = {
   "apiKey": os.environ.get("FIREBASE_APIKEY"),
