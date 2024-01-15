@@ -4,7 +4,7 @@
         {
             "src":"./index.py",
             "use": "@vercel/python",
-            "config":{"runtime":"python3.10","maxDuration": 60}
+            "config":{"runtime":"python3.6","maxDuration": 60}
         }
     ],
     "routes": [
