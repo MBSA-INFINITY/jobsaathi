@@ -310,25 +310,25 @@ def callback():
     session["google_id"] = id_info.get("sub")
     session["name"] = id_info.get("name")
     session["email"] = id_info.get("email")
-    if user_details := user_details_collection.find_one({"user_id": id_info.get("sub")},{"_id":0}):
-        session["onboarded"] = user_details.get("onboarded")
-        if onboarding_details := onboarding_details_collection.find_one({"user_id": id_info.get("sub")},{"_id":0}):
-            session["purpose"] = onboarding_details.get("purpose")
-            purpose = session["purpose"]
-            if purpose and purpose == "candidate":
-                session["resume_built"] = onboarding_details.get("resume_built")
+    # if user_details := user_details_collection.find_one({"user_id": id_info.get("sub")},{"_id":0}):
+    #     session["onboarded"] = user_details.get("onboarded")
+    #     if onboarding_details := onboarding_details_collection.find_one({"user_id": id_info.get("sub")},{"_id":0}):
+    #         session["purpose"] = onboarding_details.get("purpose")
+    #         purpose = session["purpose"]
+    #         if purpose and purpose == "candidate":
+    #             session["resume_built"] = onboarding_details.get("resume_built")
 
         
-    else:
-        user_data = {
-            "user_id": id_info.get("sub"),
-            "user_name": id_info.get("name"),
-            "email": id_info.get("email"),
-            "joined_at": datetime.now(),
-            "onboarded": False
-        }
-        session["onboarded"] = user_data.get("onboarded")
-        user_details_collection.insert_one(user_data)
+    # else:
+    #     user_data = {
+    #         "user_id": id_info.get("sub"),
+    #         "user_name": id_info.get("name"),
+    #         "email": id_info.get("email"),
+    #         "joined_at": datetime.now(),
+    #         "onboarded": False
+    #     }
+    #     session["onboarded"] = user_data.get("onboarded")
+    #     user_details_collection.insert_one(user_data)
     return redirect("/")
 
 @app.route("/onboarding", methods=['GET', 'POST'])
