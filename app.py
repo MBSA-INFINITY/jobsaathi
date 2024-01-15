@@ -318,6 +318,7 @@ def callback():
         "google_id": user_id,
         "name": user_name,
         "email": user_email,
+        "onboarded": False,
     }
     session.update(data)
     pipeline = [
@@ -340,26 +341,26 @@ def callback():
             }
         ]
     
-    if user_details := list(user_details_collection.aggregate(pipeline)):
-        user_details = user_details[0]
-        session["onboarded"] = user_details.get("onboarded")
-        onboarding_details = user_details.get("onboarding_details")
-        if onboarding_details:
-            onboarding_details = onboarding_details[0]
-            session["purpose"] = onboarding_details.get("purpose")
-            purpose = session["purpose"]
-            if purpose and purpose == "candidate":
-                session["resume_built"] = onboarding_details.get("resume_built")
-    else:
-        user_data = {
-            "user_id": id_info.get("sub"),
-            "user_name": id_info.get("name"),
-            "email": id_info.get("email"),
-            "joined_at": datetime.now(),
-            "onboarded": False
-        }
-        session["onboarded"] = user_data.get("onboarded")
-        user_details_collection.insert_one(user_data)
+    # if user_details := list(user_details_collection.aggregate(pipeline)):
+    #     user_details = user_details[0]
+    #     session["onboarded"] = user_details.get("onboarded")
+    #     onboarding_details = user_details.get("onboarding_details")
+    #     if onboarding_details:
+    #         onboarding_details = onboarding_details[0]
+    #         session["purpose"] = onboarding_details.get("purpose")
+    #         purpose = session["purpose"]
+    #         if purpose and purpose == "candidate":
+    #             session["resume_built"] = onboarding_details.get("resume_built")
+    # else:
+    #     user_data = {
+    #         "user_id": id_info.get("sub"),
+    #         "user_name": id_info.get("name"),
+    #         "email": id_info.get("email"),
+    #         "joined_at": datetime.now(),
+    #         "onboarded": False
+    #     }
+    #     session["onboarded"] = user_data.get("onboarded")
+    #     user_details_collection.insert_one(user_data)
     return redirect("/")
 
 @app.route("/onboarding", methods=['GET', 'POST'])
