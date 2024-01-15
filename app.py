@@ -310,30 +310,49 @@ def callback():
         audience=GOOGLE_CLIENT_ID
     )
     print(id_info)
-    return redirect("/mbsa")
-    # session["google_id"] = id_info.get("sub")
-    # session["name"] = id_info.get("name")
-    # session["email"] = id_info.get("email")
-    # if user_details := user_details_collection.find_one({"user_id": id_info.get("sub")},{"_id":0}):
-    #     session["onboarded"] = user_details.get("onboarded")
-    #     if onboarding_details := onboarding_details_collection.find_one({"user_id": id_info.get("sub")},{"_id":0}):
-    #         session["purpose"] = onboarding_details.get("purpose")
-    #         purpose = session["purpose"]
-    #         if purpose and purpose == "candidate":
-    #             session["resume_built"] = onboarding_details.get("resume_built")
+    # return redirect("/mbsa")
+    user_id = id_info.get("sub")
+    user_name = id_info.get("name")
+    email = id_info.get("email")
 
-        
-    # else:
-    #     user_data = {
-    #         "user_id": id_info.get("sub"),
-    #         "user_name": id_info.get("name"),
-    #         "email": id_info.get("email"),
-    #         "joined_at": datetime.now(),
-    #         "onboarded": False
-    #     }
-    #     session["onboarded"] = user_data.get("onboarded")
-    #     user_details_collection.insert_one(user_data)
-    # return redirect("/")
+    user_details = user_details_collection.find_one({"user_id": user_id}, {"_id": 0})
+
+    if user_details:
+        session.update({
+            "google_id": user_id,
+            "name": user_name,
+            "email": email,
+            "onboarded": user_details.get("onboarded")
+        })
+
+        onboarding_details = onboarding_details_collection.find_one({"user_id": user_id}, {"_id": 0})
+
+        if onboarding_details:
+            session["purpose"] = onboarding_details.get("purpose")
+            purpose = session.get("purpose")
+
+            if purpose == "candidate":
+                session["resume_built"] = onboarding_details.get("resume_built")
+
+    else:
+        user_data = {
+            "user_id": user_id,
+            "user_name": user_name,
+            "email": email,
+            "joined_at": datetime.now(),
+            "onboarded": False
+        }
+
+        session.update({
+            "google_id": user_id,
+            "name": user_name,
+            "email": email,
+            "onboarded": user_data.get("onboarded")
+        })
+
+        user_details_collection.insert_one(user_data)
+
+    return redirect("/")
 
 @app.route("/onboarding", methods=['GET', 'POST'])
 def onboarding():
