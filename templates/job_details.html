@@ -44,34 +44,49 @@
         </div>
         <div class="mb-3">
           <label for="exampleFormControlInput1" class="form-label">Mode of Work</label>
+          {% if job_details['mode_of_work'] == "onsite" %}
           <div class="form-check">
+              <input class="form-check-input" type="radio" name="mode_of_work" value="onsite" id="onsite_job" checked>
+              <label class="form-check-label" for="flexRadioDefault2">
+                Onsite
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="mode_of_work" value="remote" id="remote_job">
+              <label class="form-check-label" for="flexRadioDefault2">
+                Remote
+              </label>
+            </div>
+            {% else %}
+            <div class="form-check">
               <input class="form-check-input" type="radio" name="mode_of_work" value="remote" id="remote_job" checked>
               <label class="form-check-label" for="flexRadioDefault2">
                 Remote
               </label>
             </div>
-          <div class="form-check">
+            <div class="form-check">
               <input class="form-check-input" type="radio" name="mode_of_work" value="onsite" id="onsite_job">
               <label class="form-check-label" for="flexRadioDefault2">
                 Onsite
               </label>
             </div>
+            {% endif %}
     
         </div>
         <div class="mb-3">
           <label for="exampleFormControlInput1" class="form-label"><b>Job Type</b></label>
           <select class="form-select" aria-label="Default select example" name="job_type" id="job_type">
-              <option value="part_time">Part Time</option>
-              <option value="full_time">Full Time</option>
-              <option value="internship">Internship</option>
+              <option value="Part Time">Part Time</option>
+              <option value="Full Time">Full Time</option>
+              <option value="Internship">Internship</option>
           </select>
       </div>
       <script>
           document.getElementById("job_type").value = "{{job_details['job_type']}}"
       </script>
-      <div class="mb-3" id="job_location_div" style="display: none;">
+      <div class="mb-3" id="job_location_div" style="display:none;">
           <label for="exampleFormControlInput1" class="form-label"><b>Job Location</b></label>
-          <input type="text" class="form-control" value="{{job_details['job_location']}}" name="job_location" placeholder="Job Location" required>
+          <input type="text" class="form-control" value="{{job_details['job_location']}}" name="job_location" placeholder="Job Location">
         </div>
       <div class="mb-3">
           <label for="exampleFormControlInput1" class="form-label"><b>Salary Range</b></label>
