@@ -213,7 +213,7 @@ def login():
 
 @app.route("/mbsa", methods = ['GET'])
 def mbsa():
-    return "mbsa"
+    return render_template("index1.html")
 
 @app.route("/logout", methods = ['GET'])
 def logout():
@@ -312,8 +312,8 @@ def callback():
     print(id_info)
     # return redirect("/mbsa")
     user_id = id_info.get("sub")
-    user_name = id_info.get("sub")
-    user_email = id_info.get("sub")
+    user_name = id_info.get("name")
+    user_email = id_info.get("email")
     data = {
         "google_id": user_id,
         "name": user_name,
