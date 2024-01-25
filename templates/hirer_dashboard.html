@@ -315,6 +315,11 @@
                         </a>
                       </td>
                       <td class="align-middle">
+                        <a href="/responses/job/{{job['job_id']}}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                          Responses
+                        </a>
+                      </td>
+                      <td class="align-middle">
                         <form action="/delete/job/{{job['job_id']}}" method="post" onsubmit="return deleteJob()">
                         <button type="submit" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Delete Job" style="all: unset;cursor: pointer;">
                           Delete

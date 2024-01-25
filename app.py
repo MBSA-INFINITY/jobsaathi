@@ -213,7 +213,7 @@ def login():
 
 @app.route("/mbsa", methods = ['GET'])
 def mbsa():
-    return render_template("index1.html")
+    return render_template("index1.html", job_details={})
 
 @app.route("/logout", methods = ['GET'])
 def logout():
@@ -494,15 +494,25 @@ def job_responses(job_id):
                     'from': 'onboarding_details', 
                     'localField': 'user_id', 
                     'foreignField': 'user_id', 
+                    'as': 'candidate_details'
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'user_details', 
+                    'localField': 'user_id', 
+                    'foreignField': 'user_id', 
                     'as': 'user_details'
                 }
             },
            {
         '$project': {
             '_id': 0, 
-            'user_details._id': 0
+            'user_details._id': 0,
+            'candidate_details._id': 0,
         }
     }
         ]
-    all_responses = list(candidate_job_application_collection.aggregate(pipeline))
-    return render_template("job_responses.html", job_id=job_id, all_responses=all_responses)
+    if job_details := jobs_details_collection.find_one({"job_id": job_id},{"_id": 0, "job_title" :1, "mode_of_work": 1}):
+        all_responses = list(candidate_job_application_collection.aggregate(pipeline))
+        return render_template("job_responses.html", job_id=job_id, all_responses=all_responses, job_details=job_details)
