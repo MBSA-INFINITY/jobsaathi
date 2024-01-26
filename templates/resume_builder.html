@@ -37,7 +37,14 @@
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow to the video */
       z-index: 10000; /* Higher z-index to bring the video above other components */
     }
-
+  .disabled_button{
+   cursor: auto;
+   background-color: gray;
+  }
+  .normal_button{
+    cursor: pointer;
+   background-color: #ff3399;
+  }
 </style>
 <div id="loading-overlay" style="display: none;">
   <video autoplay loop muted>
@@ -69,10 +76,9 @@
   
   
       </main>
-  
       <form class="msger-inputarea">
-        <input type="text" class="msger-input" id="textInput" placeholder="Enter your message...">
-        <button type="submit" class="msger-send-btn">Send</button>
+        <input type="text" class="msger-input" id="textInput" placeholder="Enter your commad...">
+        <button type="submit" class="msger-send-btn" id="textInputButton" style="cursor: auto;background-color: gray;" disabled >Send</button>
       </form>
     </section>
   
@@ -85,6 +91,22 @@
   <!-- partial -->
   <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
   <script>
+  var textInput = document.getElementById('textInput')
+  var textInputButton = document.getElementById('textInputButton')
+  textInput.addEventListener('input', ()=>{
+    value = textInput.value.trim()
+    if(value.length>0){
+      textInputButton.removeAttribute('disabled')
+      textInputButton.style.cursor='pointer'
+      textInputButton.style.background='#ff3399'
+    }
+    else{
+      textInputButton.setAttribute('disabled', true)
+      textInputButton.style.cursor='auto'
+      textInputButton.style.background='gray'
+    }
+  })
+
     function decodeHtmlEntities(encodedString) {
     var doc = new DOMParser().parseFromString(encodedString, 'text/html');
     return doc.documentElement.textContent;
@@ -132,6 +154,9 @@
 
       appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
       msgerInput.value = "";
+      textInputButton.setAttribute('disabled', true)
+      textInputButton.style.cursor='auto'
+      textInputButton.style.background='gray'
       botResponse(msgText);
     });
 
