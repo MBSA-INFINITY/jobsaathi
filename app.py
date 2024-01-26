@@ -213,7 +213,8 @@ def login():
 
 @app.route("/mbsa", methods = ['GET'])
 def mbsa():
-    return render_template("index1.html", job_details={})
+    messages = list(chatbot_collection.find({},{"_id": 0}))
+    return render_template("index1.html", messages=messages)
 
 @app.route("/logout", methods = ['GET'])
 def logout():
@@ -410,6 +411,7 @@ def create_job():
     job_details['user_id'] = user_id
     job_details['job_id'] = job_id
     job_details['status'] = "draft"
+    job_details['created_on'] = datetime.now()
     jobs_details_collection.insert_one(job_details)
     return redirect("/dashboard")
 

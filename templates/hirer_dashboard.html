@@ -307,7 +307,7 @@
                       </td>
                       {% endif %}
                       <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">23/04/18</span>
+                        <span class="text-secondary text-xs font-weight-bold">{{job['created_on'].strftime("%d/%m/%Y")}}</span>
                       </td>
                       <td class="align-middle">
                         <a href="/edit/job/{{job['job_id']}}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
