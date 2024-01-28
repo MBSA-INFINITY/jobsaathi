@@ -12,22 +12,56 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 
-<body>
+<body >
 <style>
+    #loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(0.2px); /* Add blur effect to the background */
+    }
   body{
     overflow-x: hidden;
   }
+  video {
+    width: 15%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow to the video */
+      z-index: 10000; /* Higher z-index to bring the video above other components */
+    }
+  .disabled_button{
+   cursor: auto;
+   background-color: gray;
+  }
+  .normal_button{
+    cursor: pointer;
+   background-color: #ff3399;
+  }
 </style>
+<div id="loading-overlay" style="display: none;">
+  <video autoplay loop muted>
+    <source src="{{url_for('static', filename='animations/loading.mp4')}}" type="video/mp4"> <!-- Replace with your loading video -->
+    Your browser does not support the video tag.
+  </video>
+</div>
 <div class="row">
   <div class="col-2"> <form action="/resume_built" method="post" onsubmit="return resumeBuilt()">
-    <button type="submit" class="btn btn-primary my-2 mx-3">Save Resume</button>
+    <button type="submit" class="btn btn-primary my-2 mx-3" style="background-color: #ff3399; box-shadow: var(--neomorph-shadow); border:  none;">Save Resume</button>
   </form></div>
   <div class="col-3"></div>
   <div class="col-3"></div>
   <div class="col-3"></div>
-  <div class="col-1"><a type="submit" class="btn btn-primary my-2" href="/dashboard">Dashboard</a></div>
+  <div class="col-1"><a type="submit" class="btn btn-primary my-2" style="margin-right: 10px; background-color: #ff3399; box-shadow: var(--neomorph-shadow); border: none;" href="/dashboard">Dashboard</a></div>
 </div>
- 
+
     
   <div id="chat-container">
     <section class="msger" id="billbot">
@@ -42,14 +76,13 @@
   
   
       </main>
-  
       <form class="msger-inputarea">
-        <input type="text" class="msger-input" id="textInput" placeholder="Enter your message...">
-        <button type="submit" class="msger-send-btn">Send</button>
+        <input type="text" class="msger-input" id="textInput" placeholder="Enter your commad...">
+        <button type="submit" class="msger-send-btn" id="textInputButton" style="cursor: auto;background-color: gray;" disabled >Send</button>
       </form>
     </section>
   
-    <section class="msger1" id="resume">
+    <section class="msger1" id="resume" contenteditable="true">
     
      {{resume_html | safe}}
  
@@ -58,6 +91,22 @@
   <!-- partial -->
   <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
   <script>
+  var textInput = document.getElementById('textInput')
+  var textInputButton = document.getElementById('textInputButton')
+  textInput.addEventListener('input', ()=>{
+    value = textInput.value.trim()
+    if(value.length>0){
+      textInputButton.removeAttribute('disabled')
+      textInputButton.style.cursor='pointer'
+      textInputButton.style.background='#ff3399'
+    }
+    else{
+      textInputButton.setAttribute('disabled', true)
+      textInputButton.style.cursor='auto'
+      textInputButton.style.background='gray'
+    }
+  })
+
     function decodeHtmlEntities(encodedString) {
     var doc = new DOMParser().parseFromString(encodedString, 'text/html');
     return doc.documentElement.textContent;
@@ -105,6 +154,9 @@
 
       appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
       msgerInput.value = "";
+      textInputButton.setAttribute('disabled', true)
+      textInputButton.style.cursor='auto'
+      textInputButton.style.background='gray'
       botResponse(msgText);
     });
 
@@ -132,6 +184,9 @@
       loader.style.display = 'block'
   try {
     // Bot Response
+    setTimeout(function () {
+      showLoadingAnimation()
+    }, 700);
     const data = await $.post("/resume_build", { msg: rawText });
 
     console.log(rawText);
@@ -141,9 +196,11 @@
     resume_section.innerHTML = data
     appendMessage(BOT_NAME, BOT_IMG, "left", "Resume Updated!");
   } catch (error) {
+    removeLoadingVideo()
     console.error('Error:', error);
     // Handle the error as needed
   } finally{
+    removeLoadingVideo()
     loader.style.display = 'none'
   }
 }
@@ -172,7 +229,21 @@
   }
 
   </script>
+ <script>
+  function showLoadingAnimation(){
+   var loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.style.display = '';
+  }
+  function removeLoadingVideo() {
+    // Remove loading overlay
+    var loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.style.display = 'none';
+    // Add additional code for processing completion
 
+    // Optional: Unblur the background
+    document.body.style.backdropFilter = 'none';
+  }
+</script>
 </body>
 
 </html>

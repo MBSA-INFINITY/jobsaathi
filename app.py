@@ -213,7 +213,8 @@ def login():
 
 @app.route("/mbsa", methods = ['GET'])
 def mbsa():
-    return "mbsa"
+    messages = list(chatbot_collection.find({},{"_id": 0}))
+    return render_template("index1.html", messages=messages)
 
 @app.route("/logout", methods = ['GET'])
 def logout():
@@ -312,8 +313,8 @@ def callback():
     print(id_info)
     # return redirect("/mbsa")
     user_id = id_info.get("sub")
-    user_name = id_info.get("sub")
-    user_email = id_info.get("sub")
+    user_name = id_info.get("name")
+    user_email = id_info.get("email")
     data = {
         "google_id": user_id,
         "name": user_name,
@@ -410,6 +411,7 @@ def create_job():
     job_details['user_id'] = user_id
     job_details['job_id'] = job_id
     job_details['status'] = "draft"
+    job_details['created_on'] = datetime.now()
     jobs_details_collection.insert_one(job_details)
     return redirect("/dashboard")
 
@@ -494,15 +496,25 @@ def job_responses(job_id):
                     'from': 'onboarding_details', 
                     'localField': 'user_id', 
                     'foreignField': 'user_id', 
+                    'as': 'candidate_details'
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'user_details', 
+                    'localField': 'user_id', 
+                    'foreignField': 'user_id', 
                     'as': 'user_details'
                 }
             },
            {
         '$project': {
             '_id': 0, 
-            'user_details._id': 0
+            'user_details._id': 0,
+            'candidate_details._id': 0,
         }
     }
         ]
-    all_responses = list(candidate_job_application_collection.aggregate(pipeline))
-    return render_template("job_responses.html", job_id=job_id, all_responses=all_responses)
+    if job_details := jobs_details_collection.find_one({"job_id": job_id},{"_id": 0, "job_title" :1, "mode_of_work": 1}):
+        all_responses = list(candidate_job_application_collection.aggregate(pipeline))
+        return render_template("job_responses.html", job_id=job_id, all_responses=all_responses, job_details=job_details)

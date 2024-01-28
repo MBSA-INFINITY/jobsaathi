@@ -4,6 +4,7 @@
   --border: 2px solid #ddd;
   --left-msg-bg: #ececec;
   --right-msg-bg: #579ffb;
+  --neomorph-shadow: 5px 5px 10px #d9d9d9, -5px -5px 10px #ffffff; /* Neomorphic shadow */
 }
 
 html {
@@ -45,7 +46,7 @@ html {
   border: var(--border);
   border-radius: 5px;
   background: var(--msger-bg);
-  box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--neomorph-shadow); /* Apply neomorphic shadow */
 }
 .msger1 {
   display: flex;
@@ -58,6 +59,7 @@ html {
   border: var(--border);
   border-radius: 5px;
   overflow-y: scroll;
+  box-shadow: var(--neomorph-shadow); /* Apply neomorphic shadow */
 }
 
 .msger-header {
@@ -100,12 +102,14 @@ html {
   background-position: center;
   background-size: cover;
   border-radius: 50%;
+  box-shadow: var(--neomorph-shadow); /* Apply neomorphic shadow */
 }
 .msg-bubble {
   max-width: 450px;
   padding: 15px;
   border-radius: 15px;
   background: var(--left-msg-bg);
+  box-shadow: var(--neomorph-shadow); /* Apply neomorphic shadow */
 }
 .msg-info {
   display: flex;
@@ -155,14 +159,15 @@ html {
 }
 .msger-send-btn {
   margin-left: 10px;
-  background: rgb(0, 196, 65);
+  background: #ff55aa; /* Magenta color for the button */
   color: #fff;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.23s;
+  box-shadow: var(--neomorph-shadow); /* Apply neomorphic shadow */
 }
 .msger-send-btn:hover {
-  background: rgb(0, 180, 50);
+  background: #ff3399; /* Darker magenta on hover */
 }
 
 .msger-chat {
