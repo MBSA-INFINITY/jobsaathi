@@ -32,7 +32,7 @@ flow = Flow.from_client_config(
 def login_is_required(function):
     def wrapper(*args, **kwargs):
         if "google_id" not in session:
-            return abort(401)  
+            return redirect("/") 
         else:
             return function(*args, **kwargs)
     return wrapper
