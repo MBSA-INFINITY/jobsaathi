@@ -185,18 +185,29 @@ def applied_jobs():
     return render_template('applied_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_applied_jobs=all_applied_jobs)
 
 
-@app.route("/profile", methods=['POST'], endpoint='profile_update')
+@app.route("/profile", methods=['GET', 'POST'], endpoint='profile_update')
 @login_is_required
 @is_candidate
 def profile_update():
     user_id = session.get("google_id")
-    profile_data = dict(request.form)
-    if 'profile_pic' in request.files:
-        profile_pic = request.files['profile_pic']
-        profile_pic_link = upload_file_firebase(profile_pic, f"{user_id}/profile_pic.png")
-    profile_data['profile_pic'] = profile_pic_link
-    profile_details_collection.update_one({"user_id": user_id},{"$set": profile_data})
-    return redirect('/dashboard')
+    purpose = session.get("purpose")
+    if request.method == 'POST':
+        profile_data = dict(request.form)
+        if 'profile_pic' in request.files:
+            profile_pic = request.files['profile_pic']
+            profile_pic_link = upload_file_firebase(profile_pic, f"{user_id}/profile_pic.png")
+        profile_data['profile_pic'] = profile_pic_link
+        profile_details_collection.update_one({"user_id": user_id},{"$set": profile_data})
+        return redirect('/dashboard')
+    if profile_details := profile_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+        if purpose == 'candidate':
+            return render_template('candidate_profile.html', profile_details=profile_details) 
+        elif purpose == 'hirer':
+            return render_template('hirer_profile.html', profile_details=profile_details)
+        else:
+            abort(500, {"message" : "candidate or hirer not found in the records."})
+    else:
+        abort(500, {"message": f"DB Error: Profile Details for user_id {user_id} not found."})
 
 
 
@@ -385,11 +396,22 @@ def onboarding():
                         profile_data = {
                             "user_id": user_details.get("user_id"),
                             "name": onboarding_details.get("candidate_name"),
-                            "email": user_details.get("email")
+                            "email": user_details.get("email"),
+                            "mobno": user_details.get("candidate_mobno"),
                         }
                         profile_details_collection.insert_one(profile_data)
+                    elif purpose and purpose == "hirer":
+                        profile_data = {
+                            "user_id": user_details.get("user_id"),
+                            "name": onboarding_details.get("candidate_name"),
+                            "email": user_details.get("email"),
+                            "mobno": user_details.get("company_representative_mobno"),
+                        }
+                        profile_details_collection.insert_one(profile_data)
+                    else:
+                        abort(500, {"message": "Onboarding couldn't be completed due to some technical issue!"})
                     onboarding_details_collection.insert_one(onboarding_details)
-                    user_details_collection.update_one({"user_id": user_id},{"$set":data})
+                    user_details_collection.update_one({"user_id": user_id}, {"$set":data})
                     session['onboarded'] = True
                     return redirect("/dashboard") 
                 else:
