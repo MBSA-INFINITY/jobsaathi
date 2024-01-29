@@ -186,19 +186,23 @@
       </div>
       <div class="card card-body blur shadow-blur mx-4 mt-n6 overflow-hidden">
         <div class="row gx-4">
+          {% if 'profile_pic' in profile_details %}
           <div class="col-auto">
             <div class="avatar avatar-xl position-relative">
-              <img src="{{url_for('static', filename='assets/img/bruce-mars.jpg')}}" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
+              <img src="{{profile_details['profile_pic']}}" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
             </div>
           </div>
+          {% endif %}
           <div class="col-auto my-auto">
             <div class="h-100">
               <h5 class="mb-1">
-                Alec Thompson
+                {{profile_details['name']}}
               </h5>
+              {% if 'position' in profile_details %}
               <p class="mb-0 font-weight-bold text-sm">
-                CEO / Co-Founder
+                {{profile_details['position']}}
               </p>
+              {% endif %}
             </div>
           </div>
           <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
@@ -246,13 +250,17 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form>
+            <form action="/profile" method="post" enctype="multipart/form-data">
             <div class="modal-body">
                 <div class="row">
                     <div class="col-lg-4"></div>
                     <div class="col-lg-4">
+                      {% if 'profile_pic' in profile_details %}
+                      <img src="{{profile_details['profile_pic']}}" alt="" width="140" height="140" class="bd-placeholder-img rounded-circle" id="profile_pic_link">
+                      {% else %}
                       <img src="" alt="" width="140" height="140" class="bd-placeholder-img rounded-circle" id="profile_pic_link">
-                      <input class="my-2" type="file" name="profile_pic" id="profile_pic" accept=".jpg, .jpeg, .png">
+                      {% endif %}
+                      <input class="my-2" type="file" name="profile_pic" id="profile_pic_img" accept=".jpg, .jpeg, .png">
                       <!-- <svg class=""  xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-color)"/></svg> -->
                     </div>
                     <div class="col-lg-4"></div>
@@ -274,13 +282,13 @@
                       <input type="text" class="form-control" id="location" name="location" value="{{profile_details['location']}}" placeholder="Your Location">
                     </div>
                     <div class="form-group">
-                      <label for="exampleFormControlInput1">Position</label>
+                      <label for="exampleFormControlInput1">Position / Responsibility</label>
                       <input type="text" class="form-control" id="position" name="position" value="{{profile_details['position']}}" placeholder="Your Location">
                     </div>
                     <div class="form-group">
                       <label for="exampleFormControlTextarea1">Profile Description</label>
-                      <textarea class="form-control" id="description" name="description" rows="3">
-                        {{profile_details['description']}}
+                      <textarea class="form-control" id="description" name="description" placeholder="Your Location">
+                        
                       </textarea>
                     </div>
                 </div>
@@ -346,7 +354,7 @@
     </div>
   </div>
 <script>
-     document.getElementById('profile_pic').addEventListener('change', function (event) {
+     document.getElementById('profile_pic_img').addEventListener('change', function (event) {
             const fileInput = event.target;
             const imagePreview = document.getElementById('profile_pic_link');
 

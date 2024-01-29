@@ -193,12 +193,16 @@ def profile_update():
     purpose = session.get("purpose")
     if request.method == 'POST':
         profile_data = dict(request.form)
-        if 'profile_pic' in request.files:
+        if 'description' in profile_data:
+            profile_data['description'] = profile_data['description'].strip()
+        if 'profile_pic' in request.files and str(request.files['profile_pic'].filename)!="":
             profile_pic = request.files['profile_pic']
             profile_pic_link = upload_file_firebase(profile_pic, f"{user_id}/profile_pic.png")
-        profile_data['profile_pic'] = profile_pic_link
+            print(profile_pic_link)
+            print("uploaded")
+            profile_data['profile_pic'] = profile_pic_link
         profile_details_collection.update_one({"user_id": user_id},{"$set": profile_data})
-        return redirect('/dashboard')
+        return redirect('/profile')
     if profile_details := profile_details_collection.find_one({"user_id": user_id},{"_id": 0}):
         if purpose == 'candidate':
             return render_template('candidate_profile.html', profile_details=profile_details) 
