@@ -102,8 +102,12 @@ def dashboard():
     purpose = onboarding_details.get("purpose")
     resume_built = onboarding_details.get("resume_built")
     if purpose == 'hirer':
-        all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
-        return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+        approved_by_admin = onboarding_details.get('approved_by_admin')
+        if approved_by_admin:
+            all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
+            return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+        else:
+            return render_template('admin_approval_pending.html')
     else:
         if not resume_built: 
             return redirect("/billbot")
@@ -412,6 +416,7 @@ def onboarding():
                             "mobno": user_details.get("company_representative_mobno"),
                         }
                         profile_details_collection.insert_one(profile_data)
+                        onboarding_details['approved_by_admin'] = False
                     else:
                         abort(500, {"message": "Onboarding couldn't be completed due to some technical issue!"})
                     onboarding_details_collection.insert_one(onboarding_details)
