@@ -276,8 +276,11 @@ def resume_build():
 @app.route("/resume_built", methods = ['POST'], endpoint='resume_built')
 @is_candidate
 def resume_built():
+    form_data = dict(request.form)
+    resume_html = form_data.get("resume_html")
     user_id = session.get("google_id")
     onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"resume_built": True}})
+    resume_details_collection.update_one({"user_id": user_id},{"$set": {"resume_html": resume_html}})
     analyze_resume(user_id)
     return redirect("/dashboard")
 
