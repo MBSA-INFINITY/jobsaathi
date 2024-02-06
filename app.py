@@ -32,7 +32,7 @@ flow = Flow.from_client_config(
 def login_is_required(function):
     def wrapper(*args, **kwargs):
         if "google_id" not in session:
-            return abort(401)  
+            return redirect("/") 
         else:
             return function(*args, **kwargs)
     return wrapper
@@ -102,8 +102,12 @@ def dashboard():
     purpose = onboarding_details.get("purpose")
     resume_built = onboarding_details.get("resume_built")
     if purpose == 'hirer':
-        all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
-        return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+        approved_by_admin = onboarding_details.get('approved_by_admin')
+        if approved_by_admin:
+            all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
+            return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+        else:
+            return render_template('admin_approval_pending.html')
     else:
         if not resume_built: 
             return redirect("/billbot")
@@ -185,18 +189,33 @@ def applied_jobs():
     return render_template('applied_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_applied_jobs=all_applied_jobs)
 
 
-@app.route("/profile", methods=['POST'], endpoint='profile_update')
+@app.route("/profile", methods=['GET', 'POST'], endpoint='profile_update')
 @login_is_required
 @is_candidate
 def profile_update():
     user_id = session.get("google_id")
-    profile_data = dict(request.form)
-    if 'profile_pic' in request.files:
-        profile_pic = request.files['profile_pic']
-        profile_pic_link = upload_file_firebase(profile_pic, f"{user_id}/profile_pic.png")
-    profile_data['profile_pic'] = profile_pic_link
-    profile_details_collection.update_one({"user_id": user_id},{"$set": profile_data})
-    return redirect('/dashboard')
+    purpose = session.get("purpose")
+    if request.method == 'POST':
+        profile_data = dict(request.form)
+        if 'description' in profile_data:
+            profile_data['description'] = profile_data['description'].strip()
+        if 'profile_pic' in request.files and str(request.files['profile_pic'].filename)!="":
+            profile_pic = request.files['profile_pic']
+            profile_pic_link = upload_file_firebase(profile_pic, f"{user_id}/profile_pic.png")
+            print(profile_pic_link)
+            print("uploaded")
+            profile_data['profile_pic'] = profile_pic_link
+        profile_details_collection.update_one({"user_id": user_id},{"$set": profile_data})
+        return redirect('/profile')
+    if profile_details := profile_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+        if purpose == 'candidate':
+            return render_template('candidate_profile.html', profile_details=profile_details) 
+        elif purpose == 'hirer':
+            return render_template('hirer_profile.html', profile_details=profile_details)
+        else:
+            abort(500, {"message" : "candidate or hirer not found in the records."})
+    else:
+        abort(500, {"message": f"DB Error: Profile Details for user_id {user_id} not found."})
 
 
 
@@ -257,8 +276,11 @@ def resume_build():
 @app.route("/resume_built", methods = ['POST'], endpoint='resume_built')
 @is_candidate
 def resume_built():
+    form_data = dict(request.form)
+    resume_html = form_data.get("resume_html")
     user_id = session.get("google_id")
     onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"resume_built": True}})
+    resume_details_collection.update_one({"user_id": user_id},{"$set": {"resume_html": resume_html}})
     analyze_resume(user_id)
     return redirect("/dashboard")
 
@@ -385,11 +407,23 @@ def onboarding():
                         profile_data = {
                             "user_id": user_details.get("user_id"),
                             "name": onboarding_details.get("candidate_name"),
-                            "email": user_details.get("email")
+                            "email": user_details.get("email"),
+                            "mobno": user_details.get("candidate_mobno"),
                         }
                         profile_details_collection.insert_one(profile_data)
+                    elif purpose and purpose == "hirer":
+                        profile_data = {
+                            "user_id": user_details.get("user_id"),
+                            "name": onboarding_details.get("candidate_name"),
+                            "email": user_details.get("email"),
+                            "mobno": user_details.get("company_representative_mobno"),
+                        }
+                        profile_details_collection.insert_one(profile_data)
+                        onboarding_details['approved_by_admin'] = False
+                    else:
+                        abort(500, {"message": "Onboarding couldn't be completed due to some technical issue!"})
                     onboarding_details_collection.insert_one(onboarding_details)
-                    user_details_collection.update_one({"user_id": user_id},{"$set":data})
+                    user_details_collection.update_one({"user_id": user_id}, {"$set":data})
                     session['onboarded'] = True
                     return redirect("/dashboard") 
                 else:

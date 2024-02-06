@@ -54,6 +54,7 @@
 </div>
 <div class="row">
   <div class="col-2"> <form action="/resume_built" method="post" onsubmit="return resumeBuilt()">
+    <input type="hidden" id="resume_html" name="resume_html">
     <button type="submit" class="btn btn-primary my-2 mx-3" style="background-color: #ff3399; box-shadow: var(--neomorph-shadow); border:  none;">Save Resume</button>
   </form></div>
   <div class="col-3"></div>
@@ -82,7 +83,7 @@
       </form>
     </section>
   
-    <section class="msger1" id="resume" contenteditable="true">
+    <section class="msger1" id="resume" contenteditable="true" oninput="resumeHtmlChanged()">
     
      {{resume_html | safe}}
  
@@ -219,6 +220,7 @@
     }
 
   function resumeBuilt(){
+    document.getElementById("resume_html").value = document.getElementById('resume').innerHTML
     let a = confirm("Are you sure you have added all the neccessary skills and data for finding your Job?")
     if(a){
       return true;
@@ -226,6 +228,10 @@
     else{
       return false;
     }
+  }
+
+  function resumeHtmlChanged(){
+    // alert('saiaditya')
   }
 
   </script>
