@@ -4,7 +4,7 @@
     <!-- Mobile Specific Meta -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Favicon-->
-    <link rel="shortcut icon" href="img/fav.png">
+    <link rel="shortcut icon" href="static/jobisting/img/fav.png">
     <!-- Author Meta -->
     <meta name="author" content="codepixer">
     <!-- Meta Description -->
@@ -14,7 +14,7 @@
     <!-- meta character set -->
     <meta charset="UTF-8">
     <!-- Site Title -->
-    <title>Job Listing</title>
+    <title>Job Saathi</title>
 
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,400,300,500,600,700" rel="stylesheet"> 
         <!--
@@ -41,8 +41,8 @@
                     <ul class="nav-menu">
                       <li class="menu-active"><a href="index.html">Home</a></li>
                       <li><a href="/about-us">About Us</a></li>
-                      <li><a href="/contact">Contact</a></li>
-                      <li><a class="ticker-btn" href="/login">Signup</a></li>
+                      <li><a href="/contact">Contact Us</a></li>
+                      <li><a class="ticker-btn" href="/signup">Signup</a></li>
                       <li><a class="ticker-btn" href="/login">Login</a></li>				          				          
                     </ul>
                   </nav><!-- #nav-menu-container -->		    		
@@ -60,15 +60,15 @@
                         <h1 class="text-white">
                             <span>1500+</span> Jobs posted last week				
                         </h1>	
-                        <form action="search.html" class="serach-form-area">
+                        <form action="/signup" class="serach-form-area" onsubmit="return checkSubmit()">
                             <div class="row justify-content-center form-wrap">
                                 <div class="col-lg-4 form-cols">
-                                    <input type="text" class="form-control" name="search" placeholder="what are you looging for?">
+                                    <input type="text" class="form-control" name="search" placeholder="Enter skills/ designation/ companies" required>
                                 </div>
                                 <div class="col-lg-3 form-cols">
-                                    <div class="default-select" id="default-selects"">
-                                        <select>
-                                            <option value="1">Select area</option>
+                                    <div class="default-select" id="default-selects">
+                                        <select id="select-area" required> 
+                                            <option value="select-area">Select area</option>
                                             <option value="2">Asia</option>
                                             <option value="3">North America</option>
                                             <option value="4">South America</option>
@@ -79,23 +79,25 @@
                                 </div>
                                 <div class="col-lg-3 form-cols">
                                     <div class="default-select" id="default-selects2">
-                                        <select>
-                                            <option value="1">Select Experience</option>
-                                            <option value="2">Medical</option>
-                                            <option value="3">Technology</option>
-                                            <option value="4">Goverment</option>
-                                            <option value="5">Development</option>
+                                        <select id="select-experience" required>
+                                            <option value="select-experience">Select Experience</option>
+                                            <option value="2">Fresher (Less than a year) </option>
+                                            <option value="3">1 year</option>
+                                            <option value="4">2 years </option>
+                                            <option value="5">3 years</option>
+                                            <option value="5">4 years</option>
+                                            <option value="5">5 years</option>
+                                            <option value="5">more than 5 years</option>
                                         </select>
                                     </div>										
                                 </div>
                                 <div class="col-lg-2 form-cols">
-                                    <button type="button" class="btn btn-info">
-                                      <span class="lnr lnr-magnifier"></span> Search
+                                    <button type="submit" class="btn btn-info">
+                                       Search
                                     </button>
                                 </div>								
                             </div>
                         </form>	
-                        <p class="text-white"> <span>Search by tags:</span> Tecnology, Business, Consulting, IT Company, Design, Development</p>
                     </div>											
                 </div>
             </div>
@@ -142,96 +144,7 @@
             </div>	
         </section>
         <!-- End features Area -->
-        
-        <!-- Start popular-post Area -->
-        <section class="popular-post-area pt-100">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="active-popular-post-carusel">
-                        <div class="single-popular-post d-flex flex-row">
-                            <div class="thumb">
-                                <img class="img-fluid" src="img/p1.png" alt="">
-                                <a class="btns text-uppercase" href="#">view job post</a>
-                            </div>
-                            <div class="details">
-                                <a href="#"><h4>Creative Designer</h4></a>
-                                <h6>Los Angeles</h6>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temporinc ididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis.
-                                </p>
-                            </div>
-                        </div>	
-                        <div class="single-popular-post d-flex flex-row">
-                            <div class="thumb">
-                                <img src="img/p2.png" alt="">
-                                <a class="btns text-uppercase" href="#">view job post</a>
-                            </div>
-                            <div class="details">
-                                <a href="#"><h4>Creative Designer</h4></a>
-                                <h6>Los Angeles</h6>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temporinc ididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="single-popular-post d-flex flex-row">
-                            <div class="thumb">
-                                <img src="img/p1.png" alt="">
-                                <a class="btns text-uppercase" href="#">view job post</a>
-                            </div>
-                            <div class="details">
-                                <a href="#"><h4>Creative Designer</h4></a>
-                                <h6>Los Angeles</h6>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temporinc ididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis.
-                                </p>
-                            </div>
-                        </div>	
-                        <div class="single-popular-post d-flex flex-row">
-                            <div class="thumb">
-                                <img src="img/p2.png" alt="">
-                                <a class="btns text-uppercase" href="#">view job post</a>
-                            </div>
-                            <div class="details">
-                                <a href="#"><h4>Creative Designer</h4></a>
-                                <h6>Los Angeles</h6>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temporinc ididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis.
-                                </p>
-                            </div>
-                        </div>	
-                        <div class="single-popular-post d-flex flex-row">
-                            <div class="thumb">
-                                <img src="img/p1.png" alt="">
-                                <a class="btns text-uppercase" href="#">view job post</a>
-                            </div>
-                            <div class="details">
-                                <a href="#"><h4>Creative Designer</h4></a>
-                                <h6>Los Angeles</h6>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temporinc ididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis.
-                                </p>
-                            </div>
-                        </div>	
-                        <div class="single-popular-post d-flex flex-row">
-                            <div class="thumb">
-                                <img src="img/p2.png" alt="">
-                                <a class="btns text-uppercase" href="#">view job post</a>
-                            </div>
-                            <div class="details">
-                                <a href="#"><h4>Creative Designer</h4></a>
-                                <h6>Los Angeles</h6>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temporinc ididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis.
-                                </p>
-                            </div>
-                        </div>																																							
-                    </div>
-                </div>
-            </div>	
-        </section>
-        <!-- End popular-post Area -->
-        
+     
         <!-- Start feature-cat Area -->
         <section class="feature-cat-area pt-100" id="category">
             <div class="container">
@@ -246,48 +159,48 @@
                 <div class="row">
                     <div class="col-lg-2 col-md-4 col-sm-6">
                         <div class="single-fcat">
-                            <a href="category.html">
-                                <img src="img/o1.png" alt="">
+                            <a href="/signup">
+                                <img src="static/joblisting/img/o1.png" alt="">
                             </a>
                             <p>Accounting</p>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-4 col-sm-6">
                         <div class="single-fcat">
-                            <a href="category.html">
-                                <img src="img/o2.png" alt="">
+                            <a href="/signup">
+                                <img src="static/joblisting/img/o2.png" alt="">
                             </a>
                             <p>Development</p>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-4 col-sm-6">
                         <div class="single-fcat">
-                            <a href="category.html">
-                                <img src="img/o3.png" alt="">
+                            <a href="/signup">
+                                <img src="static/joblisting/img/o3.png" alt="">
                             </a>
                             <p>Technology</p>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-4 col-sm-6">
                         <div class="single-fcat">
-                            <a href="category.html">
-                                <img src="img/o4.png" alt="">
+                            <a href="/signup">
+                                <img src="static/joblisting/img/o4.png" alt="">
                             </a>
                             <p>Media & News</p>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-4 col-sm-6">
                         <div class="single-fcat">
-                            <a href="category.html">
-                                <img src="img/o5.png" alt="">
+                            <a href="/signup">
+                                <img src="static/joblisting/img/o5.png" alt="">
                             </a>
                             <p>Medical</p>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-4 col-sm-6">
                         <div class="single-fcat">
-                            <a href="category.html">
-                                <img src="img/o6.png" alt="">
+                            <a href="/signup">
+                                <img src="static/joblisting/img/o6.png" alt="">
                             </a>
                             <p>Goverment</p>
                         </div>			
@@ -302,15 +215,9 @@
             <div class="container">
                 <div class="row justify-content-center d-flex">
                     <div class="col-lg-8 post-list">
-                        <ul class="cat-list">
-                            <li><a href="#">Recent</a></li>
-                            <li><a href="#">Full Time</a></li>
-                            <li><a href="#">Intern</a></li>
-                            <li><a href="#">part Time</a></li>
-                        </ul>
                         <div class="single-post d-flex flex-row">
                             <div class="thumb">
-                                <img src="img/post.png" alt="">
+                                <img src="static/joblisting/img/post.png" alt="">
                                 <ul class="tags">
                                     <li>
                                         <a href="#">Art</a>
@@ -326,12 +233,12 @@
                             <div class="details">
                                 <div class="title d-flex flex-row justify-content-between">
                                     <div class="titles">
-                                        <a href="single.html"><h4>Creative Art Designer</h4></a>
+                                        <a href="#"><h4>Creative Art Designer</h4></a>
                                         <h6>Premium Labels Limited</h6>					
                                     </div>
                                     <ul class="btns">
                                         <li><a href="#"><span class="lnr lnr-heart"></span></a></li>
-                                        <li><a href="#">Apply</a></li>
+                                        <li><a href="/signup">Apply</a></li>
                                     </ul>
                                 </div>
                                 <p>
@@ -344,7 +251,7 @@
                         </div>
                         <div class="single-post d-flex flex-row">
                             <div class="thumb">
-                                <img src="img/post.png" alt="">
+                                <img src="static/joblisting/img/post.png" alt="">
                                 <ul class="tags">
                                     <li>
                                         <a href="#">Art</a>
@@ -360,12 +267,12 @@
                             <div class="details">
                                 <div class="title d-flex flex-row justify-content-between">
                                     <div class="titles">
-                                        <a href="single.html"><h4>Creative Art Designer</h4></a>
+                                        <a href="#"><h4>Creative Art Designer</h4></a>
                                         <h6>Premium Labels Limited</h6>					
                                     </div>
                                     <ul class="btns">
                                         <li><a href="#"><span class="lnr lnr-heart"></span></a></li>
-                                        <li><a href="#">Apply</a></li>
+                                        <li><a href="/signup">Apply</a></li>
                                     </ul>
                                 </div>
                                 <p>
@@ -378,7 +285,7 @@
                         </div>
                         <div class="single-post d-flex flex-row">
                             <div class="thumb">
-                                <img src="img/post.png" alt="">
+                                <img src="static/joblisting/img/post.png" alt="">
                                 <ul class="tags">
                                     <li>
                                         <a href="#">Art</a>
@@ -394,12 +301,12 @@
                             <div class="details">
                                 <div class="title d-flex flex-row justify-content-between">
                                     <div class="titles">
-                                        <a href="single.html"><h4>Creative Art Designer</h4></a>
+                                        <a href="#"><h4>Creative Art Designer</h4></a>
                                         <h6>Premium Labels Limited</h6>					
                                     </div>
                                     <ul class="btns">
                                         <li><a href="#"><span class="lnr lnr-heart"></span></a></li>
-                                        <li><a href="#">Apply</a></li>
+                                        <li><a href="/signup">Apply</a></li>
                                     </ul>
                                 </div>
                                 <p>
@@ -412,7 +319,7 @@
                         </div>		
                         <div class="single-post d-flex flex-row">
                             <div class="thumb">
-                                <img src="img/post.png" alt="">
+                                <img src="static/joblisting/img/post.png" alt="">
                                 <ul class="tags">
                                     <li>
                                         <a href="#">Art</a>
@@ -428,12 +335,12 @@
                             <div class="details">
                                 <div class="title d-flex flex-row justify-content-between">
                                     <div class="titles">
-                                        <a href="single.html"><h4>Creative Art Designer</h4></a>
+                                        <a href="#"><h4>Creative Art Designer</h4></a>
                                         <h6>Premium Labels Limited</h6>					
                                     </div>
                                     <ul class="btns">
                                         <li><a href="#"><span class="lnr lnr-heart"></span></a></li>
-                                        <li><a href="#">Apply</a></li>
+                                        <li><a href="/signup">Apply</a></li>
                                     </ul>
                                 </div>
                                 <p>
@@ -446,7 +353,7 @@
                         </div>
                         <div class="single-post d-flex flex-row">
                             <div class="thumb">
-                                <img src="img/post.png" alt="">
+                                <img src="static/joblisting/img/post.png" alt="">
                                 <ul class="tags">
                                     <li>
                                         <a href="#">Art</a>
@@ -462,12 +369,12 @@
                             <div class="details">
                                 <div class="title d-flex flex-row justify-content-between">
                                     <div class="titles">
-                                        <a href="single.html"><h4>Creative Art Designer</h4></a>
+                                        <a href="#"><h4>Creative Art Designer</h4></a>
                                         <h6>Premium Labels Limited</h6>					
                                     </div>
                                     <ul class="btns">
                                         <li><a href="#"><span class="lnr lnr-heart"></span></a></li>
-                                        <li><a href="#">Apply</a></li>
+                                        <li><a href="/signup">Apply</a></li>
                                     </ul>
                                 </div>
                                 <p>
@@ -480,7 +387,7 @@
                         </div>
                         <div class="single-post d-flex flex-row">
                             <div class="thumb">
-                                <img src="img/post.png" alt="">
+                                <img src="static/joblisting/img/post.png" alt="">
                                 <ul class="tags">
                                     <li>
                                         <a href="#">Art</a>
@@ -496,12 +403,12 @@
                             <div class="details">
                                 <div class="title d-flex flex-row justify-content-between">
                                     <div class="titles">
-                                        <a href="single.html"><h4>Creative Art Designer</h4></a>
+                                        <a href="#"><h4>Creative Art Designer</h4></a>
                                         <h6>Premium Labels Limited</h6>					
                                     </div>
                                     <ul class="btns">
                                         <li><a href="#"><span class="lnr lnr-heart"></span></a></li>
-                                        <li><a href="#">Apply</a></li>
+                                        <li><a href="/signup">Apply</a></li>
                                     </ul>
                                 </div>
                                 <p>
@@ -514,7 +421,7 @@
                         </div>															
                         <div class="single-post d-flex flex-row">
                             <div class="thumb">
-                                <img src="img/post.png" alt="">
+                                <img src="static/joblisting/img/post.png" alt="">
                                 <ul class="tags">
                                     <li>
                                         <a href="#">Art</a>
@@ -530,12 +437,12 @@
                             <div class="details">
                                 <div class="title d-flex flex-row justify-content-between">
                                     <div class="titles">
-                                        <a href="single.html"><h4>Creative Art Designer</h4></a>
+                                        <a href="#"><h4>Creative Art Designer</h4></a>
                                         <h6>Premium Labels Limited</h6>					
                                     </div>
                                     <ul class="btns">
                                         <li><a href="#"><span class="lnr lnr-heart"></span></a></li>
-                                        <li><a href="#">Apply</a></li>
+                                        <li><a href="/signup">Apply</a></li>
                                     </ul>
                                 </div>
                                 <p>
@@ -547,20 +454,20 @@
                             </div>
                         </div>	
                         
-                        <a class="text-uppercase loadmore-btn mx-auto d-block" href="category.html">Load More job Posts</a>
+                        
 
                     </div>
                     <div class="col-lg-4 sidebar">
                         <div class="single-slidebar">
                             <h4>Jobs by Location</h4>
                             <ul class="cat-list">
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>New York</p><span>37</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Park Montana</p><span>57</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Atlanta</p><span>33</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Arizona</p><span>36</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Florida</p><span>47</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Rocky Beach</p><span>27</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Chicago</p><span>17</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>New York</p><span>37</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Park Montana</p><span>57</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Atlanta</p><span>33</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Arizona</p><span>36</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Florida</p><span>47</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Rocky Beach</p><span>27</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Chicago</p><span>17</span></a></li>
                             </ul>
                         </div>
 
@@ -569,7 +476,7 @@
                             <div class="active-relatedjob-carusel">
                                 <div class="single-rated">
                                     <img class="img-fluid" src="img/r1.jpg" alt="">
-                                    <a href="single.html"><h4>Creative Art Designer</h4></a>
+                                    <a href="#"><h4>Creative Art Designer</h4></a>
                                     <h6>Premium Labels Limited</h6>
                                     <p>
                                         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temporinc ididunt ut dolore magna aliqua.
@@ -581,7 +488,7 @@
                                 </div>
                                 <div class="single-rated">
                                     <img class="img-fluid" src="img/r1.jpg" alt="">
-                                    <a href="single.html"><h4>Creative Art Designer</h4></a>
+                                    <a href="#"><h4>Creative Art Designer</h4></a>
                                     <h6>Premium Labels Limited</h6>
                                     <p>
                                         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temporinc ididunt ut dolore magna aliqua.
@@ -593,7 +500,7 @@
                                 </div>
                                 <div class="single-rated">
                                     <img class="img-fluid" src="img/r1.jpg" alt="">
-                                    <a href="single.html"><h4>Creative Art Designer</h4></a>
+                                    <a href="#"><h4>Creative Art Designer</h4></a>
                                     <h6>Premium Labels Limited</h6>
                                     <p>
                                         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temporinc ididunt ut dolore magna aliqua.
@@ -609,21 +516,21 @@
                         <div class="single-slidebar">
                             <h4>Jobs by Category</h4>
                             <ul class="cat-list">
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Technology</p><span>37</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Media & News</p><span>57</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Goverment</p><span>33</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Medical</p><span>36</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Restaurants</p><span>47</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Developer</p><span>27</span></a></li>
-                                <li><a class="justify-content-between d-flex" href="category.html"><p>Accounting</p><span>17</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Technology</p><span>37</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Media & News</p><span>57</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Goverment</p><span>33</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Medical</p><span>36</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Restaurants</p><span>47</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Developer</p><span>27</span></a></li>
+                                <li><a class="justify-content-between d-flex" href="/signup"><p>Accounting</p><span>17</span></a></li>
                             </ul>
                         </div>
 
                         <div class="single-slidebar">
                             <h4>Carrer Advice Blog</h4>
                             <div class="blog-list">
-                                <div class="single-blog " style="background:#000 url(img/blog1.jpg);">
-                                    <a href="single.html"><h4>Home Audio Recording <br>
+                                <div class="single-blog " style="background:#000 url(static/joblisting/img/blog1.jpg);">
+                                    <a href="#"><h4>Home Audio Recording <br>
                                     For Everyone</h4></a>
                                     <div class="meta justify-content-between d-flex">
                                         <p>
@@ -637,8 +544,8 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="single-blog " style="background:#000 url(img/blog2.jpg);">
-                                    <a href="single.html"><h4>Home Audio Recording <br>
+                                <div class="single-blog " style="background:#000 url(static/joblisting/img/blog2.jpg);">
+                                    <a href="#"><h4>Home Audio Recording <br>
                                     For Everyone</h4></a>
                                     <div class="meta justify-content-between d-flex">
                                         <p>
@@ -652,8 +559,8 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="single-blog " style="background:#000 url(img/blog1.jpg);">
-                                    <a href="single.html"><h4>Home Audio Recording <br>
+                                <div class="single-blog " style="background:#000 url(static/joblisting/img/blog1.jpg);">
+                                    <a href="#"><h4>Home Audio Recording <br>
                                     For Everyone</h4></a>
                                     <div class="meta justify-content-between d-flex">
                                         <p>
@@ -699,7 +606,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-6 download-left">
-                        <img class="img-fluid" src="img/d1.png" alt="">
+                        <img class="img-fluid" src="static/joblisting/img/d1.png" alt="">
                     </div>
                     <div class="col-lg-6 download-right">
                         <h1>Download the <br>
@@ -740,7 +647,7 @@
         <!-- start footer Area -->		
         <footer class="footer-area section-gap">
             <div class="container">
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-lg-3  col-md-12">
                         <div class="single-footer-widget">
                             <h6>Top Products</h6>
@@ -791,12 +698,12 @@
                             </ul>
                         </div>
                     </div>						
-                </div>
+                </div> -->
 
                 <div class="row footer-bottom d-flex justify-content-between">
                     <p class="col-lg-8 col-sm-12 footer-text m-0 text-white">
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | JobSaathi <i class="fa fa-heart-o" aria-hidden="true"></i> by MBSA
 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     </p>
                     <div class="col-lg-4 col-sm-12 footer-social">
@@ -809,7 +716,19 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
             </div>
         </footer>
         <!-- End footer Area -->		
-
+        <script>
+                  function checkSubmit(){
+                select_experience = document.getElementById("select-experience").value
+                select_area = document.getElementById("select-area").value
+                if (select_experience!="select-experience" && select_area!= "select-area"){
+                    return true;
+                }
+                else{
+                    alert("Select Experience and Location")
+                    return false
+                }
+            }
+        </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhOdIF3Y9382fqJYt5I_sswSrEw5eihAA"></script>
         
