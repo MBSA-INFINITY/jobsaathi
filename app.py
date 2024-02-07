@@ -90,6 +90,41 @@ def signup():
     else:
         return redirect("/dashboard")
 
+@app.route("/alljobs", methods = ['GET'], endpoint='alljobs')
+@is_candidate
+@login_is_required
+def alljobs():
+    user_name = session.get("name")
+    onboarded = session.get("onboarded")
+    user_id = session.get("google_id")
+    if onboarded == False:
+        return redirect("/onboarding")
+    onboarding_details = onboarding_details_collection.find_one({"user_id": user_id},{"_id": 0})
+    resume_built = onboarding_details.get("resume_built")
+    if not resume_built: 
+        return redirect("/billbot")
+    pipeline = [
+                {"$match": {"user_id": user_id}},
+        {
+            '$lookup': {
+                'from': 'jobs_details', 
+                'localField': 'job_id', 
+                'foreignField': 'job_id', 
+                'as': 'job_details'
+            }
+        }, 
+        {
+            '$project': {
+                '_id': 0,
+                'job_details._id': 0
+            }
+        }
+    ]
+    all_applied_jobs = list(candidate_job_application_collection.aggregate(pipeline))
+    # return all_applied_jobs
+    return render_template('candidate_alljobs.html', user_name=user_name, onboarding_details=onboarding_details, all_applied_jobs=all_applied_jobs)
+
+
 @app.route("/dashboard", methods = ['GET'], endpoint='dashboard')
 @login_is_required
 def dashboard():
