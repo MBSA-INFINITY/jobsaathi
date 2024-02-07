@@ -122,7 +122,6 @@
         src="https://static.naukimg.com/s/7/103/i/search.9ec0e1ac.svg"
         class="searchIc"
       />
-
       <div id="pehla">
         <input
           class="suggestor-input"
@@ -136,7 +135,7 @@
       </div>
 
       <div class="fourthh">
-        <button id="qsbSubmit">Search</button>
+        <button id="qsbSubmit" onclick="checkSubmit()">Search</button>
       </div>
     </div>
 <!-- <a href="../java.html"></a> -->
@@ -1247,7 +1246,21 @@ responsive: [
    slidesToScroll: 5,
  });
 
-
+function checkSubmit(){
+    skills = document.getElementById("skills").value
+    if(skills == ""){
+        alert("Enter a skill/designation/company!")
+    }
+    else{
+        a = confirm("To access all the jobs on jobsaathi, you need to login to the portal. Do you want to proceed?")
+        if (a){
+            window.location.href = "/signup"
+        }
+        else{
+            return false;
+        }
+    }
+}
 //  slide2box
 </script>
 
