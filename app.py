@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret, initial_html
-from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection
+from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection, saved_jobs_collection
 from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf
 import os
 from datetime import datetime
@@ -231,6 +231,51 @@ def applied_jobs():
     all_applied_jobs = list(candidate_job_application_collection.aggregate(pipeline))
     # return all_applied_jobs
     return render_template('applied_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_applied_jobs=all_applied_jobs)
+
+@app.route("/saved_jobs", methods = ['GET', 'POST'], endpoint='saved_jobs')
+@login_is_required
+@is_candidate
+def saved_jobs():
+    user_name = session.get("name")
+    onboarded = session.get("onboarded")
+    user_id = session.get("google_id")
+    if onboarded == False:
+        return redirect("/onboarding")
+    if request.method == 'POST':
+        pass
+    onboarding_details = onboarding_details_collection.find_one({"user_id": user_id},{"_id": 0})
+    resume_built = onboarding_details.get("resume_built")
+    if not resume_built: 
+        return redirect("/billbot")
+    pipeline = [
+                    {"$match": {"user_id": user_id}},
+            {
+                '$lookup': {
+                    'from': 'jobs_details', 
+                    'localField': 'job_id', 
+                    'foreignField': 'job_id', 
+                    'as': 'job_details'
+                }
+            }, 
+                    {
+            '$lookup': {
+                'from': 'onboarding_details', 
+                'localField': 'job_details.user_id', 
+                'foreignField': 'user_id', 
+                'as': 'user_details'
+            }
+        }, 
+            {
+                '$project': {
+                    '_id': 0,
+                    'job_details._id': 0,
+                    'user_details._id': 0
+                }
+            }
+        ]
+    all_saved_jobs = list(saved_jobs_collection.aggregate(pipeline))
+    # return all_applied_jobs
+    return render_template('saved_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_saved_jobs=all_saved_jobs)
 
 
 @app.route("/profile", methods=['GET', 'POST'], endpoint='profile_update')
@@ -494,7 +539,6 @@ def create_job():
     job_details = dict(request.form)
     job_details['user_id'] = user_id
     job_details['job_id'] = job_id
-    job_details['status'] = "draft"
     job_details['created_on'] = datetime.now()
     jobs_details_collection.insert_one(job_details)
     return redirect("/dashboard")
@@ -519,7 +563,23 @@ def delete_job(job_id):
     if request.method == 'POST':
         jobs_details_collection.delete_one({"user_id": str(user_id), "job_id": str(job_id)})
         return redirect('/dashboard')
-    
+
+@app.route('/save/job/<string:job_id>', methods=['POST'], endpoint="save_job")
+@login_is_required
+@is_candidate
+def save_job(job_id):
+    user_id = session.get("google_id")
+    if _ := saved_jobs_collection.find_one({"user_id": user_id, "job_id": job_id},{"_id": 0}):
+        return "error"
+    else:
+        saved_job_data = {
+            "user_id": user_id,
+            "job_id": job_id,
+            "saved_on": datetime.now()
+        }
+        saved_jobs_collection.insert_one(saved_job_data)
+        return {"status": "saved"}
+
 
 @app.route('/apply/job/<string:job_id>', methods=['GET', 'POST'], endpoint="apply_job")
 @login_is_required
