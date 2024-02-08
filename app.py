@@ -458,10 +458,16 @@ def onboarding():
                     elif purpose and purpose == "hirer":
                         profile_data = {
                             "user_id": user_details.get("user_id"),
-                            "name": onboarding_details.get("candidate_name"),
+                            "company_name": onboarding_details.get("company_name"),
                             "email": user_details.get("email"),
-                            "mobno": onboarding_details.get("company_representative_mobno"),
+                            "company_representative_mobno": onboarding_details.get("company_representative_mobno"),
                         }
+                        if 'company_logo' in request.files and str(request.files['company_logo'].filename)!="":
+                            company_logo = request.files['company_logo']
+                            company_logo_link = upload_file_firebase(company_logo, f"{user_id}/company_logo.png")
+                            print(company_logo_link)
+                            print("uploaded")
+                            profile_data['company_logo'] = company_logo_link
                         profile_details_collection.insert_one(profile_data)
                         onboarding_details['approved_by_admin'] = False
                     else:

@@ -131,8 +131,12 @@
               </div>
             </div>
           </form>
-          <form action="/onboarding" class="my-2" style="display: none;" id="hirerform" method="post">
+          <form action="/onboarding" class="my-2" style="display: none;" id="hirerform" method="post" enctype="multipart/form-data">
             <input type="hidden" name="purpose" value="hirer">
+            <label>Company Logo</label> <br>
+            <img src="" alt="" width="140" height="140" class="bd-placeholder-img rounded-circle" id="company_logo_link"> <br>
+            <input class="my-2" type="file" name="company_logo" id="company_logo_img" accept=".jpg, .jpeg, .png">
+            <br>
             <label>Name of the Company</label>
             <div class="input-group">
               <input type="text"  class="form-control" placeholder="Name of the Company" name="company_name" required>
@@ -153,6 +157,11 @@
             <label>PAN No.</label>
             <div class="input-group">
               <input type="text" class="form-control"placeholder="PAN  No." name="company_pan" required>
+            </div>
+            <label>Company Description</label>
+            <div class="input-group">
+              <textarea name="company_description" id="" cols="30" rows="3" class="form-control" placeholder="Company Description in One line" required></textarea>
+              
             </div>
             <div class="row">
               <div class="col-md-12">
@@ -233,6 +242,24 @@
       candidateform.reset()
     });
 
+  </script>
+  <script>
+    document.getElementById('company_logo_img').addEventListener('change', function (event) {
+            const fileInput = event.target;
+            const imagePreview = document.getElementById('company_logo_link');
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                };
+
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                imagePreview.src = '';
+            }
+        });
   </script>
   <!-- -------- END FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- -->
   <!--   Core JS Files   -->
