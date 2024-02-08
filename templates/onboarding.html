@@ -18,7 +18,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="static/assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="static/assets/img/favicon.png">
+  <link
+  rel="shortcut icon"
+  href="{{url_for('static', filename='images/favicon.png')}}"
+  type="image/x-icon"
+/>
   <title>
     Onboarding | JobSaathi
   </title>
@@ -42,7 +46,7 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
     <div class="container">
       <a class="navbar-brand" href="/" rel="tooltip" title="Designed and Coded by Creative Tim" data-placement="bottom" target="_blank">
-        JobSaathi
+        <img src="{{url_for('static', filename='images/mbsalogo.png')}}" class="navbar-brand-img h-100" alt="main_logo" height="50" width="150"><br>
       </a>
       <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon mt-2">

@@ -452,7 +452,7 @@ def onboarding():
                             "user_id": user_details.get("user_id"),
                             "name": onboarding_details.get("candidate_name"),
                             "email": user_details.get("email"),
-                            "mobno": user_details.get("candidate_mobno"),
+                            "mobno": onboarding_details.get("candidate_mobno"),
                         }
                         profile_details_collection.insert_one(profile_data)
                     elif purpose and purpose == "hirer":
@@ -460,7 +460,7 @@ def onboarding():
                             "user_id": user_details.get("user_id"),
                             "name": onboarding_details.get("candidate_name"),
                             "email": user_details.get("email"),
-                            "mobno": user_details.get("company_representative_mobno"),
+                            "mobno": onboarding_details.get("company_representative_mobno"),
                         }
                         profile_details_collection.insert_one(profile_data)
                         onboarding_details['approved_by_admin'] = False
