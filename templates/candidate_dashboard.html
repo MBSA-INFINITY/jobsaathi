@@ -233,7 +233,6 @@
     </nav>
     <!-- End Navbar -->
     <div class="container-fluid py-4">
-   
       <div class="row mt-4">
         {% if all_jobs !=[] %}
         {% for job in all_jobs %}
@@ -251,7 +250,13 @@
               <span class="text-xs">Squarespace, Inc. is an American website building and hosting company which is based in New York City, United States.</span>
               <hr class="horizontal dark my-3">
               <div class="row">
+                {% if job['saved_jobs_details'] == [] %}
                   <div class="col-7" id="saveBtn-{{job['job_id']}}"><button type="button" class="btn btn-outline-default text-xxs" onclick="saveJob(`{{job['job_id']}}`)">Save Job</button></div>
+                {% else %}
+                <div class="col-7">
+                  <button type="button" class="btn bg-gradient-primary text-xxs">Saved</button>
+                </div>
+                {% endif %}
                   <div class="col-5"><a href="/apply/job/{{job['job_id']}}"><button type="button" class="btn bg-gradient-primary text-xxs">Apply</button></a></div>
               </div>
             </div>

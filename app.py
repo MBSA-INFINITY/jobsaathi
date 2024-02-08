@@ -174,6 +174,14 @@ def dashboard():
                 }
             }, 
             {
+                '$lookup': {
+                    'from': 'saved_jobs', 
+                    'localField': 'job_id', 
+                    'foreignField': 'job_id', 
+                    'as': 'saved_jobs_details'
+                }
+            }, 
+            {
                 '$project': {
                     '_id': 0
                 }
