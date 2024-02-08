@@ -233,67 +233,41 @@
     </nav>
     <!-- End Navbar -->
     <div class="container-fluid py-4">
-      <div class="row">
-        <div class="col-12">
-          <div class="card mb-4">
-            <div class="card-header pb-0">
-              <h6>All Curated Jobs for Your skill set.</h6>
+   
+      <div class="row mt-4">
+        {% if all_jobs !=[] %}
+        {% for job in all_jobs %}
+        <div class="col-md-3 mt-2">
+          <div class="card">
+            <div class="card-header mx-4 p-3 text-center">
+                <img src="{{url_for('static', filename='images/squarespace.png')}}" alt="" height="70" width="70" style="border-radius: 10px;">
+              <!-- <div class="icon icon-shape icon-lg bg-gradient-primary shadow text-center border-radius-lg">
+                <i class="fas fa-landmark opacity-10"></i>
+              </div> -->
             </div>
-            <div class="card-body px-0 pt-0 pb-2">
-              <div class="table-responsive p-0">
-                {% if all_jobs !=[] %}
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Job Title</th>
-                      <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Job Type</th>
-                      <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Mode of Work</th>
-                      <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Published On</th>
-                      <th class="text-secondary opacity-7"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% set counter = 1 %}
-                    {% for job in all_jobs %}
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                         
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{job['job_title']}}</h6>
-                            <!-- <p class="text-xs text-secondary mb-0">john@creative-tim.com</p> -->
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">{{job['job_type']}}</p>
-                        <!-- <p class="text-xs text-secondary mb-0">Organization</p> -->
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">{{job['mode_of_work']}}</p>
-                        <!-- <p class="text-xs text-secondary mb-0">Organization</p> -->
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-sm font-weight-bold">23/04/18</span>
-                      </td>
-                      <td class="align-middle">
-                        <a href="/apply/job/{{job['job_id']}}" class="text-success font-weight-bold text-sm" data-toggle="tooltip" data-original-title="Apply Job">
-                          Apply
-                        </a>
-                      </td>
-                    </tr>
-                    {% set counter = counter+1 %}
-                    {% endfor %}
-                  </tbody>
-                </table>
-                {% else %}
-                <h6 class="text-muted text-center">No Jobs to Display!</h6>
-                {% endif %}
+            <div class="card-body pt-0 p-3 text-center">
+              <h6 class="text-center mb-0">{{job['job_title']}}</h6>
+              <span class="text-sm">{{job['user_details'][0]['company_name']}} | {{job['job_type']}}</span> <br> <br>
+              <span class="text-xs">Squarespace, Inc. is an American website building and hosting company which is based in New York City, United States.</span>
+              <hr class="horizontal dark my-3">
+              <div class="row">
+                  <div class="col-7"><a href="/apply/job/{{job['job_id']}}"><button type="button" class="btn btn-outline-default text-xxs">View Details</button></a></div>
+                  <div class="col-5"><a href="/apply/job/{{job['job_id']}}"><button type="button" class="btn bg-gradient-primary text-xxs">Apply</button></a></div>
               </div>
             </div>
           </div>
         </div>
+        {% endfor %}
+        {% else %}
+        <div>
+          <center>
+          <img src="{{url_for('static', filename='images/nojobs.png')}}" alt="" style="opacity: 0.6;">
+          </center>
+        </div>
+        {% endif %}
       </div>
+
+
 
       <footer class="footer pt-3  ">
         <div class="container-fluid">

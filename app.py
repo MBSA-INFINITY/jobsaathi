@@ -213,9 +213,18 @@ def applied_jobs():
             }
         }, 
         {
+            '$lookup': {
+                'from': 'onboarding_details', 
+                'localField': 'job_details.user_id', 
+                'foreignField': 'user_id', 
+                'as': 'user_details'
+            }
+        }, 
+        {
             '$project': {
                 '_id': 0,
-                'job_details._id': 0
+                'job_details._id': 0,
+                'user_details._id': 0
             }
         }
     ]
