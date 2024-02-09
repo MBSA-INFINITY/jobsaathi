@@ -237,7 +237,7 @@
         {% if all_saved_jobs !=[] %}
         {% for job in all_saved_jobs %}
         <div class="col-md-3 mt-2">
-          <div class="card">
+          <div class="card" id="card-{{job['job_id']}}">
             <div class="card-header mx-4 p-3 text-center">
                 <img src="{{url_for('static', filename='images/squarespace.png')}}" alt="" height="70" width="70" style="border-radius: 10px;">
               <!-- <div class="icon icon-shape icon-lg bg-gradient-primary shadow text-center border-radius-lg">
@@ -248,7 +248,8 @@
               <h6 class="text-center mb-0">{{job['job_details'][0]['job_title']}}</h6>
               <span class="text-sm">{{job['user_details'][0]['company_name']}} | {{job['job_details'][0]['job_type']}}</span> <br> <br>
               <div class="row">
-                  <div class="col-12"><a href="/apply/job/{{job['job_id']}}"><button type="button" class="btn btn-outline-default text-xxs">View Details</button></a></div>
+                <div class="col-5" ><button type="button"  class="btn btn-outline-default text-xxs" onclick="removeSavedJob(`{{job['job_id']}}`)">Remove</button></div>
+                  <div class="col-7"><a href="/apply/job/{{job['job_id']}}"><button type="button" class="btn bg-gradient-primary  text-xxs">View Details</button></a></div>
               </div>
             </div>
           </div>
@@ -283,6 +284,40 @@
         else{
           return false;
         }
+      }
+    </script>
+    <script>
+        function removeSavedJob(job_id){
+          let a = confirm("Are you sure you want to removed this job from saved list ?")
+          if(a){
+
+            data = {
+                  "mbsa": "mbsa"
+                }
+                fetch(`/remove_saved_job/${job_id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(data => {
+                  
+                  if (data.status == "deleted"){
+                      document.getElementById(`card-${job_id}`).remove()
+                  }
+                  else{
+                    alert('Error removing the job.')
+                  }
+                })
+                .catch((error) => {
+                  alert('Error removing the job. Try again later!')
+                });
+          }
+          else{
+            return ;
+          }
       }
     </script>
   <!--   Core JS Files   -->

@@ -587,6 +587,18 @@ def save_job(job_id):
         }
         saved_jobs_collection.insert_one(saved_job_data)
         return {"status": "saved"}
+    
+
+@app.route('/remove_saved_job/<string:job_id>', methods=['POST'], endpoint="remove_saved_job")
+@login_is_required
+@is_candidate
+def remove_saved_job(job_id):
+    user_id = session.get("google_id")
+    if _ := saved_jobs_collection.find_one({"user_id": user_id, "job_id": job_id},{"_id": 0}):
+        saved_jobs_collection.delete_one({"user_id": user_id, "job_id": job_id})
+        return {"status": "deleted"}
+    else:
+        return "error"
 
 
 @app.route('/apply/job/<string:job_id>', methods=['GET', 'POST'], endpoint="apply_job")
