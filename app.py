@@ -72,6 +72,24 @@ def is_onboarded(function):
     return wrapper
 
 
+@app.route("/about-us", methods = ['GET'])
+def about_us():
+    user_logged_in = False
+    if session.get('google_id') is not None:
+        user_logged_in = True
+    user_name = session.get("name")
+    resp = make_response(render_template("about_us.html", user_name=user_name, user_logged_in=user_logged_in))
+    return resp
+
+@app.route("/contact-us", methods = ['GET'])
+def contact_us():
+    user_logged_in = False
+    if session.get('google_id') is not None:
+        user_logged_in = True
+    user_name = session.get("name")
+    resp = make_response(render_template("contact_us.html", user_name=user_name, user_logged_in=user_logged_in))
+    return resp
+    
 @app.route("/", methods = ['GET'])
 def start():
     if session.get('google_id') is None:
