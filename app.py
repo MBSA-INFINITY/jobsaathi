@@ -333,17 +333,26 @@ def profile_update():
         abort(500, {"message": f"DB Error: Profile Details for user_id {user_id} not found."})
 
 
-@app.route("/candidate_profile/<string:user_id>", methods=['GET', 'POST'], endpoint='candidate_profile')
-@login_is_required
-@is_candidate
-def candidate_profile(user_id):
-    return "mbsa"
-    user_id = session.get("google_id")
-    purpose = session.get("purpose")
+@app.route("/public/candidate/<string:user_id>", methods=['GET', 'POST'], endpoint='public_candidate_profile')
+def public_candidate_profile(user_id):
     if profile_details := profile_details_collection.find_one({"user_id": user_id},{"_id": 0}):
-        return render_template('candidate_profile.html', profile_details=profile_details) 
+        return render_template('public_candidate_profile.html', profile_details=profile_details) 
     else:
         abort(500, {"message": f"DB Error: Profile Details for user_id {user_id} not found."})
+
+
+@app.route("/upload_intro_candidate", methods=['POST'], endpoint='upload_intro_candidate')
+@login_is_required
+@is_candidate
+def upload_intro_candidate():
+    user_id = session.get("google_id")
+    if 'intro_video' in request.files and str(request.files['intro_video'].filename)!="":
+        intro_video = request.files['intro_video']
+        intro_video_link = upload_file_firebase(intro_video, f"{user_id}/intro_video.mp4")
+        print(intro_video_link)
+        print("uploaded")
+        profile_details_collection.update_one({"user_id": user_id},{"$set": {"intro_video_link": intro_video_link}})
+        return redirect('/profile')
 
 
 
