@@ -333,6 +333,19 @@ def profile_update():
         abort(500, {"message": f"DB Error: Profile Details for user_id {user_id} not found."})
 
 
+@app.route("/candidate_profile/<string:user_id>", methods=['GET', 'POST'], endpoint='candidate_profile')
+@login_is_required
+@is_candidate
+def candidate_profile(user_id):
+    return "mbsa"
+    user_id = session.get("google_id")
+    purpose = session.get("purpose")
+    if profile_details := profile_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+        return render_template('candidate_profile.html', profile_details=profile_details) 
+    else:
+        abort(500, {"message": f"DB Error: Profile Details for user_id {user_id} not found."})
+
+
 
 @app.route("/login")
 def login():
