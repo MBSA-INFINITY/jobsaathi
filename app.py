@@ -99,6 +99,27 @@ def start():
     else:
         return redirect("/dashboard")
     
+@app.route("/searchJobs",methods = ['GET'])   
+def search_jobs():
+    pipeline = [
+        {
+            '$lookup': {
+                'from': 'jobs_details', 
+                'localField': 'job_id', 
+                'foreignField': 'job_id', 
+                'as': 'job_details'
+            }
+        }, 
+        {
+            '$project': {
+                '_id': 0,
+                'job_details._id': 0
+            }
+        }
+    ]
+    all_jobs = list(jobs_details_collection.aggregate(pipeline))
+    return render_template('job_search.html', all_jobs=all_jobs)
+
 @app.route("/signup", methods = ['GET'])
 def signup():
     if session.get('google_id') is None:

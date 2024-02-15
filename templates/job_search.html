@@ -15,8 +15,9 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="jobs.css" />
-    <link rel="stylesheet" href="searchbar.css" />
+
+    <link rel="stylesheet" href="{{url_for('static', filename='naukri/css/jobs.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='naukri/css/searchbar.css')}}" />
     <script
       src="https://kit.fontawesome.com/629044acfa.js"
       crossorigin="anonymous"
@@ -137,141 +138,89 @@
         background: red;
         color: white;
       }
+      .navibarr{
+  margin: auto;
+width: 90vw;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    /* overflow: hidden; */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: white;
+    height: 10vh;
+  
+}
+.t_button_1{
+    margin-right: 18px;
+    padding: 12px;
+    width: 5vw;
+    font-weight: 600;
+    color: rgb(42, 184, 240);
+    border-radius:20px;
+  
+    cursor: pointer;
+    background: #FFFFFF;
+    border: 1px solid #88ADFF;
+    border-radius: 100px;
+  
+}
+.t_button_2{
+    padding: 12px;
+    width: 7vw;
+    font-weight: 600;
+    color: white;
+    border-radius:20px;
+    background-color: #FF7555;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+.t_h3_J{
+    font-size: 15px;
+    line-height: 20px;
+   color: #8C9CBB;
+    font-weight: 500;
+    font-weight: lighter;
+    
+    /* transition:all .7s ease-in-out; */
+    /* -moz-transition: all .3s ease-in-out;
+    -webkit-transition: all .3s ease-in-out;
+    -ms-transition: all .3s ease-in-out;
+    -o-transition: all .3s ease-in-out; */
+    box-sizing: border-box;
+}
+
     </style>
   </head>
   <body>
-    <div id="nav">
-      <div class="d-flex">
-        <div class="left">
-          <img
-            id="logo"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQe7IKd6HmXmjs2l0I-mFu8Vps2wALT6IHQaQ&usqp=CAU"
-            alt=""
-            onclick="window.location.href='index.html'"
-          />
+    <div class="navibarr">
+        <div class="t_logo"><a href="#"><img src="static/images/mbsalogo.png" alt="Error" id="mainpagepaileja" height="60" width="250"></a></div>
+        <div class="t_elements">
+            <ul class="t_elements_container">
+                <li class="t_elements_li">
+                    <a href="/" class="t_anchor_tag t_h3_J"><h3 style="margin-right: 20px;font-size: 14px;text-decoration: none;" id="t_h3_J">Home</h3></a>
+                </li>
+                <li class="t_elements_li">
+                    <a href="/about-us" class="t_anchor_tag t_h3_J"><h3 style="margin-right: 20px;font-size: 14px;text-decoration: none;" id="t_h3_J">About Us</h3></a>
+                </li>
+                <li class="t_elements_li">
+                    <a href="/contact-us" class="t_anchor_tag t_h3_J"><h3 style="margin-right: 20px;font-size: 14px;text-decoration: none;" id="t_h3_J">Contact Us</h3></a>
+                </li>
+    
+            </ul>
         </div>
-        <div class="right">
-          <ul>
-            <li class="dropdown">
-              <a class="dropbtn" href="#">JOBS</a>
-              <div class="dropdown-content">
-                <a href="#">Job by Location</a>
-                <a href="#">Job by Skill</a>
-                <a href="#">Job by Designation</a>
-                <a href="#">Job by Company</a>
-                <a href="#">Job by Category</a>
-                <a href="#">Browse All Jobs</a>
-              </div>
-            </li>
-            <li class="dropdown">
-              <a class="dropbtn" href="#">RECRUITERS</a>
-              <div class="dropdown-content">
-                <a href="#">Browse all Recruiters</a>
-                <a href="#">Connection Recruiters</a>
-                <a href="#">Go to Naukri Recruiter</a>
-              </div>
-            </li>
-            <li class="dropdown">
-              <a class="dropbtn" href="#">COMPANIES</a>
-              <div class="dropdown-content">
-                <a href="#">Browse All Companies</a>
-                <a href="#">About Companies</a>
-                <a href="#">Interview Questions</a>
-                <a href="#">Write Company Review</a>
-                <a href="#">Write Interview Advice</a>
-                <a href="#">Company Review</a>
-                <a href="#">Company Salaries</a>
-              </div>
-            </li>
-            <li class="dropdown">
-              <a class="dropbtn" href="#">TOOLS</a>
-              <div class="dropdown-content">
-                <a href="#">Carier Dashboard</a>
-                <a href="#">Your Next Career Move</a>
-                <a href="#">Skill Trend</a>
-                <a href="#">Naukri Lab</a>
-              </div>
-            </li>
-            <li class="dropdown">
-              <a class="dropbtn" href="#">SERVICES</a>
-              <div class="dropdown-content">
-                <a href="#">Design</a>
-                <a href="#">Web</a>
-                <a href="#">Mobile</a>
-              </div>
-            </li>
-            <li class="dropdown">
-              <a class="dropbtn" href="#">MORE</a>
-              <div class="dropdown-content">
-                <a href="#">Our Company</a>
-                <a href="#">Team</a>
-                <a href="#">Support</a>
-              </div>
-            </li>
-            <li><a class="dropbtn" href="#">LOGIN </a></li>
-            <li style="margin-left: 109px">
-              <a class="dropbtn" href="#"
-                ><i class="far fa-bell fa-2x"></i
-                ><span class="badge">3</span></a
-              >
-            </li>
-            <li class="dropdown">
-              <a class="dropbtn" href="#">For Employers</a>
-              <div class="dropdown-content">
-                <a href="#">Buy Online</a>
-                <a href="#">Employe Login</a>
-                <a href="#">Support</a>
-              </div>
-            </li>
-          </ul>
+        <div class="t_button">
+            <a href="/login"><button class="t_button_1">Login</button></a>
+            <a href="/signup"><button class="t_button_2">Register</button></a>
         </div>
-      </div>
+         <div class="t_foremployers_container">
+        
+        </div>
     </div>
-    <div id="searchFilterHeader" class="w-100">
-      <div class="d-flex">
-        <img
-          src="https://static.naukri.com/s/7/109/assets/images/qsb.e037c49a.png"
-          alt=""
-        />
-        <p class="bold-font">
-          Showing jobs for <span id="filterKey"> #filter</span>
-          <span id="show-searchbar" class="blue"
-            >Modify <i class="fas fa-pencil-alt"></i
-          ></span>
-        </p>
-      </div>
-      <button id="save_as_alert_btn">Save as Alert</button>
-    </div>
-    <div id="searchbar-container">
-      <div id="searchbar" class="d-flex jc-sb">
-        <div class="d-flex">
-          <img
-            src="https://static.naukri.com/s/7/109/assets/images/qsb.e037c49a.png"
-            alt=""
-          />
-          <p class="bold-font">Showing jobs for</p>
-          <div id="sb-input-group">
-            <input
-              type="text"
-              name=""
-              id=""
-              placeholder="Skills,Designation, Companies"
-            />
-            <input
-              type="text"
-              name=""
-              id="search-location-input"
-              placeholder="Location/Locality"
-            />
-            <button id="modify-search-btn">Modify Search</button>
-          </div>
-        </div>
 
-        <div>
-          <button id="close-searchbar"><i class="fas fa-times"></i></button>
-        </div>
-      </div>
-    </div>
+ 
     <div id="main">
       <div id="filterContainer">
         <div>
@@ -284,22 +233,12 @@
           </div>
 
           <form action="">
-            <div class="form-group d-flex jc-sb">
-              <label for="freshness" class="bold-font">Freshness</label>
-              <select name="freshness" id="freshness">
-                <option value="-1">Select</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <p class="bold-font">Work from Home</p>
-              <input type="checkbox" name="wfh" id="wfh" />
-              <label for="wfh"> WFH during Covid </label>
-            </div>
+
 
             <!-- salary filters -->
             <div class="form-group" id="salaryFilterContainer">
               <div class="d-flex jc-sb">
-                <p class="bold-font">Salary</p>
+                <p class="bold-font">Job Type</p>
                 <!-- <i class="fas fa-chevron-down"></i> -->
               </div>
 
@@ -307,165 +246,120 @@
                 <input
                   type="checkbox"
                   name="salary"
-                  id="sal1"
-                  value='{"min":"0" ,"max":"3"}'
+                  id="All"
+                  value='All'
                 />
-                <label for="sal1">0-3 Lakhs</label>
+                <label for="sal1">All</label>
               </div>
               <div>
                 <input
                   type="checkbox"
                   name="salary"
-                  id="sal2"
-                  value='{"min": "3","max":"6"}'
+                  id="Full Time"
+                  value='Full Time'
                 />
-                <label for="sal2">3-6 Lakhs</label>
+                <label for="sal2">Full Time</label>
               </div>
               <div>
                 <input
                   type="checkbox"
                   name="salary"
                   id="sal3"
-                  value='{"min":"6" ,"max":"10"}'
+                  value='Part Time'
                 />
-                <label for="sal3">6-10 Lakhs</label>
+                <label for="sal3">Part Time</label>
               </div>
               <div>
                 <input
                   type="checkbox"
                   name="salary"
-                  id="sal4"
-                  value='{"min":"10" ,"max":"15"}'
+                  id="Contract"
+                  value='Contract'
                 />
-                <label for="sal4">10-15 Lakhs</label>
+                <label for="sal4">Contract</label>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  name="salary"
+                  id="Internship"
+                  value='Internship'
+                />
+                <label for="sal4">Internship</label>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  name="salary"
+                  id="Remote"
+                  value='Remote'
+                />
+                <label for="sal4">Remote</label>
               </div>
             </div>
 
             <div class="form-group">
-              <p class="bold-font">Location</p>
+              <p class="bold-font">Experience Level</p>
               <div class="d-flex col" id="locationsFilter">
                 <div>
                   <input
                     type="checkbox"
                     name="location"
-                    id="Remote"
-                    value="Remote"
+                    id="Any"
+                    value="Any"
                   />
-                  <label for="Remote">Remote</label>
+                  <label for="Any">Any</label>
                 </div>
                 <div>
                   <input
                     type="checkbox"
                     name="location"
-                    id="Bangalore"
-                    value="Bangalore/Bengaluru"
+                    id="Entry Level"
+                    value="Entry Level"
                   />
-                  <label for="Bangalore">Bangalore</label>
+                  <label for="Entry Level">Entry Level</label>
                 </div>
                 <div>
                   <input
                     type="checkbox"
                     name="location"
-                    id="Delhi"
-                    value="Delhi"
+                    id="Intermediate"
+                    value="Intermediate"
                   />
-                  <label for="Delhi">Delhi</label>
+                  <label for="Intermediate">Intermediate</label>
                 </div>
                 <div>
                   <input
                     type="checkbox"
                     name="location"
-                    id="Hyderabad"
-                    value="Hyderabad"
+                    id="Senior"
+                    value="Senior"
                   />
-                  <label for="Hyderabad">Hyderabad</label>
+                  <label for="Senior">Senior</label>
                 </div>
                 <div>
                   <input
                     type="checkbox"
-                    name="location"
-                    id="Chennai"
-                    value="Chennai"
+                    name="Expert"
+                    id="Expert"
+                    value="Expert"
                   />
-                  <label for="Chennai">Chennai</label>
+                  <label for="Expert">Expert</label>
                 </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    name="location"
-                    id="Mumbai"
-                    value="Mumbai"
-                  />
-                  <label for="Mumbai">Mumbai</label>
-                </div>
+ 
               </div>
             </div>
-            <div class="form-group">
-              <div class="d-flex jc-sb">
-                <p class="bold-font">Education</p>
-                <!-- <i class="fas fa-chevron-down"></i> -->
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  name="education"
-                  id="Any Graduate"
-                  value="Any Graduate"
-                />
-                <label for="Any Graduate">Any Graduate</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  name="education"
-                  id="Any Postgraduate"
-                  value="Any Postgraduate"
-                />
-                <label for="Any Postgraduate">Any Postgraduate</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  name="education"
-                  id="BTech/B.E."
-                  value="B.Tech/B.E."
-                />
-                <label for="BTech/B.E.">B.Tech/B.E.</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  name="education"
-                  id="M.Tech"
-                  value="M.Tech"
-                />
-                <label for="M.Tech">M.Tech</label>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="d-flex jc-sb">
-                <p class="bold-font">Experience</p>
-                <!-- <i class="fas fa-chevron-down"></i> -->
-              </div>
-              <div>
-                <p id="exp-value">Any</p>
-                <input
-                  type="range"
-                  min="0"
-                  max="31"
-                  value="31"
-                  class="slider"
-                  id="experience"
-                  name="exp"
-                />
-              </div>
-            </div>
+ 
           </form>
         </div>
       </div>
       <div>
         <!-- <div id="statistics">placeholder</div> -->
-        <div id="jobCardsContainer"></div>
+        <div id="jobCardsContainer">
+            {% for job in all_jobs %}
+            <div class="card" id="{{job['job_id']}}"><h4>{{job['job_title']}}</h4><div class="med-font d-flex"><p>{{job['company_name']}} </p><p></p></div><div class="small-grey-txt"><div class="d-flex"><div><img src="static/images/work_icon.png" style="height: 18px;"> {{job['experience_level']}}</div><p>{{job['job_type']}}</p><div><img src="static/images/location_icon.png" style="height: 18px;">{{job['mode_of_work']}}</div></div><p><i class="far fa-file-alt" aria-hidden="true"></i>  Looking for a team leader who will be the face of our accounting and compliance team</p>MCOM - Income Tax - Accounting - Zoho - Quick Books - Chartered Accountant</div><div><p class="posted"><i class="fa fa-history" aria-hidden="true"></i> 761 DAYS AGO</p><button class="save-btn"><i class="far fa-star" aria-hidden="true"></i> Save</button></div></div>
+            {% endfor %}
+        </div>
       </div>
       <div id="featured">
         <div id="recmd-reg">
@@ -623,8 +517,9 @@
       </div>
     </div>
   </body>
-  <script src="jobData.js"></script>
-  <script src="jobs.js"></script>
-  <script src="filters.js"></script>
-  <script src="processFilters.js"></script>
+
+  <!-- <script src="{{url_for('static', filename='naukri/js/jobData.js')}}"></script>
+  <script src="{{url_for('static', filename='naukri/js/jobs.js')}}"></script>
+  <script src="{{url_for('static', filename='naukri/js/filters.js')}}"></script>
+  <script src="{{url_for('static', filename='naukri/js/processFilters.js')}}"></script> -->
 </html>

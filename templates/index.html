@@ -6,7 +6,6 @@
     <title>JobSaathi</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/kenwheeler/slick@1.8.1/slick/slick-theme.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
     <link
       rel="shortcut icon"
       href="static/images/favicon.png"
@@ -1253,13 +1252,13 @@ function checkSubmit(){
         alert("Enter a skill/designation/company!")
     }
     else{
-        a = confirm("To access all the jobs on jobsaathi, you need to login to the portal. Do you want to proceed?")
-        if (a){
-            window.location.href = "/signup"
-        }
-        else{
-            return false;
-        }
+        // a = confirm("To access all the jobs on jobsaathi, you need to login to the portal. Do you want to proceed?")
+        window.location.href = "/searchJobs"
+        // if (a){
+        // }
+        // else{
+        //     return false;
+        // }
     }
 }
 //  slide2box
