@@ -122,7 +122,6 @@ def alljobs():
     if not resume_built: 
         return redirect("/billbot")
     pipeline = [
-                {"$match": {"user_id": user_id}},
         {
             '$lookup': {
                 'from': 'jobs_details', 
@@ -138,9 +137,9 @@ def alljobs():
             }
         }
     ]
-    all_applied_jobs = list(candidate_job_application_collection.aggregate(pipeline))
+    all_jobs = list(jobs_details_collection.aggregate(pipeline))
     # return all_applied_jobs
-    return render_template('candidate_alljobs.html', user_name=user_name, onboarding_details=onboarding_details, all_applied_jobs=all_applied_jobs)
+    return render_template('candidate_alljobs.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
 
 
 @app.route("/dashboard", methods = ['GET'], endpoint='dashboard')

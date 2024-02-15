@@ -334,7 +334,7 @@
                   <input type="file" id="videoInput" name="intro_video" accept="video/*" required>
                   <br>
                   <br>
-                  <video id="videoPlayer" controls autoplay style="width: 50%;height: 50%;">
+                  <video id="videoPlayer" controls style="width: 50%;height: 50%;">
                     {% if 'intro_video_link' in profile_details %}
                     <source src="{{profile_details['intro_video_link']}}" type="video/mp4">
                       Your browser does not support the video tag.
