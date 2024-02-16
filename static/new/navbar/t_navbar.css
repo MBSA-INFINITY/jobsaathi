@@ -201,6 +201,20 @@ ul.t_elements_container>li:nth-child(4):hover .t_element_mega{
     border: 1px solid transparent;
     cursor: pointer;
 }
+.t_button_3{
+    margin-right: 18px;
+    padding: 12px;
+    width: 11vw;
+    font-weight: 600;
+    color: rgb(42, 184, 240);
+    border-radius:20px;
+  
+    cursor: pointer;
+    background: #FFFFFF;
+    border: 1px solid #88ADFF;
+    border-radius: 100px;
+  
+}
 /* A media query. It is used to make the website responsive */
 @media all and (min-width: 768px) and (max-width: 1249px) {
         #t_navbar{
