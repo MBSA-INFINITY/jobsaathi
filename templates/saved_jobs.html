@@ -380,6 +380,27 @@
     </div>
   </div>
 <script>
+          document.getElementById("searchalljobs").addEventListener('input', function(event){
+            // alert(event.target.value)
+            all_card_body = document.getElementsByClassName("card")
+            let count = 0
+            for(let i=0;i<all_card_body.length;i++){
+              // console.log(all_card_body[i].style.display)
+              
+                // count+=1
+                data = all_card_body[i].innerHTML.toString()
+                  if(data.toLowerCase().includes(event.target.value.toLowerCase())){
+                      count = count+1
+                        all_card_body[i].style.display = "block"
+                  }
+                  else{
+                      all_card_body[i].style.display = "none"
+
+                  }
+              
+            }
+            console.log(count)
+        })
          function removeSavedJob(job_id){
           let a = confirm("Are you sure you want to removed this job from saved list ?")
           if(a){
