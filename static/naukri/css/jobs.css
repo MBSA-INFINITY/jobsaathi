@@ -105,7 +105,6 @@ body {
   
   #filterContainer form{
     height: 70vh;
-    overflow-y: scroll;
   }
   
   #exp-value{
@@ -179,6 +178,7 @@ body {
     padding: 10px 20px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     transition: 1s;
+    border-radius: 10px;
   }
   .card:hover {
     box-shadow: rgba(83, 102, 207, 0.336) 0px 2px 11px;
@@ -229,7 +229,7 @@ body {
     font-size: 0.6em;
     display: inline-block;
     /* width: 80px; */
-    padding: 2px;
+    padding: 7px;
     box-sizing: border-box;
   }
   

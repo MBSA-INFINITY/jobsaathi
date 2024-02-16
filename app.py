@@ -104,6 +104,8 @@ def search_jobs():
     logged_in = True
     if session.get('google_id') is None:
         logged_in = False
+    if logged_in:
+        return redirect("/dashboard")
     pipeline = [
         {
             '$lookup': {
@@ -154,6 +156,14 @@ def alljobs():
                 'as': 'job_details'
             }
         }, 
+        {
+                '$lookup': {
+                    'from': 'saved_jobs', 
+                    'localField': 'job_id', 
+                    'foreignField': 'job_id', 
+                    'as': 'saved_jobs_details'
+                }
+            }, 
         {
             '$project': {
                 '_id': 0,
@@ -392,8 +402,25 @@ def login():
 
 @app.route("/mbsa", methods = ['GET'])
 def mbsa():
-    messages = list(chatbot_collection.find({},{"_id": 0}))
-    return render_template("index1.html", messages=messages)
+    pipeline = [
+            {
+                '$lookup': {
+                    'from': 'jobs_details', 
+                    'localField': 'job_id', 
+                    'foreignField': 'job_id', 
+                    'as': 'job_details'
+                }
+            }, 
+            {
+                '$project': {
+                    '_id': 0,
+                    'job_details._id': 0
+                }
+            }
+        ]
+    all_jobs = list(jobs_details_collection.aggregate(pipeline))
+    # return all_applied_jobs
+    return render_template('candidate_alljobs.html', all_jobs=all_jobs)
 
 @app.route("/logout", methods = ['GET'])
 def logout():
