@@ -101,6 +101,9 @@ def start():
     
 @app.route("/searchJobs",methods = ['GET'])   
 def search_jobs():
+    logged_in = True
+    if session.get('google_id') is None:
+        logged_in = False
     pipeline = [
         {
             '$lookup': {
@@ -118,7 +121,7 @@ def search_jobs():
         }
     ]
     all_jobs = list(jobs_details_collection.aggregate(pipeline))
-    return render_template('job_search.html', all_jobs=all_jobs)
+    return render_template('job_search.html', all_jobs=all_jobs, logged_in=logged_in)
 
 @app.route("/signup", methods = ['GET'])
 def signup():
