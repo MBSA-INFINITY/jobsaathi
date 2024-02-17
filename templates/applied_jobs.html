@@ -259,6 +259,38 @@
     .t_elements.active a {
         margin: 10px 0;
     }
+    body{
+      font-size: x-small;
+    }
+    #main{
+      width: 100vw;
+      margin: 0px auto;
+    }
+
+    #jobCardsContainer{
+      width: 67vw;
+    }
+    #filterContainer{
+      width: 17vw;
+      margin: 0 0;
+    }
+    #filterContainer > div{
+      width: 141px;
+    }
+    #featured{
+      display: none;
+    }
+    #searchalljobs{
+      margin-top: 10px;
+      width: 50vw
+    }
+    .card{
+      width: 54vw;
+    }
+
+
+
+    
 }
 
   </style>
@@ -393,7 +425,7 @@
     <div>
       <!-- <div id="statistics">placeholder</div> -->
       <div id="jobCardsContainer">
-        <input type="text" style="width: 96% ; height:4vh; border-radius: 12px;border: none; padding: 0 10px;"  placeholder="Search by title/designation/company" id="searchalljobs">
+        <input type="text" style="width: 90% ; height:4vh; border-radius: 12px;border: none; padding: 0 10px;"  placeholder="Search by title/designation/company" id="searchalljobs">
         {% for job in all_applied_jobs %}
         <div class="card" id="{{job['job_id']}}">
           <input type="hidden" name="Any All">

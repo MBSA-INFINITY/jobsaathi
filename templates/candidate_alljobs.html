@@ -236,7 +236,7 @@
 }
 
 /* Media query for smaller screens */
-@media (max-width: 768px) {
+@media (max-width: 790px) {
     .hamburger-menu {
         display: block; /* Display on smaller screens */
     }
@@ -267,6 +267,34 @@
 
     .t_elements.active a {
         margin: 10px 0;
+    }
+    body{
+      font-size: x-small;
+    }
+    #main{
+      width: 100vw;
+      margin: 0px auto;
+    }
+
+    #jobCardsContainer{
+      width: 67vw;
+    }
+    #filterContainer{
+      width: 17vw;
+      margin: 0 0;
+    }
+    #filterContainer > div{
+      width: 141px;
+    }
+    #featured{
+      display: none;
+    }
+    #searchalljobs{
+      margin-top: 10px;
+      width: 50vw
+    }
+    .card{
+      width: 54vw;
     }
 }
 
@@ -404,7 +432,7 @@
     <div>
       <!-- <div id="statistics">placeholder</div> -->
       <div id="jobCardsContainer">
-        <input type="text" style="width: 96% ; height:4vh; border-radius: 12px;border: none; padding: 0 10px;"  placeholder="Search by title/designation/company" id="searchalljobs">
+        <input type="text" style="width: 90% ; height:4vh; border-radius: 12px;border: none; padding: 0 10px;"  placeholder="Search by title/designation/company" id="searchalljobs">
         {% for job in all_jobs %}
         <div class="card" id="{{job['job_id']}}" style="display: block;">
           <input type="hidden" name="Any All">
@@ -423,13 +451,9 @@
           <div>
             <p class="posted"><i class="fa fa-history" aria-hidden="true"></i> 761 DAYS AGO</p>
             {% if job['saved_jobs_details'] == [] %}
-            <!-- <div class="col-7" id="saveBtn-{{job['job_id']}}"><button type="button" class="btn btn-outline-default text-xxs" onclick="saveJob(`{{job['job_id']}}`)">Save Job</button></div> -->
-            <div class="reset-div" id="saveBtn-{{job['job_id']}}"><button class="save-btn" onclick="saveJob(`{{job['job_id']}}`)"><i class="far fa-star" aria-hidden="true"></i> Save</button></div>
+            <div class="reset-div" id="saveBtn-{{job['job_id']}}"><button style="float: right; margin-top: 5px;" onclick="saveJob(`{{job['job_id']}}`)"><i class="far fa-star" aria-hidden="true"></i> Save</button></div>
           {% else %}
-          <!-- <div class="col-7" id="saveBtn-{{job['job_id']}}">
-              <button type="button"  class="btn bg-gradient-primary text-xxs" onclick="removeSavedJob(`{{job['job_id']}}`)">Saved</button>
-          </div> -->
-          <div class="reset-div" id="saveBtn-{{job['job_id']}}"><button class="save-btn" onclick="removeSavedJob(`{{job['job_id']}}`)"><i class="fa fa-star" aria-hidden="true"></i> Saved</button></div>
+          <div class="reset-div" id="saveBtn-{{job['job_id']}}"><button style="float: right; margin-top: 5px;" onclick="removeSavedJob(`{{job['job_id']}}`)"><i class="fa fa-star" aria-hidden="true"></i> Saved</button></div>
           {% endif %}
           </div>
         </div>

@@ -402,25 +402,7 @@ def login():
 
 @app.route("/mbsa", methods = ['GET'])
 def mbsa():
-    pipeline = [
-            {
-                '$lookup': {
-                    'from': 'jobs_details', 
-                    'localField': 'job_id', 
-                    'foreignField': 'job_id', 
-                    'as': 'job_details'
-                }
-            }, 
-            {
-                '$project': {
-                    '_id': 0,
-                    'job_details._id': 0
-                }
-            }
-        ]
-    all_jobs = list(jobs_details_collection.aggregate(pipeline))
-    # return all_applied_jobs
-    return render_template('candidate_alljobs.html', all_jobs=all_jobs)
+    return render_template('mbsa.html')
 
 @app.route("/logout", methods = ['GET'])
 def logout():
