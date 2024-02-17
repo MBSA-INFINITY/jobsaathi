@@ -221,6 +221,54 @@
     -o-transition: all .3s ease-in-out; */
       box-sizing: border-box;
     }
+    .hamburger-menu {
+    display: none; /* Hide by default on larger screens */
+    cursor: pointer;
+}
+
+/* Style for each bar in the hamburger menu */
+.bar {
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    margin: 5px 0;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: block; /* Display on smaller screens */
+    }
+
+    .t_elements {
+        display: none; /* Hide navigation links by default on smaller screens */
+    }
+    .t_button {
+        display: none; /* Hide navigation links by default on smaller screens */
+    }
+    .t_button {
+        display: none; /* Hide navigation links by default on smaller screens */
+    }
+
+
+    .t_elements.active {
+        display: flex; /* Show navigation links when hamburger menu is clicked */
+        flex-direction: column;
+        background-color: #fff;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .t_elements.active a {
+        margin: 10px 0;
+    }
+}
+
   </style>
 </head>
 
@@ -253,6 +301,11 @@
 
       </ul>
     </div>
+    <div class="hamburger-menu">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+  </div>
     <div class="t_button">
       <a href="/billbot"><button class="t_button_3">AI Resume Builder</button></a>
       <a href="/logout"><button class="t_button_2">Logout</button></a>
@@ -510,7 +563,16 @@
       }
         attachCheckboxEventListener();
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const hamburgerMenu = document.querySelector('.hamburger-menu');
+    const navElements = document.querySelector('.t_elements');
 
+    hamburgerMenu.addEventListener('click', function() {
+        navElements.classList.toggle('active');
+    });
+});
+ </script>
  
 </body>
 
