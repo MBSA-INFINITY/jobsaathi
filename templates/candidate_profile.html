@@ -352,13 +352,15 @@
       <!-- <div id="statistics">placeholder</div> -->
       <div id="jobCardsContainer">
         <div class="card" id="" style="display: block;">
-          <input type="hidden" name="Any All">
-         <a href="/apply/job/" style="text-decoration: none;color: black;"><h4>{{profile_details['name']}}</h4></a>
+          {% if 'profile_pic' in profile_details %}
+          <img src="{{profile_details['profile_pic']}}" alt="" width="140" height="140" class="bd-placeholder-img rounded-circle my-3" id="profile_pic_link">
+          {% endif %}
+         <a style="text-decoration: none;color: black;"><h4>{{profile_details['name']}}</h4></a>
        
-          <div class="small-grey-txt">
+          <div class="small-grey-txt" style="margin-top: 20px;">
             <div class="d-flex">
               {% if 'position' in profile_details %}
-              <div><img src="static/images/work_icon.png" style="height: 18px; margin-right: 5px;">{{profile_details['position']}}</div>
+              <div><img src="static/images/work_icon.png" style="height: 20px; margin-right: 5px;margin-bottom: 5px;"><span>{{profile_details['position']}}</span></div>
               {% endif %}
             </div>
             <br>
@@ -368,7 +370,7 @@
             <p> {{profile_details['description']}}</p>
           </div>
           <br>
-          <ul >
+          <ul>
             <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Mobile:</strong> &nbsp; {{profile_details['mobno']}}</li> <br><br>
             <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Email:</strong> &nbsp; {{profile_details['email']}}</li> <br><br>
             {% if 'location' in profile_details %}
@@ -386,6 +388,7 @@
         <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Profile</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+      <form action="/profile" method="post" enctype="multipart/form-data">
       <div class="modal-body">
         <div class="row">
             <div class="col-lg-4"></div>
@@ -401,35 +404,36 @@
             <div class="col-lg-4"></div>
           </div><!-- /.row -->
             <div class="form-group">
-              <label for="exampleFormControlInput1">Full Name</label>
+              <label for="exampleFormControlInput1" class="my-1">Full Name</label>
               <input type="text" class="form-control" id="name" name="name" value="{{profile_details['name']}}" placeholder="Your full name">
             </div>
             <div class="form-group">
-              <label for="exampleFormControlInput1">Mobile No.</label>
+              <label for="exampleFormControlInput1" class="my-1">Mobile No.</label>
               <input type="text" class="form-control" id="mobno" name="mobno" value="{{profile_details['mobno']}}" placeholder="Your mobile no.">
             </div>
             <div class="form-group">
-              <label for="exampleFormControlInput1">Email</label>
+              <label for="exampleFormControlInput1" class="my-1">Email</label>
               <input type="email" class="form-control" id="email" name="email" value="{{profile_details['email']}}" placeholder="Your email">
             </div>
             <div class="form-group">
-              <label for="exampleFormControlInput1">Location</label>
+              <label for="exampleFormControlInput1" class="my-1">Location</label>
               <input type="text" class="form-control" id="location" name="location" value="{{profile_details['location']}}" placeholder="Your Location">
             </div>
             <div class="form-group">
-              <label for="exampleFormControlInput1">Position / Responsibility</label>
+              <label for="exampleFormControlInput1" class="my-1">Position / Responsibility</label>
               <input type="text" class="form-control" id="position" name="position" value="{{profile_details['position']}}" placeholder="Your Location">
             </div>
             <div class="form-group">
-              <label for="exampleFormControlTextarea1">Profile Description</label>
+              <label for="exampleFormControlTextarea1" class="my-1">Profile Description</label>
               <input type="text" class="form-control" id="description" name="description" value="{{profile_details['description']}}" placeholder="Your Location">
             
             </div>
         </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <div class="modal-footer">
+          <button type="button" class="btn bg-secondary" data-bs-dismiss="modal" style="color:white">Close</button>
+          <button type="submit" class="btn bg-primary" style="color:white">Save changes</button>
       </div>
+    </form>
     </div>
   </div>
 </div>
