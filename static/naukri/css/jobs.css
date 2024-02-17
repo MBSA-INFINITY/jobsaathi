@@ -237,8 +237,8 @@ body {
     color: grey;
     background-color: white;
     font-size: 0.75em;
-    position: relative;
-    left: 380px;
+    /* position: relative; */
+    /* left: 380px; */
     border:none;
   }
   

@@ -284,7 +284,7 @@
       margin: 0 0;
     }
     #filterContainer > div{
-      width: 141px;
+      width: 30vw;
     }
     #featured{
       display: none;
@@ -451,11 +451,11 @@
           <div>
             <p class="posted"><i class="fa fa-history" aria-hidden="true"></i> 761 DAYS AGO</p>
             {% if job['saved_jobs_details'] == [] %}
-            <div class="reset-div" id="saveBtn-{{job['job_id']}}"><button style="float: right; margin-top: 5px;" onclick="saveJob(`{{job['job_id']}}`)"><i class="far fa-star" aria-hidden="true"></i> Save</button></div>
+            <div class="reset-div" id="saveBtn-{{job['job_id']}}"><button class="save-btn" style="float: right; margin-top: 11px;" onclick="saveJob(`{{job['job_id']}}`)"><i class="far fa-star" aria-hidden="true"></i> Save</button></div>
           {% else %}
-          <div class="reset-div" id="saveBtn-{{job['job_id']}}"><button style="float: right; margin-top: 5px;" onclick="removeSavedJob(`{{job['job_id']}}`)"><i class="fa fa-star" aria-hidden="true"></i> Saved</button></div>
+          <div class="reset-div" id="saveBtn-{{job['job_id']}}"><button class="save-btn" style="float: right; margin-top: 11px;" onclick="removeSavedJob(`{{job['job_id']}}`)"><i class="fa fa-star" aria-hidden="true"></i> Saved</button></div>
           {% endif %}
-          </div>
+          </div> 
         </div>
         {% endfor %}
       </div>
@@ -524,7 +524,7 @@
                 console.log("mbsa")
                 console.log(document.getElementById(`saveBtn-${job_id}`))
                   document.getElementById(`saveBtn-${job_id}`).innerHTML = ""
-                  document.getElementById(`saveBtn-${job_id}`).innerHTML = `<button class="save-btn" onclick="removeSavedJob('${job_id}')"><i class="fa fa-star" aria-hidden="true"></i> Saved</button>`
+                  document.getElementById(`saveBtn-${job_id}`).innerHTML = `<button class="save-btn" style="float: right; margin-top: 11px;" onclick="removeSavedJob('${job_id}')"><i class="fa fa-star" aria-hidden="true"></i> Saved</button>`
               }
               else{
                 alert('Error saving the job.')
@@ -552,7 +552,7 @@
               if (data.status == "deleted"){
                 console.log(document.getElementById(`saveBtn-${job_id}`))
                   document.getElementById(`saveBtn-${job_id}`).innerHTML = ""
-                  document.getElementById(`saveBtn-${job_id}`).innerHTML = `<button class="save-btn" onclick="saveJob('${job_id}')"><i class="far fa-star" aria-hidden="true"></i> Save</button>`
+                  document.getElementById(`saveBtn-${job_id}`).innerHTML = `<button class="save-btn" style="float: right; margin-top: 11px;" onclick="saveJob('${job_id}')"><i class="far fa-star" aria-hidden="true"></i> Save</button>`
               }
               else{
                 alert('Error removing the job.')

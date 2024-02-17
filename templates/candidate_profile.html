@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="{{url_for('static', filename='naukri/css/searchbar.css')}}" />
   <script src="https://kit.fontawesome.com/629044acfa.js" crossorigin="anonymous"></script>
   <style>
+   
           .reset-div {
         margin: 0;
         padding: 0;
@@ -236,9 +237,12 @@
     background-color: #333;
     margin: 5px 0;
 }
+#jobCardsContainer{
+      width: 100%;
+    }
 
 /* Media query for smaller screens */
-@media (max-width: 768px) {
+@media (max-width: 790px) {
     .hamburger-menu {
         display: block; /* Display on smaller screens */
     }
@@ -270,6 +274,16 @@
     .t_elements.active a {
         margin: 10px 0;
     }
+    #featured{
+      display: none;
+    }
+    #jobCardsContainer{
+      width: 95vw;
+    }
+    #main{
+      width: 100vw;
+    }
+ 
 }
 
 
@@ -327,27 +341,7 @@
 
 
   <div id="main">
-    <div id="filterContainer">
 
-      <div>
-          <p class="bold-font">
-            <img src="icons/filter_list.png" alt="" id="filter-icon" /> Candidate's Intro Video
-          </p>
-          <!-- <p id="applied">Applied</p> -->
-        <form action="/upload_intro_candidate" method="post" enctype="multipart/form-data" onsubmit="return uploadIntroVideo()">
-          <input type="file" id="videoInput" name="intro_video" accept="video/*" required>
-          <br>
-          <br>
-          <video id="videoPlayer" controls style="width: 70%;height: 70%;">
-            {% if 'intro_video_link' in profile_details %}
-            <source src="{{profile_details['intro_video_link']}}" type="video/mp4">
-              Your browser does not support the video tag.
-            {% endif %}
-          </video> <br>
-          <button class="btn btn-primary" type="submit">Upload</button>
-        </form>
-      </div>
-    </div>
     <div>
       <!-- <div id="statistics">placeholder</div> -->
       <div id="jobCardsContainer">
@@ -379,7 +373,7 @@
           </ul>
           <div>
             <p class="posted" style="visibility: hidden;"><i class="fa fa-history" aria-hidden="true"></i> 761 DAYS AGO</p>
-         <button class="save-btn" type="button" data-bs-toggle="modal" data-bs-target="#editModal"><i class="far fa-edit" aria-hidden="true"></i> Edit</button>
+         <button class="save-btn" style="float: right" type="button" data-bs-toggle="modal" data-bs-target="#editModal"><i class="far fa-edit" aria-hidden="true"></i> Edit</button>
      <!-- Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -437,6 +431,20 @@
     </div>
   </div>
 </div>
+<hr>
+<label for="exampleFormControlInput1" class="my-1">Candidate's Intro Video</label>
+<form action="/upload_intro_candidate" method="post" enctype="multipart/form-data" onsubmit="return uploadIntroVideo()">
+  <input type="file" id="videoInput" name="intro_video" accept="video/*" required>
+  <br>
+  <br>
+  <video id="videoPlayer" controls style="width: 20%;height: 20%;">
+    {% if 'intro_video_link' in profile_details %}
+    <source src="{{profile_details['intro_video_link']}}" type="video/mp4">
+      Your browser does not support the video tag.
+    {% endif %}
+  </video> <br>
+  <button class="btn btn-primary" type="submit">Upload</button>
+</form>
         </div>
       </div>
     </div>
