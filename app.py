@@ -198,13 +198,15 @@ def dashboard():
         if not resume_built: 
             return redirect("/billbot")
         resume_skills_string = resume_details_collection.find_one({'user_id': user_id}, {'skills': 1})['skills']
-        resume_skills = [skill.strip() for skill in resume_skills_string.split(',')]
+        resume_skills = [skill.strip().lower() for skill in resume_skills_string.split(',')]
+        print(resume_skills)
         regex_patterns = []
         for skill in resume_skills:
             skill_words = skill.split()
             skill_pattern = '|'.join(skill_words)
             regex_patterns.append(skill_pattern)
         regex_pattern = '|'.join(regex_patterns)
+        print(regex_pattern)
         pipeline = [
                  {
         '$match': {
