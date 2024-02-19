@@ -16,7 +16,7 @@
 />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" /> -->
 
   <link rel="stylesheet" href="{{url_for('static', filename='naukri/css/jobs.css')}}" />
   <link rel="stylesheet" href="{{url_for('static', filename='naukri/css/searchbar.css')}}" />
@@ -240,7 +240,9 @@
 #jobCardsContainer{
       width: 100%;
     }
-
+.card{
+  width: 55vw;
+}
 /* Media query for smaller screens */
 @media (max-width: 790px) {
     .hamburger-menu {
@@ -279,9 +281,16 @@
     }
     #jobCardsContainer{
       width: 95vw;
+      margin-left: 1rem;
     }
     #main{
       width: 100vw;
+    }
+    .card{
+      width: 80vw;
+    }
+    html{
+      overflow-x: hidden;
     }
  
 }
@@ -293,7 +302,7 @@
 
 <body>
   <div class="navibarr" style="border-radius: 10px">
-    <div class="t_logo"><a href="/"><img src="static/images/mbsalogo.png" alt="Error" id="mainpagepaileja" height="60"
+    <div class="t_logo"><a href="/"><img src="{{url_for('static', filename='images/mbsalogo.png')}}" alt="Error" id="mainpagepaileja" height="60"
           width="250"></a></div>
     <div class="t_elements">
       <ul class="t_elements_container">
@@ -345,108 +354,39 @@
     <div>
       <!-- <div id="statistics">placeholder</div> -->
       <div id="jobCardsContainer">
-        <div class="card" id="" style="display: block;">
-          {% if 'profile_pic' in profile_details %}
-          <img src="{{profile_details['profile_pic']}}" alt="" width="140" height="140" class="bd-placeholder-img rounded-circle my-3" id="profile_pic_link">
-          {% endif %}
-         <a style="text-decoration: none;color: black;"><h4>{{profile_details['name']}}</h4></a>
-       
-          <div class="small-grey-txt" style="margin-top: 20px;">
-            <div class="d-flex">
-              {% if 'position' in profile_details %}
-              <div><img src="static/images/work_icon.png" style="height: 20px; margin-right: 5px;margin-bottom: 5px;"><span>{{profile_details['position']}}</span></div>
-              {% endif %}
-            </div>
-            <br>
-          </div>
-          <br>
-          <div class="med-font d-flex">
-            <p> {{profile_details['description']}}</p>
-          </div>
-          <br>
-          <ul>
-            <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Mobile:</strong> &nbsp; {{profile_details['mobno']}}</li> <br><br>
-            <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Email:</strong> &nbsp; {{profile_details['email']}}</li> <br><br>
-            {% if 'location' in profile_details %}
-            <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Location:</strong> &nbsp; {{profile_details['location']}}</li> <br><br>
-            {% endif %}
-          </ul>
-          <div>
-            <p class="posted" style="visibility: hidden;"><i class="fa fa-history" aria-hidden="true"></i> 761 DAYS AGO</p>
-         <button class="save-btn" style="float: right" type="button" data-bs-toggle="modal" data-bs-target="#editModal"><i class="far fa-edit" aria-hidden="true"></i> Edit</button>
-     <!-- Modal -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Profile</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form action="/profile" method="post" enctype="multipart/form-data">
-      <div class="modal-body">
-        <div class="row">
-            <div class="col-lg-4"></div>
-            <div class="col-lg-4">
-              {% if 'profile_pic' in profile_details %}
-              <img src="{{profile_details['profile_pic']}}" alt="" width="140" height="140" class="bd-placeholder-img rounded-circle" id="profile_pic_link">
-              {% else %}
-              <img src="" alt="" width="140" height="140" class="bd-placeholder-img rounded-circle" id="profile_pic_link">
-              {% endif %}
-              <input class="my-2" type="file" name="profile_pic" id="profile_pic_img" accept=".jpg, .jpeg, .png">
-              <!-- <svg class=""  xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-color)"/></svg> -->
-            </div>
-            <div class="col-lg-4"></div>
-          </div><!-- /.row -->
-            <div class="form-group">
-              <label for="exampleFormControlInput1" class="my-1">Full Name</label>
-              <input type="text" class="form-control" id="name" name="name" value="{{profile_details['name']}}" placeholder="Your full name">
-            </div>
-            <div class="form-group">
-              <label for="exampleFormControlInput1" class="my-1">Mobile No.</label>
-              <input type="text" class="form-control" id="mobno" name="mobno" value="{{profile_details['mobno']}}" placeholder="Your mobile no.">
-            </div>
-            <div class="form-group">
-              <label for="exampleFormControlInput1" class="my-1">Email</label>
-              <input type="email" class="form-control" id="email" name="email" value="{{profile_details['email']}}" placeholder="Your email">
-            </div>
-            <div class="form-group">
-              <label for="exampleFormControlInput1" class="my-1">Location</label>
-              <input type="text" class="form-control" id="location" name="location" value="{{profile_details['location']}}" placeholder="Your Location">
-            </div>
-            <div class="form-group">
-              <label for="exampleFormControlInput1" class="my-1">Position / Responsibility</label>
-              <input type="text" class="form-control" id="position" name="position" value="{{profile_details['position']}}" placeholder="Your Location">
-            </div>
-            <div class="form-group">
-              <label for="exampleFormControlTextarea1" class="my-1">Profile Description</label>
-              <input type="text" class="form-control" id="description" name="description" value="{{profile_details['description']}}" placeholder="Your Location">
-            
+        <div class="row" style="width: 100%;">
+            <div class="card ">
+              <a href="/apply/job/{{job_details['job_id']}}" style="text-decoration: none;color: black;"><h2>{{job_details['job_title']}}</h2></a>
+              <div class="med-font d-flex">
+                <p style="font-size: 1rem;">{{job_details['user_details'][0]['company_name']}}</p>
+                <p></p>
+              </div>
+              <div class="small-grey-txt">
+                <div class="d-flex">
+                  <div><img src="{{url_for('static', filename='images/work_icon.png')}}" style="height: 18px; margin-right: 5px;"> {{job_details['experience_level']}} | {{job_details['job_type']}}</div>
+                  <div><img src="{{url_for('static', filename='images/location_icon.png')}}" style="height: 18px; margin-right: 5px;">{{job_details['mode_of_work']}}</div>
+                </div>
+                <br>
+              </div>
+              <br>
+
+              <p style="font-weight: 10;display: block;" id="jd"></p>
+              <script>
+                function loadData() {
+                      var textInput = `{{job_details['job_description']}}`
+                      var output = document.getElementById('jd');
+                      
+                      // Replace newline characters with HTML line break tags
+                      var formattedText = textInput.replace(/\n/g, "<br>");
+                      
+                      // Set the formatted text as the innerHTML of the <p> tag
+                      output.innerHTML = formattedText;
+                  }
+                  loadData()
+               </script>
+              
             </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn bg-secondary" data-bs-dismiss="modal" style="color:white">Close</button>
-          <button type="submit" class="btn bg-primary" style="color:white">Save changes</button>
-      </div>
-    </form>
-    </div>
-  </div>
-</div>
-<hr>
-<h6 class="my-3">Candidate's Intro Video</h6>
-<form action="/upload_intro_candidate" method="post" enctype="multipart/form-data" onsubmit="return uploadIntroVideo()">
-  <input type="file" id="videoInput" name="intro_video" accept="video/*" required style="font-size: 0.7em;">
-  <br>
-  <br>
-  <video id="videoPlayer" controls style="width: 20%;height: 20%;">
-    {% if 'intro_video_link' in profile_details %}
-    <source src="{{profile_details['intro_video_link']}}" type="video/mp4">
-      Your browser does not support the video tag.
-    {% endif %}
-  </video> <br>
-  <button class="btn btn-primary" type="submit">Upload</button>
-</form>
-        </div>
-      </div>
     </div>
   </div>
   <div id="featured">
@@ -473,7 +413,7 @@
     </div>
   </div>
   </div>
-
+ 
  <script>
   document.addEventListener('DOMContentLoaded', function() {
     const hamburgerMenu = document.querySelector('.hamburger-menu');
@@ -484,42 +424,9 @@
     });
 });
  </script>
+
 </body>
-<script>
-  function uploadIntroVideo(){
-    let a = confirm("Are you sure you want to upload the intro video in your profile?")
-    if(a) return true;
-    else return false;
-  }
-     document.getElementById('profile_pic_img').addEventListener('change', function (event) {
-            const fileInput = event.target;
-            const imagePreview = document.getElementById('profile_pic_link');
 
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-
-                reader.onload = function (e) {
-                    imagePreview.src = e.target.result;
-                };
-
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                imagePreview.src = '';
-            }
-        });
-
-        document.getElementById('videoInput').addEventListener('change', function(event) {
-      var file = this.files[0];
-      var videoPlayer = document.getElementById('videoPlayer');
-
-      var reader = new FileReader();
-      reader.onload = function(event) {
-        videoPlayer.src = event.target.result;
-      };
-
-      reader.readAsDataURL(file);
-    });
-</script>
 <!-- <script src="{{url_for('static', filename='naukri/js/jobData.js')}}"></script>
   <script src="{{url_for('static', filename='naukri/js/jobs.js')}}"></script>
   <script src="{{url_for('static', filename='naukri/js/filters.js')}}"></script>
