@@ -188,11 +188,19 @@
 
     .t_button_2 {
       padding: 12px;
-      width: 7vw;
       font-weight: 600;
       color: white;
       border-radius: 20px;
       background-color: #FF7555;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    .t_button_2_green {
+      padding: 12px;
+      font-weight: 600;
+      color: white;
+      border-radius: 20px;
+      background-color: rgb(106, 235, 106);
       border: 1px solid transparent;
       cursor: pointer;
     }
@@ -356,11 +364,15 @@
       <div id="jobCardsContainer">
         <div class="row" style="width: 100%;">
             <div class="card ">
-              <a href="/apply/job/{{job_details['job_id']}}" style="text-decoration: none;color: black;"><h2>{{job_details['job_title']}}</h2></a>
+              
+              <form action="/apply/job/{{job_details['job_id']}}" method="post" onsubmit="return applySubmitForm()">
+
+              <a style="text-decoration: none;color: black;"><h2>{{job_details['job_title']}}</h2></a>
               <div class="med-font d-flex">
                 <p style="font-size: 1rem;">{{job_details['user_details'][0]['company_name']}}</p>
                 <p></p>
               </div>
+
               <div class="small-grey-txt">
                 <div class="d-flex">
                   <div><img src="{{url_for('static', filename='images/work_icon.png')}}" style="height: 18px; margin-right: 5px;"> {{job_details['experience_level']}} | {{job_details['job_type']}}</div>
@@ -369,8 +381,17 @@
                 <br>
               </div>
               <br>
-
+              {% if applied %}
+              <button class="t_button_2_green" disabled>Applied</button>
+              {% else %}
+              <button class="t_button_2" type="submit">Apply</button>
+               {% endif %}
               <p style="font-weight: 10;display: block;" id="jd"></p>
+              {% if applied %}
+             <button class="t_button_2_green" disabled>Applied</button>
+             {% else %}
+             <button class="t_button_2" type="submit">Apply</button>
+              {% endif %}
               <script>
                 function loadData() {
                       var textInput = `{{job_details['job_description']}}`
@@ -384,7 +405,7 @@
                   }
                   loadData()
                </script>
-              
+              </form>
             </div>
         </div>
     </div>
@@ -413,7 +434,17 @@
     </div>
   </div>
   </div>
- 
+  <script>
+    function applySubmitForm(){
+      let a = confirm("Are you sure you want to aplly for this job?");
+      if (a){
+        return true;
+      }
+      else{
+        return false;
+      }
+    }
+  </script>
  <script>
   document.addEventListener('DOMContentLoaded', function() {
     const hamburgerMenu = document.querySelector('.hamburger-menu');
