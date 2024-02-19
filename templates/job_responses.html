@@ -160,6 +160,7 @@
                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Mob No.</th>
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Profile</th>
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Applied On</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                         <!-- <th class="text-secondary opacity-7"></th> -->
                       </tr>
                     </thead>
@@ -186,6 +187,39 @@
                         </td>
                         <td class="align-middle text-center">
                           <span class="text-secondary text-xs font-weight-bold">{{responses['applied_on'].strftime("%d/%m/%Y")}}</span>
+                        </td>
+                        <td class="align-middle text-center text-sm">
+                   
+                          <a type="button" class="badge badge-sm bg-gradient-success" data-bs-toggle="modal" data-bs-target="#modal_{{responses['candidate_details'][0]['user_id']}}">{{responses['status']}}</a>
+                          <div class="modal fade" id="modal_{{responses['candidate_details'][0]['user_id']}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLabel">Change Status</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <form action="/status/job/{{responses['candidate_details'][0]['user_id']}}" method="post" >
+                                    <input type="hidden" name="job_id" value="{{responses['job_id']}}">
+                                    <select class="form-control" value="{{responses['status']}}" name="status" id="job_status_{{responses['candidate_details'][0]['user_id']}}">
+                                      <option value="Applied">Applied</option>
+                                      <option value="Accepted">Accepted</option>
+                                      <option value="Rejected">Rejected</option>
+                                    </select>
+                                    <script>
+                                      document.getElementById("job_status_{{responses['candidate_details'][0]['user_id']}}").value = "{{responses['status']}}"
+                                    </script>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn bg-gradient-primary">Save changes</button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
                         </td>
                       </tr>
                       {% endfor %}
@@ -224,10 +258,11 @@
       }
     </script>
   <!--   Core JS Files   -->
-  <script src="static/assets/js/core/popper.min.js"></script>
-  <script src="static/assets/js/core/bootstrap.min.js"></script>
-  <script src="static/assets/js/plugins/perfect-scrollbar.min.js"></script>
-  <script src="static/assets/js/plugins/smooth-scrollbar.min.js"></script>
+
+  <script src="{{url_for('static', filename='assets/js/core/popper.min.js')}}"></script>
+  <script src="{{url_for('static', filename='assets/js/core/bootstrap.min.js')}}"></script>
+  <script src="{{url_for('static', filename='assets/js/plugins/perfect-scrollbar.min.js')}}"></script>
+  <script src="{{url_for('static', filename='assets/js/plugins/smooth-scrollbar.min.js')}}"></script>
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {

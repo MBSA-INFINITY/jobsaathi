@@ -442,7 +442,13 @@
             <br>
           </div>
           <div>
-            <p class="posted"><i class="fa fa-history" aria-hidden="true"></i> 761 DAYS AGO</p>
+            {% if job['status'] == "Applied" %}
+            <p class="posted"><i class="fa fa-user" aria-hidden="true"></i> <b>Applied</b></p>
+            {% elif job['status'] == "Rejected" %}
+            <p class="posted" style="background-color: red;color: white;"><i class="fa fa-user" aria-hidden="true"></i> <b>Rejected</b></p>
+            {% else %}
+            <p class="posted"><i class="fa fa-user" aria-hidden="true"></i> <b>{{job['status']}}</b></p>
+            {% endif %}
           </div>
         </div>
         {% endfor %}

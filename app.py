@@ -718,6 +718,17 @@ def apply_job(job_id):
     else:
         abort(500, {"message": f"JOB with job_id {job_id} not found!"})
 
+@app.route("/status/job/<string:candidate_user_id>", methods=['POST'])
+@login_is_required
+@is_hirer
+def change_job_status(candidate_user_id):
+    form_data = dict(request.form)
+    status = form_data.get("status")
+    job_id = form_data.get("job_id")
+    candidate_job_application_collection.update_one({"job_id": job_id, 'user_id': candidate_user_id},{"$set": {"status": status} })
+    return redirect(f'/responses/job/{job_id}')
+
+
 @app.route('/responses/job/<string:job_id>', methods=['GET', 'POST'], endpoint="job_responses")
 @login_is_required
 @is_hirer
