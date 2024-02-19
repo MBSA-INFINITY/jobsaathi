@@ -683,7 +683,7 @@ def apply_job(job_id):
             "job_id": job_id,
             "user_id": user_id,
             "applied_on": datetime.now(),
-            "status": "applied",
+            "status": "Applied",
         }
         candidate_job_application_collection.insert_one(job_apply_data)
         flash("Successfully Applied for the Job. Recruiters will get back to you soon, if you are a good fit.")
