@@ -1,0 +1,203 @@
+<!--
+=========================================================
+* Soft UI Dashboard - v1.0.7
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard
+* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="{{url_for('static', filename='assets/img/apple-icon.png')}}">
+  <link rel="icon" type="image/png" href="{{url_for('static', filename='assets/img/favicon.png')}}">
+  <title>
+    Profile | JobSaathi
+  </title>
+  <!--     Fonts and icons     -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+  <!-- Nucleo Icons -->
+  <link href="{{url_for('static', filename='assets/css/nucleo-icons.css')}}" rel="stylesheet" />
+  <link href="{{url_for('static', filename='assets/css/nucleo-svg.css')}}" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <link href="{{url_for('static', filename='assets/css/nucleo-svg.css')}}" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link id="pagestyle" href="{{url_for('static', filename='assets/css/soft-ui-dashboard.css')}}" rel="stylesheet" />
+  <!-- Nepcha Analytics (nepcha.com) -->
+  <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
+  <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+</head>
+
+<body class="g-sidenav-show bg-gray-100">
+  <div class="main-content position-relative bg-gray-100 max-height-vh-100 h-100">
+    <!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg bg-transparent shadow-none position-absolute px-4 w-100 z-index-2">
+      <div class="container-fluid py-1">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 ps-2 me-sm-6 me-5">
+          </ol>
+        </nav>
+        <div class="collapse navbar-collapse me-md-0 me-sm-4 mt-sm-0 mt-2" id="navbar">
+   
+
+        </div>
+      </div>
+    </nav>
+    <!-- End Navbar -->
+    <style>
+        #backcover{
+            background-image: url("{{url_for('static', filename='assets/img/curved-images/curved1.jpg')}}");
+        }
+    </style>
+    <div class="container-fluid">
+      <div id="backcover" class="page-header min-height-300 border-radius-xl mt-4" style="background-position-y: 50%;">
+        <span class="mask bg-gradient-primary opacity-6"></span>
+      </div>
+      <div class="card card-body blur shadow-blur mx-4 mt-n6 overflow-hidden">
+        <div class="row gx-4">
+          {% if 'profile_pic' in profile_details %}
+          <div class="col-auto">
+            <div class="avatar avatar-xl position-relative">
+              <img src="{{profile_details['profile_pic']}}" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
+            </div>
+          </div>
+          {% endif %}
+          <div class="col-auto my-auto">
+            <div class="h-100">
+              <h5 class="mb-1">
+                {{profile_details['name']}}
+              </h5>
+              {% if 'position' in profile_details %}
+              <p class="mb-0 font-weight-bold text-sm">
+                {{profile_details['position']}}
+              </p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
+            <div class="nav-wrapper position-relative end-0">
+              <ul class="nav nav-pills nav-fill p-1 bg-transparent" role="tablist">
+                <li class="nav-item">
+              
+                </li>
+                <li class="nav-item">
+               
+                </li>
+      
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid py-4">
+      <div class="row">
+        <div class="col-12 col-xl-12">
+          <div class="card h-100">
+            <div class="card-header pb-0 p-3">
+              <div class="row">
+                <div class="col-md-8 d-flex align-items-center">
+                  <h6 class="mb-0">Profile Description</h6>
+                </div>
+                <div class="col-md-4 text-end">
+                
+                </div>
+              </div>
+            </div>
+            <div class="card-body p-3">
+            {% if 'description' in profile_details %}
+              <p class="text-sm">
+                {{profile_details['description']}}
+              </p>
+              {% else %}
+              <p class="text-sm">Edit your profile using Edit Profile button and add a description to your profile which wil make your profile more attractive!</p>
+              {% endif %}
+              <hr class="horizontal gray-light my-4">
+              <ul class="list-group">
+                <h6 class="mb-0">Candidate's Intro</h6>
+                <video id="videoPlayer" controls style="width: 20%;height: 20%;">
+                  {% if 'intro_video_link' in profile_details %}
+                  <source src="{{profile_details['intro_video_link']}}" type="video/mp4">
+                    Your browser does not support the video tag.
+                  {% endif %}
+                </video> <br>
+                <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Full Name:</strong> &nbsp; {{profile_details['name']}}</li>
+                <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Mobile:</strong> &nbsp; {{profile_details['mobno']}}</li>
+                <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Email:</strong> &nbsp; {{profile_details['email']}}</li>
+                {% if 'location' in profile_details %}
+                <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Location:</strong> &nbsp; {{profile_details['location']}}</li>
+                {% endif %}
+
+                <!-- <li class="list-group-item border-0 ps-0 pb-0">
+                  <strong class="text-dark text-sm">Social:</strong> &nbsp;
+                  <a class="btn btn-facebook btn-simple mb-0 ps-1 pe-2 py-0" href="javascript:;">
+                    <i class="fab fa-facebook fa-lg"></i>
+                  </a>
+                  <a class="btn btn-twitter btn-simple mb-0 ps-1 pe-2 py-0" href="javascript:;">
+                    <i class="fab fa-twitter fa-lg"></i>
+                  </a>
+                  <a class="btn btn-instagram btn-simple mb-0 ps-1 pe-2 py-0" href="javascript:;">
+                    <i class="fab fa-instagram fa-lg"></i>
+                  </a>
+                </li> -->
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+  
+    </div>
+  </div>
+<script>
+     document.getElementById('profile_pic_img').addEventListener('change', function (event) {
+            const fileInput = event.target;
+            const imagePreview = document.getElementById('profile_pic_link');
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                };
+
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                imagePreview.src = '';
+            }
+        });
+</script>
+  <!--   Core JS Files   -->
+  <script src="{{url_for('static', filename='assets/js/core/popper.min.js')}}" type="text/javascript"></script>
+  <script src="{{url_for('static', filename='assets/js/core/bootstrap.min.js')}}" type="text/javascript"></script>
+  <script src="{{url_for('static', filename='assets/js/plugins/perfect-scrollbar.min.js')}}" type="text/javascript"></script>
+  <script src="{{url_for('static', filename='assets/js/plugins/smooth-scrollbar.min.js')}}" type="text/javascript"></script>
+  <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="{{url_for('static', filename='assets/js/soft-ui-dashboard.min.js')}}" type="text/javascript"></script>
+</body>
+
+</html>

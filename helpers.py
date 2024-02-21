@@ -31,7 +31,7 @@ llm = OpenAI(openai_api_key=OPENAIKEY,  max_tokens=-1)
 template = """You are a chatbot who helps people to build their resume/portfolio. This is the HTML of the portfolio {html}. Analyze the HTML properly.The following statement "{statement}" would be an instruction or information related to skills, achievements, education, projects or any other section in the resume. Analyze the statement and update the HTML code according to statement. You are free to add or remove a section as per the scenario. Make the portfolio attractive in styling. Return me only the HTML Code.
 """
 
-skills_analyze_template = """You are a chatbot who helps people to build their resume/portfolio. This is the text of the portfolio {html}. Analyze the text properly and find all the skills of the person from the resume and return me the all skills in comma seperated formated.
+skills_analyze_template = """You are a chatbot who helps people to build their resume/portfolio. This is the text of the portfolio {html}. Analyze the text properly and find all the skills of the person from the resume and return me only the skills of the candidate in comma seperated formated.
 """
 prompt = PromptTemplate(template=template, input_variables=["html", "statement"])
 llm_chain = LLMChain(prompt=prompt, llm=llm)

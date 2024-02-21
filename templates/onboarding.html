@@ -18,7 +18,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="static/assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="static/assets/img/favicon.png">
+  <link
+  rel="shortcut icon"
+  href="{{url_for('static', filename='images/favicon.png')}}"
+  type="image/x-icon"
+/>
   <title>
     Onboarding | JobSaathi
   </title>
@@ -42,7 +46,7 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
     <div class="container">
       <a class="navbar-brand" href="/" rel="tooltip" title="Designed and Coded by Creative Tim" data-placement="bottom" target="_blank">
-        JobSaathi
+        <img src="{{url_for('static', filename='images/mbsalogo.png')}}" class="navbar-brand-img h-100" alt="main_logo" height="50" width="150"><br>
       </a>
       <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon mt-2">
@@ -127,8 +131,12 @@
               </div>
             </div>
           </form>
-          <form action="/onboarding" class="my-2" style="display: none;" id="hirerform" method="post">
+          <form action="/onboarding" class="my-2" style="display: none;" id="hirerform" method="post" enctype="multipart/form-data">
             <input type="hidden" name="purpose" value="hirer">
+            <label>Company Logo</label> <br>
+            <img src="" alt="" width="140" height="140" class="bd-placeholder-img rounded-circle" id="company_logo_link"> <br>
+            <input class="my-2" type="file" name="company_logo" id="company_logo_img" accept=".jpg, .jpeg, .png">
+            <br>
             <label>Name of the Company</label>
             <div class="input-group">
               <input type="text"  class="form-control" placeholder="Name of the Company" name="company_name" required>
@@ -149,6 +157,11 @@
             <label>PAN No.</label>
             <div class="input-group">
               <input type="text" class="form-control"placeholder="PAN  No." name="company_pan" required>
+            </div>
+            <label>Company Description</label>
+            <div class="input-group">
+              <textarea name="company_description" id="" cols="30" rows="3" class="form-control" placeholder="Company Description in One line" required></textarea>
+              
             </div>
             <div class="row">
               <div class="col-md-12">
@@ -229,6 +242,24 @@
       candidateform.reset()
     });
 
+  </script>
+  <script>
+    document.getElementById('company_logo_img').addEventListener('change', function (event) {
+            const fileInput = event.target;
+            const imagePreview = document.getElementById('company_logo_link');
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                };
+
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                imagePreview.src = '';
+            }
+        });
   </script>
   <!-- -------- END FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- -->
   <!--   Core JS Files   -->
