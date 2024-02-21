@@ -92,6 +92,8 @@
   <!-- partial -->
   <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
   <script>
+  var nxt_build_status = "{{nxt_build_status}}"
+  // alert(nxt_build_status)
   var textInput = document.getElementById('textInput')
   var textInputButton = document.getElementById('textInputButton')
   textInput.addEventListener('input', ()=>{
@@ -188,14 +190,20 @@
     setTimeout(function () {
       showLoadingAnimation()
     }, 700);
-    const data = await $.post("/resume_build", { msg: rawText });
+    const data = await $.post("/resume_build", { msg: rawText, nxt_build_status: nxt_build_status });
 
     console.log(rawText);
     console.log(data);
 
-    const resume_html = data;
-    resume_section.innerHTML = data
+    const resume_html = data['html_code'];
+    const nxt_messages = data['nxt_messages'];
+    nxt_build_status = data['nxt_build_status'];
+    resume_section.innerHTML = resume_html
     appendMessage(BOT_NAME, BOT_IMG, "left", "Resume Updated!");
+    for (let i = 0; i < nxt_messages.length; i++) {
+      message = nxt_messages[i]['msg']
+      appendMessage(BOT_NAME, BOT_IMG, "left", message);
+    }
   } catch (error) {
     removeLoadingVideo()
     console.error('Error:', error);
@@ -206,6 +214,7 @@
   }
 }
 
+  
 
     // Utils
     function get(selector, root = document) {

@@ -2,7 +2,7 @@ from langchain.llms import OpenAI
 from langchain import LLMChain, PromptTemplate
 # from langchain.chains import LLMChain
 # from langchain.prompts import PromptTemplate
-from db import resume_details_collection
+from db import resume_details_collection, onboarding_details_collection
 import os
 import json
 from firebase import Firebase
@@ -28,7 +28,7 @@ OPENAIKEY=os.environ['OPENAIKEY']
 
 llm = OpenAI(openai_api_key=OPENAIKEY,  max_tokens=-1)
 
-template = """You are a chatbot who helps people to build their resume/portfolio. This is the HTML of the portfolio {html}. Analyze the HTML properly.The following statement "{statement}" would be an instruction or information related to skills, achievements, education, projects or any other section in the resume. Analyze the statement and update the HTML code according to statement. You are free to add or remove a section as per the scenario. Make the portfolio attractive in styling. Return me only the HTML Code.
+template = """You are a chatbot who helps people to build their resume/portfolio. This is the HTML of the portfolio {html}. Analyze the HTML properly.The following statement "{statement}" would be an instruction or information related to skills, achievements, education, projects or any other section in the resume. Analyze the statement and update the HTML code according to statement. You are free to add or remove a section as per the scenario. Make the portfolio attractive in styling. Keep the sections of the resume one after another in vertical format. Return me only the HTML Code.
 """
 
 skills_analyze_template = """You are a chatbot who helps people to build their resume/portfolio. This is the text of the portfolio {html}. Analyze the text properly and find all the skills of the person from the resume and return me only the skills of the candidate in comma seperated formated.
@@ -96,3 +96,39 @@ resume_question_llm_chain = LLMChain(prompt=resume_question_prompt, llm=llm)
 def query__billbot(statement):
     resp = resume_question_llm_chain.run(statement) 
     return str(resp).strip().lower()
+
+
+def outbound_messages(build_status):
+    messages = []
+    if build_status == "introduction":
+         messages = [{"user":"billbot","msg": "Hi, The right side of your screen will display your resume. You can give me instruction to build it in the chat."},{"user":"billbot","msg": "Provide a small introduction about you?"}]
+    elif build_status == "contactinfo":
+         messages = [{"user":"billbot","msg": "Can you provide your contact info like phone number, mail id etc.?"}]
+    elif build_status == "education":
+         messages = [{"user":"billbot","msg": "Tell me about your schooling and higher education?"}]
+    elif build_status == "experiences":
+         messages = [{"user":"billbot","msg": "Tell me about your current employment and past experiences (if any)?"}]
+    elif build_status == "skills":
+         messages = [{"user":"billbot","msg": "Tell me your skill list?"}]
+    elif build_status == "projects":
+         messages = [{"user":"billbot","msg": "Tell me about your projects?"}]
+    else:
+         messages = [{"user":"billbot","msg": "You can go ahead and tell me to do anything!"}]
+    return messages
+    
+
+def next_build_status(build_status):
+    status={
+        "introduction": "contactinfo",
+        "contactinfo": "education",
+        "education": "experiences",
+        "experiences": "skills",
+        "skills": "projects",
+        "projects": "endofchecklist",
+        "endofchecklist": "endofchecklist"
+        }
+    return status.get(build_status)
+
+def updated_build_status(user_id, nxt_build_status):
+    onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"build_status": nxt_build_status}})
+    return 

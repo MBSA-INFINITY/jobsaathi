@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret, initial_html
 from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection, saved_jobs_collection
-from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf
+from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf, outbound_messages, next_build_status, updated_build_status
 import os
 from datetime import datetime
 import requests
@@ -421,15 +421,19 @@ def chatbot():
     user_id = session.get("google_id")
     if onboarding_details := onboarding_details_collection.find_one({"user_id": user_id}, {"_id": 0}):
         phase = onboarding_details.get('phase')
+        build_status = onboarding_details.get('build_status')
         if phase == "1":
             messages = list(chatbot_collection.find({},{"_id": 0}))
             return render_template('chatbot.html', messages=messages)
         elif phase == "2":
-            messages = [{"user":"billbot","msg": "Hi, The right side of your screen will display your resume. You can give me instruction to build it in the chat."},{"user":"billbot","msg": "You can give me information regarding your inroduction, skills, experiences, achievements and projects. I will create a professional resume for you!"}]
+            messages = outbound_messages(build_status)
+            nxt_build_status = next_build_status(build_status)
+            print(nxt_build_status)
+            # messages = [{"user":"billbot","msg": "Hi, The right side of your screen will display your resume. You can give me instruction to build it in the chat."},{"user":"billbot","msg": "You can give me information regarding your inroduction, skills, experiences, achievements and projects. I will create a professional resume for you!"}]
             if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
                 resume_html = resume_details.get("resume_html")
                 resume_built = session.get("resume_built")
-                return render_template('resume_builder.html', messages=messages, resume_html=resume_html, resume_built=resume_built) 
+                return render_template('resume_builder.html', messages=messages, resume_html=resume_html, resume_built=resume_built, nxt_build_status=nxt_build_status) 
             else:
                 abort(500,{"message":"Something went wrong! Contact ADMIN!"})
         
@@ -440,9 +444,22 @@ def resume_build():
     user_id = session.get("google_id")
     form_data = dict(request.form)
     userMsg = form_data.get("msg")
+    nxt_build_status = form_data.get("nxt_build_status")
+    updated_build_status(user_id, nxt_build_status)
+    nxt_build_status_ = next_build_status(nxt_build_status)
     html_code = query_update_billbot(user_id, userMsg)
     add_html_to_db(user_id, html_code)
-    return str(html_code)
+    return {"html_code" :str(html_code), "nxt_messages": outbound_messages(nxt_build_status), "nxt_build_status": nxt_build_status_}
+
+@app.route("/current_build_status", methods = ['POST'], endpoint='current_build_status')
+@is_candidate
+def current_build_status():
+    user_id = session.get("google_id")
+    if onboarding_details := onboarding_details_collection.find_one({"user_id": user_id}):
+        current_build_status = onboarding_details.get("build_status")
+        return next_build_status(str(current_build_status))
+    else:
+        abort(500)
 
 @app.route("/resume_built", methods = ['POST'], endpoint='resume_built')
 @is_candidate
@@ -573,6 +590,7 @@ def onboarding():
                     data = {"onboarded": True}
                     if purpose and purpose == "candidate":
                         onboarding_details['phase'] = "1"
+                        onboarding_details['build_status'] = "introduction"
                         onboarding_details['resume_built'] = False
                         session['resume_built'] = False
                         profile_data = {
