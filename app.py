@@ -359,7 +359,7 @@ def profile_update():
         return redirect('/profile')
     if profile_details := profile_details_collection.find_one({"user_id": user_id},{"_id": 0}):
         if purpose == 'candidate':
-            return render_template('candidate_profile.html', profile_details=profile_details) 
+            return render_template('candidate_profile.html', profile_details=profile_details, user_id=user_id) 
         elif purpose == 'hirer':
             return render_template('hirer_profile.html', profile_details=profile_details)
         else:
@@ -370,7 +370,24 @@ def profile_update():
 
 @app.route("/public/candidate/<string:user_id>", methods=['GET', 'POST'], endpoint='public_candidate_profile')
 def public_candidate_profile(user_id):
-    if profile_details := profile_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+    pipeline = [
+            {"$match": {"user_id": user_id}},
+            {
+                '$lookup': {
+                    'from': 'resume', 
+                    'localField': 'user_id', 
+                    'foreignField': 'user_id', 
+                    'as': 'resume_details'
+                }
+            }, 
+            {
+                '$project': {
+                    '_id': 0,
+                    'resume_details._id': 0
+                }
+            }
+        ]
+    if profile_details := list(profile_details_collection.aggregate(pipeline)):
         return render_template('public_candidate_profile.html', profile_details=profile_details) 
     else:
         abort(500, {"message": f"DB Error: Profile Details for user_id {user_id} not found."})
@@ -491,6 +508,25 @@ def resume_upload():
         resume_text = extract_text_pdf(resume)
         analyze_resume(user_id, resume_text)
         return redirect("/dashboard")
+    
+@app.route('/update_resume',methods = ['POST'], endpoint='update_resume')
+@is_candidate
+def update_resume():
+    user_id = session.get("google_id")
+    if 'resume' in request.files:
+        resume = request.files['resume']
+        resume_link = upload_file_firebase(resume, f"{user_id}/resume.pdf")
+        data = {"resume_link": resume_link}
+        if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+            print("user exists resume_details_collection")
+            resume_details_collection.update_one({"user_id": user_id},{"$set": data})
+        else:
+            print("user does not exists resume_details_collection")
+            resume_details_collection.insert_one({"user_id": user_id, "resume_link": resume_link})
+        profile_details_collection.update_one({"user_id": user_id},{"$set": data})
+        resume_text = extract_text_pdf(resume)
+        analyze_resume(user_id, resume_text)
+        return redirect("/profile")
   
 @app.route("/have_resume", methods = ['POST'], endpoint='have_resume')
 @is_candidate

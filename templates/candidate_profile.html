@@ -437,6 +437,17 @@
   </div>
 </div>
 <hr>
+<h6 class="my-3">Update Resume</h6>
+{% if 'resume_link' in profile_details %}
+<a href="{{profile_details['resume_link']}}" class="mb-2" target="_blank">Current Resume</a>
+{% endif %}
+<form action="/update_resume" method="post" enctype="multipart/form-data" onsubmit="return updateResume()">
+  <input type="file" id="resume" name="resume" accept=".pdf" required style="font-size: 0.7em;">
+  <br>
+  <br>
+  <button class="btn btn-primary" type="submit">Upload</button>
+</form>
+<hr>
 <h6 class="my-3">Candidate's Intro Video</h6>
 <form action="/upload_intro_candidate" method="post" enctype="multipart/form-data" onsubmit="return uploadIntroVideo()">
   <input type="file" id="videoInput" name="intro_video" accept="video/*" required style="font-size: 0.7em;">
@@ -450,6 +461,8 @@
   </video> <br>
   <button class="btn btn-primary" type="submit">Upload</button>
 </form>
+
+
         </div>
       </div>
     </div>
@@ -457,13 +470,13 @@
   <div id="featured">
     <div id="recmd-reg" style="border-radius: 10px;">
       <div class="d-flex" >
-        <h4>Use our AI to build your resume in seconds.</h4>
+        <h4>Checkout your public profile</h4>
         <img src="https://static.naukri.com/s/7/109/assets/images/register.e0bc10df.png" alt="" height="60px" />
       </div>
       <p>
-        Click on the button below and access our revolutionary chatbot called "Billbot" to build resume using normal chats.
+        Click on the button below and access our public profile to checkout how interviewers will see your profile.
       </p>
-      <button><a href="/billbot" style="text-decoration: none;color: white;">BillBot</a></button>
+      <button><a href="/public/candidate/{{user_id}}" style="text-decoration: none;color: white;">My Public Profile </a></button>
     </div>
     <div id="featured-comp" style="border-radius: 10px;">
       <h4>See 232 jobs in Featured Companies</h4>
@@ -493,6 +506,11 @@
 <script>
   function uploadIntroVideo(){
     let a = confirm("Are you sure you want to upload the intro video in your profile?")
+    if(a) return true;
+    else return false;
+  }
+  function updateResume(){
+    let a = confirm("Are you sure you want to upload the resume in your profile?")
     if(a) return true;
     else return false;
   }
