@@ -191,7 +191,14 @@ def dashboard():
         approved_by_admin = onboarding_details.get('approved_by_admin')
         if approved_by_admin:
             all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
-            return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+            all_published_jobs = list(jobs_details_collection.find({"user_id": user_id, "status":"published"},{"_id": 0}))
+            total_selected_candidates = list(candidate_job_application_collection.find({"hirer_id": user_id, "status":"Accepted"},{"_id": 0}))
+            stats = {
+                "total_jobs" : len(all_jobs),
+                "total_published_jobs" : len(all_published_jobs),
+                "total_selected_candidates" : len(total_selected_candidates)
+            }
+            return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs, stats=stats)
         else:
             return render_template('admin_approval_pending.html')
     else:
@@ -735,15 +742,19 @@ def remove_saved_job(job_id):
 def apply_job(job_id):
     user_id = session.get("google_id")
     if request.method == 'POST':
-        job_apply_data = {
-            "job_id": job_id,
-            "user_id": user_id,
-            "applied_on": datetime.now(),
-            "status": "Applied",
-        }
-        candidate_job_application_collection.insert_one(job_apply_data)
-        flash("Successfully Applied for the Job. Recruiters will get back to you soon, if you are a good fit.")
-        return redirect(f'/apply/job/{job_id}')
+        if job_details := jobs_details_collection.find_one({"job_id": job_id},{"_id": 0}):
+            job_apply_data = {
+                "job_id": job_id,
+                "hirer_id": job_details.get("user_id"),
+                "user_id": user_id,
+                "applied_on": datetime.now(),
+                "status": "Applied",
+            }
+            candidate_job_application_collection.insert_one(job_apply_data)
+            flash("Successfully Applied for the Job. Recruiters will get back to you soon, if you are a good fit.")
+            return redirect(f'/apply/job/{job_id}')
+        else:
+            abort(500,{"messages": f"Job with Job Id {job_id} doesn't exist! "})
     pipeline = [
               {"$match": {"job_id": str(job_id)}},
                 {
