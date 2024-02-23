@@ -15,6 +15,7 @@
 />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Satoshi">
 
   <link rel="stylesheet" href="{{url_for('static', filename='naukri/css/jobs.css')}}" />
   <link rel="stylesheet" href="{{url_for('static', filename='naukri/css/searchbar.css')}}" />
@@ -153,7 +154,7 @@
 
     .navibarr {
       margin: auto;
-      width: 90vw;
+      width: 100vw;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -164,7 +165,7 @@
       z-index: 1;
       background-color: white;
       height: 10vh;
-      margin-top: 15px;
+      font-family:Satoshi, sans-serif
 
     }
 
@@ -210,7 +211,7 @@
     .t_h3_J {
       font-size: 15px;
       line-height: 20px;
-      color: #8C9CBB;
+      color: #4a4f59;
       font-weight: 500;
       font-weight: lighter;
 
@@ -241,7 +242,7 @@
     /* margin: 22em; */
     float: right;
     margin-left: auto;
-    margin-right: 1rem;
+    margin-right: 2rem;
     /* justify-content: flex-end; */
     }
     .t_elements {
@@ -435,7 +436,7 @@
       <div id="jobCardsContainer">
         <input type="text" style="width: 90% ; height:4vh; border-radius: 12px;border: none; padding: 0 10px;"  placeholder="Search by title/designation/company" id="searchalljobs">
         {% for job in all_saved_jobs %}
-        <div class="card" id="card-{{job['job_id']}}">
+        <div class="card" id="card-{{job['job_id']}}" style="display: block;border-radius: 20px;margin-top: 1.2rem;">
           <input type="hidden" name="Any All">
          <a href="/apply/job/{{job['job_id']}}" style="text-decoration: none;color: black;"><h4>{{job['job_details'][0]['job_title']}}</h4></a>
           <div class="med-font d-flex">
@@ -450,7 +451,7 @@
             <br>
           </div>
           <div>
-            <p class="posted"><i class="fa fa-history" aria-hidden="true"></i> 761 DAYS AGO</p>
+            <p class="posted" style="border-radius: 15px;"><i class="fa fa-history" aria-hidden="true"></i> 761 DAYS AGO</p>
             <div class="reset-div">
               <button class="save-btn" style="cursor: pointer;float: right; margin-top: 11px;" onclick="removeSavedJob(`{{job['job_id']}}`)">Remove</button>
             </div>
@@ -460,7 +461,7 @@
       </div>
     </div>
     <div id="featured">
-      <div id="recmd-reg" style="border-radius: 10px;">
+      <div id="recmd-reg" style="border-radius: 20px;">
         <div class="d-flex" >
           <h4>Use our AI to build your resume in seconds.</h4>
           <img src="https://static.naukri.com/s/7/109/assets/images/register.e0bc10df.png" alt="" height="60px" />
@@ -468,9 +469,9 @@
         <p>
           Click on the button below and access our revolutionary chatbot called "Billbot" to build resume using normal chats.
         </p>
-        <button><a href="/billbot" style="text-decoration: none;color: white;">BillBot</a></button>
+        <button style="border-radius: 20px;"><a href="/billbot" style="text-decoration: none;color: white;">BillBot</a></button>
       </div>
-      <div id="featured-comp" style="border-radius: 10px;">
+      <div id="featured-comp" style="border-radius: 20px;">
         <h4>See 232 jobs in Featured Companies</h4>
         <div id="company-container">
           <img src="https://img.naukri.com/fc_images/v2/18166.gif">

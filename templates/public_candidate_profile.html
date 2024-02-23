@@ -65,9 +65,35 @@
         }
     </style>
     {%set profile_details = profile_details[0] %}
-    
+    <nav
+  class="navbar navbar-expand-lg navbar-light bg-white z-index-3 py-3">
+  <div class="container">
+    <a class="navbar-brand" href="" rel="tooltip" title="Designed and Coded by Creative Tim" data-placement="bottom" target="_blank">
+      <img src="{{url_for('static', filename='images/mbsalogo.png')}}" alt="Error" id="mainpagepaileja" height="60"
+          width="250">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navigation">
+      <ul class="navbar-nav navbar-nav-hover ms-auto">
+        <div class="row">
+ 
+          <div class="col-auto">
+            <div class="bg-white border-radius-lg d-flex me-2">
+              <a href="/"><button class="btn bg-gradient-primary my-1 me-1">Dashboard</button></a>
+            </div>
+          </div>
+        </div>
+      </ul>
+    </div>
+  </div>
+</nav>
     <div class="container-fluid">
-      <div class="card card-body blur shadow-blur mx-4 mt-6 overflow-hidden">
+      <div class="page-header min-height-300 border-radius-xl mt-4" id="backcover" style="background-position-y: 50%;">
+        <span class="mask bg-gradient-primary opacity-6"></span>
+      </div>
+      <div class="card card-body blur shadow-blur mx-4 mt-n6 overflow-hidden">
         <div class="row gx-4">
           {% if 'profile_pic' in profile_details %}
           <div class="col-auto">
