@@ -447,7 +447,16 @@ def chatbot():
         phase = onboarding_details.get('phase')
         build_status = onboarding_details.get('build_status')
         if phase == "1":
-            messages = list(chatbot_collection.find({},{"_id": 0}))
+            # messages = list(chatbot_collection.find({},{"_id": 0}))
+            resume_uploaded = False
+            if profile_details := profile_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+                if 'resume_link' in profile_details:
+                    resume_link = profile_details['resume_link']
+                    resume_uploaded = True
+            if resume_uploaded:
+                messages = [{"user": "billbot","msg": "Hi, I am BillBot."}, {"user": "billbot", "msg": f"I see you have already uploaded a <a href={resume_link} target=_blank>Resume</a>. Click Yes, if you want to upload another resume and hit no to use BillBot to develope a resume using AI!"}]
+            else:           
+                messages = [{"user": "billbot","msg": "Hi, I am BillBot."}, {"user": "billbot", "msg": "Do you have a pre-built resume?"}]
             return render_template('chatbot.html', messages=messages)
         elif phase == "2":
             messages = outbound_messages(build_status)
