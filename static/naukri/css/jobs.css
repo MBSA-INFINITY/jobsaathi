@@ -61,10 +61,7 @@ body {
     display: flex;
     justify-content: space-between;
   }
-  #main > div {
-    /* border: 1px solid red; */
-    /* margin: 5px auto; */
-  }
+
   #filterContainer > div {
     width: 300px;
     height: 1200px;
