@@ -28,7 +28,7 @@ OPENAIKEY=os.environ['OPENAIKEY']
 
 llm = OpenAI(openai_api_key=OPENAIKEY,  max_tokens=-1)
 
-template = """You are a chatbot who helps people to build their resume/portfolio. This is the HTML of the portfolio {html}. Analyze the HTML properly.The following statement "{statement}" would be an instruction or information related to skills, achievements, education, projects or any other section in the resume. Analyze the statement and update the HTML code according to statement. You are free to add or remove a section as per the scenario. Make the portfolio attractive in styling. Keep the sections of the resume one after another in vertical format. Return me only the HTML Code.
+template = """You are a chatbot who helps people to build their resume/portfolio. This is the Markdonwn of the portfolio {html}. Analyze the Markdown properly.The following statement "{statement}" would be an instruction or information related to skills, achievements, education, projects or any other section in the resume. Analyze the statement and update the Markdown code according to statement. You are free to add or remove a section as per the scenario. Make the portfolio attractive in styling. Keep the sections of the resume one after another in vertical format. Return me only the Markdown Code.
 """
 
 skills_analyze_template = """You are a chatbot who helps people to build their resume/portfolio. This is the text of the portfolio {html}. Analyze the text properly and find all the skills of the person from the resume and return me only the skills of the candidate in comma seperated formated.
@@ -39,7 +39,7 @@ llm_chain = LLMChain(prompt=prompt, llm=llm)
 skills_analyze_prompt = PromptTemplate(template=skills_analyze_template, input_variables=["html"])
 skills_analyze_llm_chain = LLMChain(prompt=skills_analyze_prompt, llm=llm)
 
-def query_update_billbot(user_id, statement):
+def query_update_billbot(user_id, statement, nxt_build_status_):
     resume_html = get_resume_html_db(user_id)
     html_code = llm_chain.run({"html": str(resume_html), "statement": statement}) 
     return html_code

@@ -447,7 +447,7 @@ def resume_build():
     nxt_build_status = form_data.get("nxt_build_status")
     updated_build_status(user_id, nxt_build_status)
     nxt_build_status_ = next_build_status(nxt_build_status)
-    html_code = query_update_billbot(user_id, userMsg)
+    html_code = query_update_billbot(user_id, userMsg, nxt_build_status_)
     add_html_to_db(user_id, html_code)
     return {"html_code" :str(html_code), "nxt_messages": outbound_messages(nxt_build_status), "nxt_build_status": nxt_build_status_}
 
