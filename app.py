@@ -428,7 +428,7 @@ def login():
 
 @app.route("/mbsa", methods = ['GET'])
 def mbsa():
-    return render_template('mbsa.html')
+    return render_template('resume_edit.html')
 
 @app.route("/logout", methods = ['GET'])
 def logout():
@@ -469,7 +469,23 @@ def chatbot():
                 return render_template('resume_builder.html', messages=messages, resume_html=resume_html, resume_built=resume_built, nxt_build_status=nxt_build_status) 
             else:
                 abort(500,{"message":"Something went wrong! Contact ADMIN!"})
-        
+
+@app.route("/edit/mdresume", methods=['GET','POST'], endpoint="edit_mdresume")
+@is_candidate
+def edit_mdresume():
+    user_id = session.get("google_id")
+    if request.method == 'POST':
+        form_data = dict(request.form)
+        resume_html = form_data.get("resume_html")
+        user_id = session.get("google_id")
+        resume_details_collection.update_one({"user_id": user_id},{"$set": {"resume_html": resume_html}})
+        analyze_resume(user_id)
+        return redirect("/edit/mdresume")
+    if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+        markdown = resume_details.get("resume_html")
+        return render_template('resume_edit.html', markdown=markdown) 
+    else:
+        abort(500, {"messages": f"Resume Deatails for user_id {user_id} unavailable! Contact Admin!"})
 
 @app.route("/resume_build", methods = ['POST'], endpoint='resume_build')
 @is_candidate
