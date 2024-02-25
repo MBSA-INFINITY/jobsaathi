@@ -12,6 +12,15 @@ from pip._vendor import cachecontrol
 import google.auth.transport.requests
 import uuid
 import time
+import pusher
+
+pusher_client = pusher.Pusher(
+  app_id='1725786',
+  key='18cc355939b16cafdc10',
+  secret='4b641fb23ac4f16955f4',
+  cluster='ap2',
+  ssl=True
+)
 
 app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET']
@@ -889,3 +898,58 @@ def all_chats():
     ]
     all_connections = list(connection_details_collection.aggregate(pipeline))
     return render_template("chatservice/index.html", purpose=purpose, all_connections=all_connections)
+
+import time
+@app.route("/chat/<string:incoming_user_id>", methods=['GET', 'POST'], endpoint='specific_chat')
+@login_is_required
+def specific_chat(incoming_user_id):
+    user_id = session.get("google_id")
+    purpose = session.get("purpose")
+    if request.method == 'POST':
+        msg = dict(request.json).get('msg')
+        chat_details = {
+            "hirer_id": user_id if purpose == "hirer" else incoming_user_id,
+            "candidate_id": user_id if purpose == "candidate" else incoming_user_id,
+            "sent_by": purpose,
+            "sent_on": datetime.now(),
+            "msg": msg,
+        }
+        chat_details_collection.insert_one(chat_details)
+        channel_id = f"{user_id}-{incoming_user_id}" if purpose == "candidate" else f"{incoming_user_id}-{user_id}"
+        pusher_client.trigger(channel_id, purpose, {'msg': msg})
+        return {"status": "saved"}
+    hirer_id = incoming_user_id if purpose == "candidate" else user_id
+    candidate_id = user_id if purpose == "candidate" else incoming_user_id
+    if onboarding_details := onboarding_details_collection.find_one({"user_id": incoming_user_id},{"_id": 0}):
+        name = onboarding_details.get("company_name") if purpose == "candidate" else onboarding_details.get("candidate_name")
+        pipeline = [
+            {"$match": {"hirer_id": hirer_id, "candidate_id": candidate_id}},
+            {"$project": {"_id": 0}}
+        ]
+        all_chats = list(chat_details_collection.aggregate(pipeline))
+        channel_id = f"{user_id}-{incoming_user_id}" if purpose == "candidate" else f"{incoming_user_id}-{user_id}"
+        return render_template("chatservice/message.html",incoming_user_id=incoming_user_id, purpose=purpose, all_chats=all_chats, name=name, channel_id=channel_id)
+    else:
+        abort(500, {"message": "User Not Found!"})
+
+@app.route("/initiate_chat", methods =['POST'], endpoint="initiate_chat")
+@login_is_required
+def initiate_chat():
+    user_id = session.get("google_id")
+    form_data = dict(request.form)
+    candidate_id = form_data.get("candidate_id")
+    job_id = form_data.get("job_id")
+    if connection_details := connection_details_collection.find_one({"candidate_id": candidate_id, "hirer_id": user_id},{"_id": 0}):
+        pass
+    else:
+        if _ := candidate_job_application_collection.find_one({"user_id": candidate_id, "hirer_id": user_id, "job_id": job_id},{"_id": 0}):
+            connection_details = {
+            "created_on": datetime.now(),
+            "hirer_id": user_id,
+            "candidate_id": candidate_id,
+            }
+            connection_details_collection.insert_one(connection_details)
+            candidate_job_application_collection.update_one({"user_id": candidate_id, "hirer_id": user_id, "job_id": job_id},{"$set": {"chat_initiated": True}})
+        else:
+            abort(500, {"message": "Either job_id or candidate_id is wrong!"})
+    return redirect(f"/chat/{candidate_id}")

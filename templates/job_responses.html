@@ -19,9 +19,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="static/assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="{{url_for('static', filename='assets/img/favicon.png')}}">
+  <link
+  rel="shortcut icon"
+  href="{{url_for('static', filename='images/favicon.png')}}"
+  type="image/x-icon"
+/>
   <title>
-    Dashboard | JobSaathi
+    Responses | JobSaathi
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -161,6 +165,7 @@
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Profile</th>
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Applied On</th>
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"></th>
                         <!-- <th class="text-secondary opacity-7"></th> -->
                       </tr>
                     </thead>
@@ -221,6 +226,17 @@
                             </div>
                           </div>
                         </td>
+                        <td class="align-middle text-center">
+                          {% if 'chat_initiated' in responses %}
+                          <a href="/chat/{{responses['user_id']}}"><span class="text-secondary text-xs font-weight-bold">Chat Initiated</span></a>
+                          {% else %}
+                          <form action="/initiate_chat" method="post" onsubmit="return initiateChat()">
+                            <input type="hidden" value="{{responses['user_id']}}" name="candidate_id">
+                            <input type="hidden" value="{{responses['job_id']}}" name="job_id">
+                          <button type="submit" style="all:unset; cursor: pointer;"><span class="text-secondary text-xs font-weight-bold">Initiate Chat</span></button>
+                          </form>
+                          {% endif %}
+                        </td>
                       </tr>
                       {% endfor %}
                     </tbody>
@@ -247,6 +263,15 @@
     </div>
   </main>
     <script>
+      function initiateChat(){
+        let a = confirm("Are you sure you want to initiate chat with this candidate?")
+        if(a){
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
       function deleteJob(){
         let a = confirm("Are you sure you want to delete this job?")
         if(a){
