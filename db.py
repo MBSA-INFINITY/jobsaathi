@@ -24,4 +24,6 @@ saved_jobs_collection = db_client['saved_jobs']
 candidate_job_application_collection = db_client['candidate_job_application']
 chatbot_collection = db_client['chatbot']
 profile_details_collection = db_client['profile_details']
+chat_details_collection = db_client['chat_details']
+connection_details_collection = db_client['connection_details']
 

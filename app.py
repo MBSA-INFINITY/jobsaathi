@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret, initial_html
-from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection, saved_jobs_collection
+from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection, saved_jobs_collection, chat_details_collection, connection_details_collection
 from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf, outbound_messages, next_build_status, updated_build_status
 import os
 from datetime import datetime
@@ -857,3 +857,35 @@ def job_responses(job_id):
     if job_details := jobs_details_collection.find_one({"job_id": job_id},{"_id": 0, "job_title" :1, "mode_of_work": 1}):
         all_responses = list(candidate_job_application_collection.aggregate(pipeline))
         return render_template("job_responses.html", job_id=job_id, all_responses=all_responses, job_details=job_details)
+    
+
+@app.route("/chats", methods=['GET'], endpoint='all_chats')
+@login_is_required
+def all_chats():
+    user_id = session.get("google_id")
+    purpose = session.get("purpose")
+    key = "hirer_id" if purpose == "hirer" else "candidate_id"
+    localField = "hirer_id" if purpose == "candidate" else "candidate_id"
+    localAs = "hirer_details" if purpose == "candidate" else "candidate_details"
+    pipeline = [
+         {
+                "$match": {key: user_id}
+            },
+         {
+                '$lookup': {
+                    'from': 'onboarding_details', 
+                    'localField': localField, 
+                    'foreignField': 'user_id', 
+                    'as': localAs
+                }
+            },
+            
+           {
+        '$project': {
+            '_id': 0, 
+            f'{localAs}._id': 0,
+        }
+    }
+    ]
+    all_connections = list(connection_details_collection.aggregate(pipeline))
+    return render_template("chatservice/index.html", purpose=purpose, all_connections=all_connections)

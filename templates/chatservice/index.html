@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <!-- <link rel="stylesheet" type="text/css" href="static/style.css"> -->
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='chatservice/style.css')}}">
-    <title>Whatsupp! Dashboard</title>
+    <title>JobSaathi Chats</title>
 </head>
 
 <body style="height: 100vh;">
@@ -37,7 +37,7 @@
                                     </a>
                                 </div>
                                 <div class="d-flex align-items-center h5 mb-0 nav-name">
-                                    <p class="mb-0">MBSA CHAT APP</p>
+                                    <p class="mb-0">JobSaathi CHAT APP</p>
                                 </div>
                                 <!-- list of nav icons -->
                                 <ul class="list-unstyled list-inline ml-auto my-auto h5 nav-icons">
@@ -89,14 +89,17 @@
                         <!-- row for chat in big screens - no links since message body is on right pane -->
                         <div class="d-none d-md-flex flex-column chats">
                             <!-- First recent-chat -->
-                            <a href="/">
+                            {% for connection in all_connections%}
+                            {% set userid = connection['hirer_id'] if purpose == 'candidate' else connection['candidate_id'] %}
+                            <a href="/chat/{{userid}}">
                                 <div class="d-flex chat">
                                     <!-- sender avatar -->
                                     <div class="">
                                         <img src="{{url_for('static', filename='chatservice/img/admin.jfif')}}" class="rounded-circle" style="width: 55px;">
                                     </div>
                                     <div class="d-flex flex-column justify-content-center mx-2">
-                                        <span class="font-weight-bold">MBSA</span>
+                                        {% set name = connection['hirer_details'][0]['company_name'] if purpose == 'candidate' else connection['candidate_details'][0]['candidate_name'] %}
+                                        <span class="font-weight-bold">{{name}}</span>
                                         <div class="">
                                            
                                         </div>
@@ -107,26 +110,7 @@
                                     </div>
                                 </div>
                             </a>
-                            <hr>
-                            <a href="/">
-                                <div class="d-flex chat">
-                                    <!-- sender avatar -->
-                                    <div class="">
-                                        <img src="{{url_for('static', filename='chatservice/img/admin.jfif')}}" class="rounded-circle" style="width: 55px;">
-                                    </div>
-                                    <div class="d-flex flex-column justify-content-center mx-2">
-                                        <span class="font-weight-bold">MBSA</span>
-                                        <div class="">
-                                           
-                                        </div>
-                                    </div>
-                                    <div class="ml-auto">
-                                     
-                                   
-                                    </div>
-                                </div>
-                            </a>
-                          
+                        {% endfor %}
                         </div>
 
                         <!-- row for chats on mobile with links-->
