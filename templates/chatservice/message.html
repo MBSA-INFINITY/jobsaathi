@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Slab|Lekton" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='chatservice/style.css')}}">
+    <title>Message Details</title>
+</head>
+
+<body style="height: 100vh;">
+
+    <div class="container-fluid" style="height: 100%;">
+        <div class="row" style="height: 100%;">
+            <div class="col-md-12 right-body px-0 px-md-5 bg-dark" style="height: 100%;">
+                <div class="d-flex flex-column">
+                    <!-- Contact header and other options -->
+                    <div class="d-flex bg-primary text-white border border-secondary px-1 px-md-3">
+                        <div class="profile-pic">
+                            <a class="navbar-brand" href="#">
+                                <img class="rounded-circle" src="{{url_for('static', filename='chatservice/img/admin.jfif')}}" style="width: 50px;">
+                            </a>
+                        </div>
+                        <div class="d-flex align-items-center h5 mb-0">
+                            <p class="mb-0">MBSA</p>
+                        </div>
+                        <ul class="list-unstyled list-inline ml-auto my-auto nav-icons h5">
+                            <li class="list-inline-item mr-2 mr-sm-3"><a href="#" title="Search" data-toggle="modal" data-target="#status-modal"><i class="fas fa-share"></i></a></li>
+                            <li class="list-inline-item mr-2 mr-sm-3">
+                                
+                                <div class="dropdown">
+                                    <a href="#" class="dropdown-toggle" id="nav-dropdown-menu" data-toggle="dropdown" title="More Options">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="nav-dropdown-menu">
+                                        <a class="dropdown-item disabled" href="#">View Contact</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item disabled" href="#">Mute Notifications</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item disabled" href="#">Block</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item disabled" href="#">Clear Chat</a>
+                                    </div>
+                                </div>
+
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- end of contact info -->
+                    
+                </div>
+
+                <div id="message-body-id" class="message-body" style="height: calc(100% - 135px);">
+                    <div class="px-3 py-3" id="message-body-id-inner">
+                        <div class="m-received">
+                            <div class="message">
+                                <p>Hi! You there?</p>
+             
+                            </div>
+                        </div>
+                        <div class="m-sent clearfix">
+                            <div class="message float-right">
+                                <p>Yup!</p>
+                                <div class="msg-timestamp d-flex flex-nowrap">
+                      
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                </div>
+          
+                <!-- Send text bar at bottom -->
+                <form action="" onsubmit="return mySubmitFunction(event)">
+                <div class="d-flex bg-light py-3 border border-secondary">
+                    <div class="col-1 mb-0 h4 d-flex align-items-center justify-content-center">
+                        <a href="#"><span><i class="fas fa-smile-wink"></i></span></a>
+                    </div>
+                    <div class="input-group md-form form-sm form-2 pl-0">
+                        <input class="form-control my-0 py-1 red-border" id="entrybox" type="text" placeholder="Type to send" aria-label="Search">
+                        <div class="input-group-append">
+                           <button type="submit" onclick="send()" style="cursor: pointer;"> <span class="input-group-text red lighten-3" id="basic-text1"><i class="fas fa-play"></i></span></button>
+                        </div>
+                    </div>
+                    <div class="col-1 mb-0 h4 d-flex align-items-center justify-content-center">
+                        <button onclick="Choose_Image()" style="cursor: pointer;"><span><i class="fas fa-image"></i></span></button>
+                        <input type="file" name="" id="Image_fileId" accept="image/*" style = "display: none;"  onchange="imageUploaded()">
+                    </div>
+                </div>
+            </form>
+
+            </div>
+        </div>
+    </div>
+
+
+
+  
+    <script src=https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js></script>
+    <script src=https://www.gstatic.com/firebasejs/8.7.0/firebase-database.js></script>
+    <script src=https://www.gstatic.com/firebasejs/8.7.0/firebase-analytics.js></script>
+    <script src=https://www.gstatic.com/firebasejs/8.7.0/firebase-auth.js></script>
+
+
+    <script>
+    
+        function send() {
+            let CallClicks_New = firebase.database().ref("Users").child("{{user_uid}}").child("friends").child("{{friend_uid}}").child("{{friend_uid}}");
+            CallClicks_New.push({
+                chat: person + ': ' + document.getElementById('entrybox').value,
+                type: 'text',
+                name: person
+            });
+            let f_CallClicks_New = firebase.database().ref("Users").child("{{friend_uid}}").child("friends").child("{{user_uid}}").child("{{user_uid}}");
+            f_CallClicks_New.push({
+                chat: person + ': ' + document.getElementById('entrybox').value,
+                type: 'text',
+                name: person
+            });
+            //document.getElementById("qqww").innerHTML += `<h3>${person + ': ' + document.getElementById('entrybox').value}</h3>`
+            document.getElementById('entrybox').value = ""
+            
+        }
+        function imageUploaded() {
+            var file = document.querySelector(
+                'input[type=file]')['files'][0];
+            var reader = new FileReader();
+                reader.onload = function () {
+                    base64String = reader.result.replace("data:", "")
+                        .replace(/^.+,/, "");
+
+                    imageBase64Stringsep = base64String;
+
+                    let CallClicks_New = firebase.database().ref("Users").child("{{user_uid}}").child("friends").child("{{friend_uid}}").child("{{friend_uid}}");
+                    CallClicks_New.push({
+                        chat: base64String,
+                        type: 'img',
+                        name: person
+                    });
+                    let fimg_CallClicks_New = firebase.database().ref("Users").child("{{friend_uid}}").child("friends").child("{{user_uid}}").child("{{user_uid}}");
+                    fimg_CallClicks_New.push({
+                        chat: base64String,
+                        type: 'img',
+                        name: person
+                    });
+                    document.getElementById('fileId').value = ""
+
+         
+                    //document.getElementById("qqww").innerHTML += `<img src="data:image/png;base64,${base64String}"  width = 300 height = 300><br>`
+                }
+                reader.readAsDataURL(file);
+            
+        }
+        function mySubmitFunction() {
+            return false
+        }
+        function bottom() {
+            var elem = document.getElementById('message-body-id');
+            elem.scrollTop = elem.scrollHeight;
+          
+        };
+        function Choose_Image(){
+            document.getElementById('Image_fileId').click()
+        }
+        function Change_Friend(uid){
+            document.getElementById("all_forwarded_Messages").value = JSON.stringify(Forward_Messages)
+        document.getElementById("friend_to_be_forwarded").value = uid;
+         
+        }
+        function Verify(){
+
+            return true;
+        }
+    </script>
+    <script>
+        
+
+    </script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='chatservice/script.js')}}"></script>
+  
+</body>
+
+</html>

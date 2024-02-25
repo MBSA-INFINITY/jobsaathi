@@ -428,7 +428,7 @@ def login():
 
 @app.route("/mbsa", methods = ['GET'])
 def mbsa():
-    return render_template('resume_edit.html')
+    return render_template('chatservice/message.html')
 
 @app.route("/logout", methods = ['GET'])
 def logout():
