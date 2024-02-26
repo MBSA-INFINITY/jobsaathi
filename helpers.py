@@ -1,3 +1,4 @@
+import re
 from langchain.llms import OpenAI
 from langchain import LLMChain, PromptTemplate
 # from langchain.chains import LLMChain
@@ -132,3 +133,12 @@ def next_build_status(build_status):
 def updated_build_status(user_id, nxt_build_status):
     onboarding_details_collection.update_one({"user_id": user_id},{"$set": {"build_status": nxt_build_status}})
     return 
+
+
+
+
+def text_to_html(text):
+  # Regular expression to match URLs, including optional http/https
+  url_regex = r"(http|https):\/\/(\w+\.)+\w{2,}(?:\/\S+)?/"
+  # Replace URLs with anchor tags
+  return re.sub(url_regex, lambda match: f'<a href="{match.group(0)}" target="_blank">{match.group(0)}</a>', text)

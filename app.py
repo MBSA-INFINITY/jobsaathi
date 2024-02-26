@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret, initial_html
 from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection, saved_jobs_collection, chat_details_collection, connection_details_collection
-from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf, outbound_messages, next_build_status, updated_build_status
+from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf, outbound_messages, next_build_status, updated_build_status, text_to_html
 import os
 from datetime import datetime
 import requests
@@ -929,7 +929,7 @@ def specific_chat(incoming_user_id, job_id):
             "msg": msg,
         }
         chat_details_collection.insert_one(chat_details)
-        channel_id = f"{user_id}-{incoming_user_id}-{job_id}" if purpose == "candidate" else f"{incoming_user_id}-{user_id}-{job_id}"
+        channel_id = f"{user_id}_{incoming_user_id}_{job_id}" if purpose == "candidate" else f"{incoming_user_id}_{user_id}_{job_id}"
         pusher_client.trigger(channel_id, purpose, {'msg': msg})
         return {"status": "saved"}
     hirer_id = incoming_user_id if purpose == "candidate" else user_id
@@ -941,9 +941,12 @@ def specific_chat(incoming_user_id, job_id):
             {"$project": {"_id": 0}}
         ]
         all_chats = list(chat_details_collection.aggregate(pipeline))
-        channel_id = f"{user_id}-{incoming_user_id}-{job_id}" if purpose == "candidate" else f"{incoming_user_id}-{user_id}-{job_id}"
+        channel_id = f"{user_id}_{incoming_user_id}_{job_id}" if purpose == "candidate" else f"{incoming_user_id}_{user_id}_{job_id}"
         job_details = jobs_details_collection.find_one({"job_id": job_id},{"_id": 0,"job_title": 1})
-        return render_template("chatservice/message.html",incoming_user_id=incoming_user_id, purpose=purpose, all_chats=all_chats, name=name, channel_id=channel_id, job_id=job_id, job_details=job_details)
+        meet_details = {
+            "meetLink": f"http://127.0.0.1:5000/meet/{channel_id}"
+        }
+        return render_template("chatservice/message.html",incoming_user_id=incoming_user_id, purpose=purpose, all_chats=all_chats, name=name, channel_id=channel_id, job_id=job_id, job_details=job_details, meet_details=meet_details, text_to_html=text_to_html)
     else:
         abort(500, {"message": "User Not Found!"})
 
@@ -970,5 +973,18 @@ def initiate_chat():
         else:
             abort(500, {"message": "Either job_id or candidate_id is wrong!"})
     return redirect(f"/chat/{candidate_id}/{job_id}")
-
+    
+@app.route("/meet/<string:channel_id>", methods=['GET'])
+def meeting(channel_id):
+    candidate_id, hirer_id, job_id = channel_id.split("_")
+    if job_details := jobs_details_collection.find_one({"job_id": job_id}, {"_id": 0, "job_title": 1}):
+        if onboarding_details := onboarding_details_collection.find_one({"user_id": hirer_id},{"_id": 0, "company_name": 1}):
+            meet_details = {
+                "roomName": f"vpaas-magic-cookie-c1b5084297244909bc3d1d4dc2b51775/{channel_id}",
+                "jwt": "jwt",
+                "meetLink": f"http:127.0.0.1:5000/meet/{channel_id}"
+            }
+            return render_template('videoservice/main.html', meet_details=meet_details, job_details=job_details, onboarding_details=onboarding_details)
+    else:
+        abort(500, {"message": "Inavlid Channel ID"})
 
