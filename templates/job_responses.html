@@ -228,7 +228,7 @@
                         </td>
                         <td class="align-middle text-center">
                           {% if 'chat_initiated' in responses %}
-                          <a href="/chat/{{responses['user_id']}}"><span class="text-secondary text-xs font-weight-bold">Chat Initiated</span></a>
+                          <a href="/chat/{{responses['user_id']}}/{{responses['job_id']}}"><span class="text-secondary text-xs font-weight-bold">Chat Initiated</span></a>
                           {% else %}
                           <form action="/initiate_chat" method="post" onsubmit="return initiateChat()">
                             <input type="hidden" value="{{responses['user_id']}}" name="candidate_id">

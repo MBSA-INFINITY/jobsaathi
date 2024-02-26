@@ -437,7 +437,11 @@ def login():
 
 @app.route("/mbsa", methods = ['GET'])
 def mbsa():
-    return render_template('chatservice/message.html')
+    return render_template('mbsa.html')
+
+@app.route("/mbsai", methods = ['GET'])
+def mbsa1():
+    return render_template('mbsa1.html')
 
 @app.route("/logout", methods = ['GET'])
 def logout():
@@ -888,11 +892,20 @@ def all_chats():
                     'as': localAs
                 }
             },
+         {
+                '$lookup': {
+                    'from': 'jobs_details', 
+                    'localField': "job_id", 
+                    'foreignField': 'job_id', 
+                    'as': "job_details"
+                }
+            },
             
            {
         '$project': {
             '_id': 0, 
             f'{localAs}._id': 0,
+            'job_details._id': 0,
         }
     }
     ]
@@ -900,9 +913,9 @@ def all_chats():
     return render_template("chatservice/index.html", purpose=purpose, all_connections=all_connections)
 
 import time
-@app.route("/chat/<string:incoming_user_id>", methods=['GET', 'POST'], endpoint='specific_chat')
+@app.route("/chat/<string:incoming_user_id>/<string:job_id>", methods=['GET', 'POST'], endpoint='specific_chat')
 @login_is_required
-def specific_chat(incoming_user_id):
+def specific_chat(incoming_user_id, job_id):
     user_id = session.get("google_id")
     purpose = session.get("purpose")
     if request.method == 'POST':
@@ -910,12 +923,13 @@ def specific_chat(incoming_user_id):
         chat_details = {
             "hirer_id": user_id if purpose == "hirer" else incoming_user_id,
             "candidate_id": user_id if purpose == "candidate" else incoming_user_id,
+            "job_id": job_id,
             "sent_by": purpose,
             "sent_on": datetime.now(),
             "msg": msg,
         }
         chat_details_collection.insert_one(chat_details)
-        channel_id = f"{user_id}-{incoming_user_id}" if purpose == "candidate" else f"{incoming_user_id}-{user_id}"
+        channel_id = f"{user_id}-{incoming_user_id}-{job_id}" if purpose == "candidate" else f"{incoming_user_id}-{user_id}-{job_id}"
         pusher_client.trigger(channel_id, purpose, {'msg': msg})
         return {"status": "saved"}
     hirer_id = incoming_user_id if purpose == "candidate" else user_id
@@ -923,17 +937,19 @@ def specific_chat(incoming_user_id):
     if onboarding_details := onboarding_details_collection.find_one({"user_id": incoming_user_id},{"_id": 0}):
         name = onboarding_details.get("company_name") if purpose == "candidate" else onboarding_details.get("candidate_name")
         pipeline = [
-            {"$match": {"hirer_id": hirer_id, "candidate_id": candidate_id}},
+            {"$match": {"hirer_id": hirer_id, "candidate_id": candidate_id, "job_id": job_id}},
             {"$project": {"_id": 0}}
         ]
         all_chats = list(chat_details_collection.aggregate(pipeline))
         channel_id = f"{user_id}-{incoming_user_id}" if purpose == "candidate" else f"{incoming_user_id}-{user_id}"
-        return render_template("chatservice/message.html",incoming_user_id=incoming_user_id, purpose=purpose, all_chats=all_chats, name=name, channel_id=channel_id)
+        job_details = jobs_details_collection.find_one({"job_id": job_id},{"_id": 0,"job_title": 1})
+        return render_template("chatservice/message.html",incoming_user_id=incoming_user_id, purpose=purpose, all_chats=all_chats, name=name, channel_id=channel_id, job_id=job_id, job_details=job_details)
     else:
         abort(500, {"message": "User Not Found!"})
 
 @app.route("/initiate_chat", methods =['POST'], endpoint="initiate_chat")
 @login_is_required
+@is_hirer
 def initiate_chat():
     user_id = session.get("google_id")
     form_data = dict(request.form)
@@ -947,9 +963,10 @@ def initiate_chat():
             "created_on": datetime.now(),
             "hirer_id": user_id,
             "candidate_id": candidate_id,
+            "job_id": job_id
             }
             connection_details_collection.insert_one(connection_details)
             candidate_job_application_collection.update_one({"user_id": candidate_id, "hirer_id": user_id, "job_id": job_id},{"$set": {"chat_initiated": True}})
         else:
             abort(500, {"message": "Either job_id or candidate_id is wrong!"})
-    return redirect(f"/chat/{candidate_id}")
+    return redirect(f"/chat/{candidate_id}/{job_id}")
