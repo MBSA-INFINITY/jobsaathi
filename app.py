@@ -941,7 +941,7 @@ def specific_chat(incoming_user_id, job_id):
             {"$project": {"_id": 0}}
         ]
         all_chats = list(chat_details_collection.aggregate(pipeline))
-        channel_id = f"{user_id}-{incoming_user_id}" if purpose == "candidate" else f"{incoming_user_id}-{user_id}"
+        channel_id = f"{user_id}-{incoming_user_id}-{job_id}" if purpose == "candidate" else f"{incoming_user_id}-{user_id}-{job_id}"
         job_details = jobs_details_collection.find_one({"job_id": job_id},{"_id": 0,"job_title": 1})
         return render_template("chatservice/message.html",incoming_user_id=incoming_user_id, purpose=purpose, all_chats=all_chats, name=name, channel_id=channel_id, job_id=job_id, job_details=job_details)
     else:
@@ -970,3 +970,5 @@ def initiate_chat():
         else:
             abort(500, {"message": "Either job_id or candidate_id is wrong!"})
     return redirect(f"/chat/{candidate_id}/{job_id}")
+
+
