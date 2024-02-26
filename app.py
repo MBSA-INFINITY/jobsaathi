@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, redirect, abort, session, fla
 from client_secret import client_secret, initial_html
 from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection, saved_jobs_collection, chat_details_collection, connection_details_collection
 from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf, outbound_messages, next_build_status, updated_build_status, text_to_html
+from jitsi import create_jwt
 import os
 from datetime import datetime
 import requests
@@ -974,17 +975,28 @@ def initiate_chat():
             abort(500, {"message": "Either job_id or candidate_id is wrong!"})
     return redirect(f"/chat/{candidate_id}/{job_id}")
     
-@app.route("/meet/<string:channel_id>", methods=['GET'])
+@app.route("/meet/<string:channel_id>", methods=['GET'], endpoint='meeting')
+@login_is_required
 def meeting(channel_id):
+    purpose = session.get("purpose")
     candidate_id, hirer_id, job_id = channel_id.split("_")
     if job_details := jobs_details_collection.find_one({"job_id": job_id}, {"_id": 0, "job_title": 1}):
-        if onboarding_details := onboarding_details_collection.find_one({"user_id": hirer_id},{"_id": 0, "company_name": 1}):
-            meet_details = {
-                "roomName": f"vpaas-magic-cookie-c1b5084297244909bc3d1d4dc2b51775/{channel_id}",
-                "jwt": "jwt",
-                "meetLink": f"http:127.0.0.1:5000/meet/{channel_id}"
-            }
-            return render_template('videoservice/main.html', meet_details=meet_details, job_details=job_details, onboarding_details=onboarding_details)
+        if purpose == "hirer":
+            if onboarding_details := onboarding_details_collection.find_one({"user_id": hirer_id},{"_id": 0}):
+                jwt = create_jwt(onboarding_details['company_name'], "mbsaiaditya@gmail.com", True)
+            else:
+                abort(500, {"message": "Inavlid Channel ID"})
+        else:
+            if onboarding_details := onboarding_details_collection.find_one({"user_id": candidate_id},{"_id": 0}):
+                jwt = create_jwt(onboarding_details['company_name'], "mbsaiaditya@gmail.com", True)
+            else:
+                abort(500, {"message": "Inavlid Channel ID"})
+        meet_details = {
+            "roomName": f"vpaas-magic-cookie-c1b5084297244909bc3d1d4dc2b51775/{channel_id}",
+            "jwt": jwt,
+            "meetLink": f"http:127.0.0.1:5000/meet/{channel_id}"
+        }
+        return render_template('videoservice/main.html', meet_details=meet_details, job_details=job_details, onboarding_details=onboarding_details)
     else:
         abort(500, {"message": "Inavlid Channel ID"})
 
