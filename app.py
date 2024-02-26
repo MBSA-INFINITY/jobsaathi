@@ -980,17 +980,19 @@ def initiate_chat():
 def meeting(channel_id):
     purpose = session.get("purpose")
     candidate_id, hirer_id, job_id = channel_id.split("_")
+    if onboarding_details := onboarding_details_collection.find_one({"user_id": hirer_id},{"_id": 0}):
+        company_name = onboarding_details.get("company_name")
+    else:
+        abort(500, {"message": "Invalid Channel ID"})
+    if onboarding_details := onboarding_details_collection.find_one({"user_id": candidate_id},{"_id": 0}):
+        candidate_name = onboarding_details.get("candidate_name")
+    else:
+        abort(500, {"message": "Invalid Channel ID"})
     if job_details := jobs_details_collection.find_one({"job_id": job_id}, {"_id": 0, "job_title": 1}):
         if purpose == "hirer":
-            if onboarding_details := onboarding_details_collection.find_one({"user_id": hirer_id},{"_id": 0}):
-                jwt = create_jwt(onboarding_details['company_name'], "mbsaiaditya@gmail.com", True)
-            else:
-                abort(500, {"message": "Inavlid Channel ID"})
+                jwt = create_jwt(company_name, "mbsaiaditya@gmail.com", True)
         else:
-            if onboarding_details := onboarding_details_collection.find_one({"user_id": candidate_id},{"_id": 0}):
-                jwt = create_jwt(onboarding_details['company_name'], "mbsaiaditya@gmail.com", True)
-            else:
-                abort(500, {"message": "Inavlid Channel ID"})
+                jwt = create_jwt(candidate_name, "mbsaiaditya@gmail.com", False)
         meet_details = {
             "roomName": f"vpaas-magic-cookie-c1b5084297244909bc3d1d4dc2b51775/{channel_id}",
             "jwt": jwt,
@@ -998,5 +1000,5 @@ def meeting(channel_id):
         }
         return render_template('videoservice/main.html', meet_details=meet_details, job_details=job_details, onboarding_details=onboarding_details)
     else:
-        abort(500, {"message": "Inavlid Channel ID"})
+        abort(500, {"message": "Invalid Channel ID"})
 
