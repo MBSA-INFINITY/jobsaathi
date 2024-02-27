@@ -980,19 +980,47 @@ def initiate_chat():
 def meeting(channel_id):
     purpose = session.get("purpose")
     candidate_id, hirer_id, job_id = channel_id.split("_")
-    if onboarding_details := onboarding_details_collection.find_one({"user_id": hirer_id},{"_id": 0}):
-        company_name = onboarding_details.get("company_name")
+    hirer_pipeline = [
+           {
+                "$match": {"user_id": hirer_id}
+            },
+         {
+                '$lookup': {
+                    'from': 'user_details', 
+                    'localField': "user_id", 
+                    'foreignField': 'user_id', 
+                    'as': "user_details"
+                }
+            }
+    ]
+    candidate_pipeline = [
+           {
+                "$match": {"user_id": candidate_id}
+            },
+         {
+                '$lookup': {
+                    'from': 'user_details', 
+                    'localField': "user_id", 
+                    'foreignField': 'user_id', 
+                    'as': "user_details"
+                }
+            }
+    ]
+    if onboarding_details := list(onboarding_details_collection.aggregate(hirer_pipeline)):
+        company_name = onboarding_details[0].get("company_name")
+        hirer_email = onboarding_details[0].get("user_details")[0]['email']
     else:
         abort(500, {"message": "Invalid Channel ID"})
-    if onboarding_details := onboarding_details_collection.find_one({"user_id": candidate_id},{"_id": 0}):
-        candidate_name = onboarding_details.get("candidate_name")
+    if onboarding_details := list(onboarding_details_collection.aggregate(candidate_pipeline)):
+        candidate_name = onboarding_details[0].get("candidate_name")
+        candidate_email = onboarding_details[0].get("user_details")[0]['email']
     else:
         abort(500, {"message": "Invalid Channel ID"})
     if job_details := jobs_details_collection.find_one({"job_id": job_id}, {"_id": 0, "job_title": 1}):
         if purpose == "hirer":
-                jwt = create_jwt(company_name, "mbsaiaditya@gmail.com", True)
+                jwt = create_jwt(company_name, hirer_email, True)
         else:
-                jwt = create_jwt(candidate_name, "mbsaiaditya@gmail.com", False)
+                jwt = create_jwt(candidate_name, candidate_email, False)
         meet_details = {
             "roomName": f"vpaas-magic-cookie-c1b5084297244909bc3d1d4dc2b51775/{channel_id}",
             "jwt": jwt,
