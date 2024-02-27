@@ -36,8 +36,10 @@
   />
     <link rel="stylesheet" href="static/new/Naya tropical/Landing Page by Nandlal/homep.css" />
     <link rel="stylesheet" href="static/new/Naya tropical/navbar/t_navbar.css">
+    <!-- <link id="pagestyle" href="static/assets/css/soft-ui-dashboard.css?v=1.0.7" rel="stylesheet" /> -->
   </head>
   <body>
+ 
 <!-- <a href="/servieces.html/servieces.html"></a> -->
 <div id="navibarr">
     <div class="t_logo"><a href="#"><img src="static/images/mbsalogo.png" alt="Error" id="mainpagepaileja" height="60" width="250"></a></div>
@@ -63,7 +65,7 @@
     
     </div>
 </div>
-<h2>What JobSaathi Offers?</h2>
+<h2 >What JobSaathi Offers?</h2>
 <div class="Firsuuiut slider">
     <div class="ROkau">
         <img src="https://static.naukimg.com/s/0/0/i/trending-naukri/remote.svg" alt="">
@@ -116,7 +118,8 @@
       <h1>Land your dream job with JobSaathi</h1>
       <p class="jaab">3 lakh+jobs for you to explore</p>
     </div>
-
+    
+    <form action="/searchJobs" style="all:unset">
     <div id="suggestionhaiya">
       <img
         src="https://static.naukimg.com/s/7/103/i/search.9ec0e1ac.svg"
@@ -131,12 +134,14 @@
           value=""
           id="skills"
           style="width: 715px;"
+          name="search"
         />
       </div>
 
       <div class="fourthh">
-        <button id="qsbSubmit" onclick="checkSubmit()">Search</button>
+        <button id="qsbSubmit" type="submit" onclick="return checkSubmit()">Search</button>
       </div>
+    </form>
     </div>
 <!-- <a href="../java.html"></a> -->
 
@@ -656,28 +661,9 @@ management company</p>
 
 </div>
 
-
-
-
-
 <div id="righpinkk"></div>
 </div>
 
-<!-- <h2>Sponsored Company</h2>
-<div id="sponsered">
-    <button class="saare">All</button>
-    <button class="sponserdbtn">IT Services</button>
-    <button class="sponserdbtn">Technology</button>
-    <button class="sponserdbtn">Manufacturing & Production</button>
-    <button class="sponserdbtn">Healthcare & Life Sciences</button>
-    <button class="sponserdbtn">BFSI</button><p>+3more</p>
-</div> -->
-
-
-
-<!------------F----------------- grid slider to be done here ------------------------ -->
-
-<!-- <div class="slidergridwala">
     <div class="Rokaugridwala">
         <div class="twoboxes">
             <div class="chotaimage">
@@ -1250,15 +1236,17 @@ function checkSubmit(){
     skills = document.getElementById("skills").value
     if(skills == ""){
         alert("Enter a skill/designation/company!")
+        return false;
     }
     else{
         // a = confirm("To access all the jobs on jobsaathi, you need to login to the portal. Do you want to proceed?")
-        window.location.href = "/searchJobs"
+        // window.location.href = "/searchJobs"
         // if (a){
         // }
         // else{
         //     return false;
         // }
+        return true
     }
 }
 //  slide2box

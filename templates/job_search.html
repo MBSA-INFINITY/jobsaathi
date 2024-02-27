@@ -15,6 +15,7 @@
 />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Satoshi">
 
   <link rel="stylesheet" href="{{url_for('static', filename='naukri/css/jobs.css')}}" />
   <link rel="stylesheet" href="{{url_for('static', filename='naukri/css/searchbar.css')}}" />
@@ -28,6 +29,7 @@
       justify-content: center;
       background-color: white;
     }
+
 
     .left {
       width: 15%;
@@ -143,9 +145,10 @@
       color: white;
     }
 
+
     .navibarr {
       margin: auto;
-      width: 90vw;
+      width: 100vw;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -156,6 +159,7 @@
       z-index: 1;
       background-color: white;
       height: 10vh;
+      font-family:Satoshi, sans-serif
 
     }
 
@@ -199,6 +203,89 @@
     -o-transition: all .3s ease-in-out; */
       box-sizing: border-box;
     }
+    .hamburger-menu {
+    display: none; /* Hide by default on larger screens */
+    cursor: pointer;
+}
+
+/* Style for each bar in the hamburger menu */
+.bar {
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    margin: 5px 0;
+}
+
+    /* Media query for smaller screens */
+@media (max-width: 790px) {
+  .hamburger-menu {
+    display: block;
+    /* margin: 22em; */
+    float: right;
+    margin-left: auto;
+    margin-right: 2rem;
+    /* justify-content: flex-end; */
+    }
+
+    .t_elements {
+        display: none; /* Hide navigation links by default on smaller screens */
+    }
+    .t_button {
+        display: none; /* Hide navigation links by default on smaller screens */
+    }
+    .t_button {
+        display: none; /* Hide navigation links by default on smaller screens */
+    }
+
+
+    .t_elements.active {
+        display: flex; /* Show navigation links when hamburger menu is clicked */
+        flex-direction: column;
+        background-color: #fff;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .t_elements.active a {
+        margin: 10px 0;
+    }
+    body{
+      font-size: x-small;
+    }
+    #main{
+      width: 100vw;
+      margin: 0px auto;
+    }
+
+    #jobCardsContainer{
+      width: 67vw;
+    }
+    #filterContainer{
+      width: 17vw;
+      margin: 0 0;
+    }
+    #filterContainer > div{
+      width: 30vw;
+    }
+    #featured{
+      display: none;
+    }
+    #searchalljobs{
+      margin-top: 10px;
+      width: 50vw
+    }
+    .card{
+      width: 54vw;
+    }
+  
+}
+
+
   </style>
 </head>
 
@@ -226,6 +313,11 @@
 
       </ul>
     </div>
+    <div class="hamburger-menu">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+  </div>
     <div class="t_button">
       <a href="/login"><button class="t_button_1">Login</button></a>
       <a href="/signup"><button class="t_button_2">Register</button></a>
@@ -239,7 +331,7 @@
   <div id="main">
     <div id="filterContainer">
       <div>
-        <div id="form-header" class="d-flex jc-sb">
+        <div id="form-header" class="d-flex jc-sb" style="border-radius: 15px;border: 1px solid #ebecef;">
           <p class="bold-font">
             <img src="icons/filter_list.png" alt="" id="filter-icon" /> All
             Filters
@@ -251,7 +343,7 @@
 
 
           <!-- salary filters -->
-          <div class="form-group" id="salaryFilterContainer">
+          <div class="form-group" id="salaryFilterContainer"  style="border-radius: 15px;border: 1px solid #ebecef;">
             <div class="d-flex jc-sb">
               <p class="bold-font">Job Type</p>
               <!-- <i class="fas fa-chevron-down"></i> -->
@@ -283,7 +375,7 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group"  style="border-radius: 15px;border: 1px solid #ebecef;">
             <p class="bold-font">Experience Level</p>
             <div class="d-flex col" id="locationsFilter">
               <div>
@@ -316,10 +408,15 @@
     <div>
       <!-- <div id="statistics">placeholder</div> -->
       <div id="jobCardsContainer">
+        <input type="text" style="width: 90% ; height:4vh; border-radius: 15px; border: none; padding: 0 10px;"  placeholder="Search by title/designation/company" id="searchalljobs">
         {% for job in all_jobs %}
-        <div class="card" id="{{job['job_id']}}">
+        <div class="card" id="{{job['job_id']}}" style="display: block;border-radius: 20px; margin-top: 1.2rem;">
           <input type="hidden" name="Any All">
-          <h4>{{job['job_title']}}</h4>
+          {% if logged_in %}
+            <a href="/apply/job/{{job['job_id']}}" style="text-decoration: none;color: black;"><h4>{{job['job_title']}}</h4></a>
+          {% else %}
+          <a href="/signup" style="text-decoration: none;color: black;"><h4>{{job['job_title']}}</h4></a>
+          {% endif %}
           <div class="med-font d-flex">
             <p>{{job['company_name']}} </p>
             <p></p>
@@ -433,7 +530,16 @@
       }
         attachCheckboxEventListener();
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const hamburgerMenu = document.querySelector('.hamburger-menu');
+    const navElements = document.querySelector('.t_elements');
 
+    hamburgerMenu.addEventListener('click', function() {
+        navElements.classList.toggle('active');
+    });
+});
+ </script>
  
 </body>
 
