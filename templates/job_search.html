@@ -448,18 +448,21 @@
       </div>
     </div>
     <div id="featured">
-      <div id="recmd-reg">
-        <div class="d-flex">
-          <h4>Get Personalised Job Recommendations using Our AI</h4>
+      <div id="recmd-reg" style="border-radius: 20px;">
+        <div class="d-flex" >
+          <h4>Use our AI to build your resume in seconds.</h4>
           <img src="https://static.naukri.com/s/7/109/assets/images/register.e0bc10df.png" alt="" height="60px" />
         </div>
         <p>
-          Registreing gives you the benefit to browse & apply variety of jobs
-          based on your preferences
+          Click on the button below and access our revolutionary chatbot called "Billbot" to build resume using normal chats.
         </p>
-        <button><a href="/signup" style="text-decoration: none;color: white;">Registrer Now</a></button>
+        {% if logged_in %}
+        <button style="border-radius: 20px;"><a href="/billbot" style="text-decoration: none;color: white;">BillBot</a></button>
+        {% else %}
+        <button style="border-radius: 20px;"><a href="/signup" style="text-decoration: none;color: white;">BillBot</a></button>
+        {% endif %}
       </div>
-      <div id="featured-comp">
+      <div id="featured-comp" style="border-radius: 20px;">
         <h4>See 232 jobs in Featured Companies</h4>
         <div id="company-container">
           <img src="https://img.naukri.com/fc_images/v2/18166.gif">

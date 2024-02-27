@@ -481,6 +481,7 @@ def logout():
     return redirect("/")
 
 @app.route("/billbot", methods = ['GET', 'POST'], endpoint='chatbot')
+@login_is_required
 @is_candidate
 def chatbot():
     user_id = session.get("google_id")
