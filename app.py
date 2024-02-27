@@ -111,13 +111,39 @@ def start():
     
 @app.route("/searchJobs",methods = ['GET'])   
 def search_jobs():
+    searched_for = request.args.get("search")
     logged_in = True
     if session.get('google_id') is None:
         logged_in = False
     if logged_in:
         return redirect("/dashboard")
+    # pipeline = [
+    #     {
+    #         '$lookup': {
+    #             'from': 'jobs_details', 
+    #             'localField': 'job_id', 
+    #             'foreignField': 'job_id', 
+    #             'as': 'job_details'
+    #         }
+    #     }, 
+    #     {
+    #         '$project': {
+    #             '_id': 0,
+    #             'job_details._id': 0
+    #         }
+    #     }
+    # ]
     pipeline = [
         {
+            "$match": {
+                "$or": [
+                    {"job_title": {"$regex": searched_for, "$options": "i"}},
+                    {"job_description": {"$regex": searched_for, "$options": "i"}},
+                    {"job_type": {"$regex": searched_for, "$options": "i"}}
+                ]
+            }
+        },
+         {
             '$lookup': {
                 'from': 'jobs_details', 
                 'localField': 'job_id', 
@@ -132,6 +158,7 @@ def search_jobs():
             }
         }
     ]
+    
     all_jobs = list(jobs_details_collection.aggregate(pipeline))
     return render_template('job_search.html', all_jobs=all_jobs, logged_in=logged_in)
 

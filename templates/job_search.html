@@ -408,7 +408,10 @@
     <div>
       <!-- <div id="statistics">placeholder</div> -->
       <div id="jobCardsContainer">
-        <input type="text" style="width: 90% ; height:4vh; border-radius: 15px; border: none; padding: 0 10px;"  placeholder="Search by title/designation/company" id="searchalljobs">
+        <form action="/searchJobs" style="all:unset">
+        <input type="text" style="width: 90% ; height:4vh; border-radius: 15px; border: none; padding: 0 10px;"  placeholder="Search by title/designation/company" id="searchalljobs" name="search">
+        </form>
+        {% if all_jobs!= [] %}
         {% for job in all_jobs %}
         <div class="card" id="{{job['job_id']}}" style="display: block;border-radius: 20px; margin-top: 1.2rem;">
           <input type="hidden" name="Any All">
@@ -439,6 +442,9 @@
           </div>
         </div>
         {% endfor %}
+        {% else %}
+        <p style="text-align: center;">No results</p>
+        {% endif %}
       </div>
     </div>
     <div id="featured">
