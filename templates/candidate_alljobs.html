@@ -313,10 +313,46 @@
     display: none;
   }
   
-}
-
-
-    
+} 
+  </style>
+<style>
+  .pagination {
+    display: flex;
+    overflow-x: auto;
+  }
+  
+  .pagination a {
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  
+  .pagination a.active {
+    background-color: orange;
+    color: white;
+    border-radius: 5px;
+  }
+  
+  .pagination a:hover:not(.active) {
+    background-color: #ddd;
+    border-radius: 5px;
+  }
+  
+  .pagination::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .pagination-container {
+    width: 90%;
+    display: flex;
+    align-items: center;
+  }
+  
+  .arrow {
+    cursor: pointer;
+    padding: 8px;
+  }
   </style>
 </head>
 
@@ -486,6 +522,22 @@
           </div> 
         </div>
         {% endfor %}
+
+      <center>
+        <div class="pagination-container" style="margin-top: 17px;">
+          <div class="arrow" id="leftArrow">&laquo;</div>
+          <div class="pagination">
+            {% for num in range(total_pages) %}
+            {% if page_number == num+1 %}
+            <a href="/alljobs?pageno={{page_number}}" class="active">{{num+1}}</a>
+            {% else %}
+            <a href="/alljobs?pageno={{num+1}}">{{num+1}}</a>
+            {% endif %}
+            {% endfor %}
+          </div>
+          <div class="arrow" id="rightArrow">&raquo;</div>
+        </div>
+      </center>
       </div>
     </div>
     <div id="featured">
@@ -760,6 +812,38 @@ body {
     });
 });
  </script>
+ <script>
+  const paginationContainer = document.querySelector('.pagination');
+  const leftArrow = document.getElementById('leftArrow');
+  const rightArrow = document.getElementById('rightArrow');
+
+  leftArrow.addEventListener('click', () => {
+    paginationContainer.scrollBy({
+      left: -100,
+      behavior: 'smooth'
+    });
+  });
+
+  rightArrow.addEventListener('click', () => {
+    paginationContainer.scrollBy({
+      left: 100,
+      behavior: 'smooth'
+    });
+  });
+  function bringActiveIntoView() {
+    const activeElement = document.querySelector('.pagination a.active');
+    if (activeElement) {
+      activeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
+      });
+    }
+  }
+
+  // Call the function initially and on window resize
+  bringActiveIntoView();
+  window.addEventListener('resize', bringActiveIntoView);
+</script>
 </body>
 
 <!-- <script src="{{url_for('static', filename='naukri/js/jobData.js')}}"></script>

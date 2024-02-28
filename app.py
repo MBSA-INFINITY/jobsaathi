@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret, initial_html
 from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection, saved_jobs_collection, chat_details_collection, connection_details_collection
-from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf, outbound_messages, next_build_status, updated_build_status, text_to_html
+from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf, outbound_messages, next_build_status, updated_build_status, text_to_html, calculate_total_pages
 from jitsi import create_jwt
 import os
 from datetime import datetime
@@ -185,6 +185,14 @@ def alljobs():
     resume_built = onboarding_details.get("resume_built")
     if not resume_built: 
         return redirect("/billbot")
+    pageno = request.args.get("pageno")
+    page_number = 1  # The page number you want to retrieve
+    if pageno is not None:
+        page_number = int(pageno)
+    page_size = 7   # Number of documents per page
+    total_elements = len(list(jobs_details_collection.find({},{"_id": 0})))
+    total_pages = calculate_total_pages(total_elements, page_size)
+    skip = (page_number - 1) * page_size
     pipeline = [
         {
             '$lookup': {
@@ -207,11 +215,13 @@ def alljobs():
                 '_id': 0,
                 'job_details._id': 0
             }
-        }
+        },
+        {"$skip": skip},  # Skip documents based on the calculated skip value
+        {"$limit": page_size}  # Limit the number of documents per page
     ]
     all_jobs = list(jobs_details_collection.aggregate(pipeline))
     # return all_applied_jobs
-    return render_template('candidate_alljobs.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+    return render_template('candidate_alljobs.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs, total_pages=total_pages,page_number=page_number)
 
 
 @app.route("/dashboard", methods = ['GET'], endpoint='dashboard')
@@ -252,6 +262,32 @@ def dashboard():
             regex_patterns.append(skill_pattern)
         regex_pattern = '|'.join(regex_patterns)
         print(regex_pattern)
+        length_pipeline = [
+                 {
+        '$match': {
+            'status': 'published',
+               '$or': [
+                {'job_title': {'$regex': regex_pattern, '$options': 'i'}},
+                {'job_description': {'$regex': regex_pattern, '$options': 'i'}},
+                {'job_topics': {'$regex': regex_pattern, '$options': 'i'}},
+            ]
+        }
+    }, 
+            {
+                '$project': {
+                    '_id': 0
+                }
+            }
+        ]
+
+        pageno = request.args.get("pageno")
+        page_number = 1  # The page number you want to retrieve
+        if pageno is not None:
+            page_number = int(pageno)
+        page_size = 7   # Number of documents per page
+        total_elements = len(list(jobs_details_collection.aggregate(length_pipeline)))
+        total_pages = calculate_total_pages(total_elements, page_size)
+        skip = (page_number - 1) * page_size
         pipeline = [
                  {
         '$match': {
@@ -283,8 +319,11 @@ def dashboard():
                 '$project': {
                     '_id': 0
                 }
-            }
+            },
+        {"$skip": skip},  # Skip documents based on the calculated skip value
+        {"$limit": page_size}  # Limit the number of documents per page
         ]
+
         all_jobs = list(jobs_details_collection.aggregate(pipeline))
         all_updated_jobs = []
         for idx, job in enumerate(all_jobs):
@@ -293,7 +332,7 @@ def dashboard():
             else:
                 all_updated_jobs.append(job)
         profile_details = profile_details_collection.find_one({"user_id": user_id},{"_id": 0})
-        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_updated_jobs, profile_details=profile_details)
+        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_updated_jobs, profile_details=profile_details, total_pages=total_pages, page_number=page_number)
     
 @app.route("/applied_jobs", methods = ['GET'], endpoint='applied_jobs')
 @login_is_required
@@ -308,6 +347,22 @@ def applied_jobs():
     resume_built = onboarding_details.get("resume_built")
     if not resume_built: 
         return redirect("/billbot")
+    pageno = request.args.get("pageno")
+    page_number = 1  # The page number you want to retrieve
+    if pageno is not None:
+        page_number = int(pageno)
+    page_size = 7   # Number of documents per page
+    length_pipeline = [
+                {"$match": {"user_id": user_id}},
+        {
+            '$project': {
+                '_id': 0
+            }
+        }
+    ]
+    total_elements = len(list(candidate_job_application_collection.aggregate(length_pipeline)))
+    total_pages = calculate_total_pages(total_elements, page_size)
+    skip = (page_number - 1) * page_size
     pipeline = [
                 {"$match": {"user_id": user_id}},
         {
@@ -332,11 +387,13 @@ def applied_jobs():
                 'job_details._id': 0,
                 'user_details._id': 0
             }
-        }
+        },
+        {"$skip": skip},  # Skip documents based on the calculated skip value
+        {"$limit": page_size}  # Limit the number of documents per page
     ]
     all_applied_jobs = list(candidate_job_application_collection.aggregate(pipeline))
     # return all_applied_jobs
-    return render_template('applied_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_applied_jobs=all_applied_jobs)
+    return render_template('applied_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_applied_jobs=all_applied_jobs, total_pages=total_pages, page_number=page_number)
 
 @app.route("/saved_jobs", methods = ['GET', 'POST'], endpoint='saved_jobs')
 @login_is_required
@@ -353,6 +410,22 @@ def saved_jobs():
     resume_built = onboarding_details.get("resume_built")
     if not resume_built: 
         return redirect("/billbot")
+    pageno = request.args.get("pageno")
+    page_number = 1  # The page number you want to retrieve
+    if pageno is not None:
+        page_number = int(pageno)
+    page_size = 7   # Number of documents per page
+    length_pipeline = [
+                    {"$match": {"user_id": user_id}},
+            {
+                '$project': {
+                    '_id': 0
+                }
+            }
+        ]
+    total_elements = len(list(saved_jobs_collection.aggregate(length_pipeline)))
+    total_pages = calculate_total_pages(total_elements, page_size)
+    skip = (page_number - 1) * page_size
     pipeline = [
                     {"$match": {"user_id": user_id}},
             {
@@ -377,11 +450,13 @@ def saved_jobs():
                     'job_details._id': 0,
                     'user_details._id': 0
                 }
-            }
+            },
+            {"$skip": skip},  # Skip documents based on the calculated skip value
+        {"$limit": page_size}  # Limit the number of documents per page
         ]
     all_saved_jobs = list(saved_jobs_collection.aggregate(pipeline))
     # return all_applied_jobs
-    return render_template('saved_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_saved_jobs=all_saved_jobs)
+    return render_template('saved_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_saved_jobs=all_saved_jobs,total_pages=total_pages, page_number=page_number)
 
 
 @app.route("/profile", methods=['GET', 'POST'], endpoint='profile_update')

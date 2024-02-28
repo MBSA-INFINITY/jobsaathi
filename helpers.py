@@ -8,6 +8,7 @@ import os
 import json
 from firebase import Firebase
 from PyPDF2 import PdfReader 
+import math
 
 firebaseConfig = {
   "apiKey": os.environ.get("FIREBASE_APIKEY"),
@@ -142,3 +143,8 @@ def text_to_html(text):
   url_regex = r"(http|https):\/\/(\w+\.)+\w{2,}(?:\/\S+)?/"
   # Replace URLs with anchor tags
   return re.sub(url_regex, lambda match: f'<a href="{match.group(0)}" target="_blank">{match.group(0)}</a>', text)
+
+
+
+def calculate_total_pages(total_elements, page_size):
+    return math.ceil(total_elements / page_size)
