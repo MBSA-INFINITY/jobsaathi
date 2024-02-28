@@ -38,7 +38,45 @@
   <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
   <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
 </head>
-
+<style>
+  .pagination {
+    display: flex;
+    overflow-x: auto;
+  }
+  
+  .pagination a {
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  
+  .pagination a.active {
+    background-image: linear-gradient(310deg, #7928CA 0%, #FF0080 100%);
+    color: white;
+    border-radius: 5px;
+  }
+  
+  .pagination a:hover:not(.active) {
+    background-color: #ddd;
+    border-radius: 5px;
+  }
+  
+  .pagination::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .pagination-container {
+    width: 50%;
+    display: flex;
+    align-items: center;
+  }
+  
+  .arrow {
+    cursor: pointer;
+    padding: 8px;
+  }
+  </style>
 <body class="g-sidenav-show  bg-gray-100">
   <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-white" id="sidenav-main">
     <div class="sidenav-header">
@@ -405,6 +443,21 @@
                     {% endfor %}
                   </tbody>
                 </table>
+                <center>
+                  <div class="pagination-container" style="margin-top: 17px;">
+                    <div class="arrow" id="leftArrow">&laquo;</div>
+                    <div class="pagination">
+                      {% for num in range(total_pages) %}
+                      {% if page_number == num+1 %}
+                      <a href="/dashboard?pageno={{page_number}}" class="active">{{num+1}}</a>
+                      {% else %}
+                      <a href="/dashboard?pageno={{num+1}}">{{num+1}}</a>
+                      {% endif %}
+                      {% endfor %}
+                    </div>
+                    <div class="arrow" id="rightArrow">&raquo;</div>
+                  </div>
+                </center>
                 {% else %}
                 <h6 class="text-muted text-center">No Jobs created! Click on Create Job and get the top talents around the world.</h6>
                 {% endif %}
@@ -426,6 +479,40 @@
       </footer>
     </div>
   </main>
+  <script>
+    const paginationContainer = document.querySelector('.pagination');
+    const leftArrow = document.getElementById('leftArrow');
+    const rightArrow = document.getElementById('rightArrow');
+  
+    leftArrow.addEventListener('click', () => {
+      paginationContainer.scrollBy({
+        left: -100,
+        behavior: 'smooth'
+      });
+    });
+  
+    rightArrow.addEventListener('click', () => {
+      paginationContainer.scrollBy({
+        left: 100,
+        behavior: 'smooth'
+      });
+    });
+    function bringActiveIntoView() {
+      const activeElement = document.querySelector('.pagination a.active');
+      if (activeElement) {
+        activeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest'
+        });
+      }
+    }
+    setTimeout(()=>{
+
+      bringActiveIntoView()
+    }, 1000)
+    // Call the function initially and on window resize
+    window.addEventListener('resize', bringActiveIntoView);
+  </script>
   <script>
     const remote_job = document.getElementById('remote_job');
   const onsite_job = document.getElementById('onsite_job');
@@ -478,6 +565,7 @@
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
   </script>
+  
   <!-- Github buttons -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->

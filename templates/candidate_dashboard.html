@@ -811,7 +811,38 @@
     });
 });
  </script>
- 
+  <script>
+    const paginationContainer = document.querySelector('.pagination');
+    const leftArrow = document.getElementById('leftArrow');
+    const rightArrow = document.getElementById('rightArrow');
+  
+    leftArrow.addEventListener('click', () => {
+      paginationContainer.scrollBy({
+        left: -100,
+        behavior: 'smooth'
+      });
+    });
+  
+    rightArrow.addEventListener('click', () => {
+      paginationContainer.scrollBy({
+        left: 100,
+        behavior: 'smooth'
+      });
+    });
+    function bringActiveIntoView() {
+      const activeElement = document.querySelector('.pagination a.active');
+      if (activeElement) {
+        activeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest'
+        });
+      }
+    }
+  
+    // Call the function initially and on window resize
+    bringActiveIntoView();
+    window.addEventListener('resize', bringActiveIntoView);
+  </script>
 </body>
 
 <!-- <script src="{{url_for('static', filename='naukri/js/jobData.js')}}"></script>

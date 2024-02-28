@@ -238,7 +238,25 @@ def dashboard():
     if purpose == 'hirer':
         approved_by_admin = onboarding_details.get('approved_by_admin')
         if approved_by_admin:
-            all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
+            pageno = request.args.get("pageno")
+            page_number = 1  # The page number you want to retrieve
+            if pageno is not None:
+                page_number = int(pageno)
+            page_size = 7   # Number of documents per page
+            total_elements = len(list(jobs_details_collection.find({"user_id": user_id},{"_id": 0})))
+            total_pages = calculate_total_pages(total_elements, page_size)
+            skip = (page_number - 1) * page_size
+            pipeline = [
+                   {'$match': {"user_id": user_id} },
+                    {
+                        '$project': {
+                            '_id': 0,
+                        }
+                    },
+                    {"$skip": skip},  # Skip documents based on the calculated skip value
+                    {"$limit": page_size}  # Limit the number of documents per page
+                ]
+            all_jobs = list(jobs_details_collection.aggregate(pipeline))
             all_published_jobs = list(jobs_details_collection.find({"user_id": user_id, "status":"published"},{"_id": 0}))
             total_selected_candidates = list(candidate_job_application_collection.find({"hirer_id": user_id, "status":"Accepted"},{"_id": 0}))
             stats = {
@@ -246,7 +264,7 @@ def dashboard():
                 "total_published_jobs" : len(all_published_jobs),
                 "total_selected_candidates" : len(total_selected_candidates)
             }
-            return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs, stats=stats)
+            return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs, stats=stats, total_pages=total_pages, page_number=page_number)
         else:
             return render_template('admin_approval_pending.html')
     else:
