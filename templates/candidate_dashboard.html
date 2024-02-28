@@ -234,7 +234,9 @@
     background-color: #333;
     margin: 5px 0;
 }
-
+#chatsicon-mob{
+  display: none;
+}
 /* Media query for smaller screens */
 @media (max-width: 790px) {
   .hamburger-menu {
@@ -301,6 +303,12 @@
     .card{
       width: 54vw;
     }
+    #chatsicon-mob{
+    display: block;
+  }
+    #chatsicon-desk{
+    display: none;
+  }
   
 }
 
@@ -308,7 +316,7 @@
 </head>
 
 <body>
-  <div class="navibarr" style="border-radius: 10px">
+  <div class="navibarr">
     <div class="t_logo"><a href="/"><img src="static/images/mbsalogo.png" alt="Error" id="mainpagepaileja" height="60"
           width="250"></a></div>
     <div class="t_elements">
@@ -338,10 +346,16 @@
             <p style="margin-right: 20px;font-size: 14px;text-decoration: none;" id="t_h3_J">Profile</p>
           </a>
         </li>
-        <li class="t_elements_li">
+        <li class="t_elements_li" id="chatsicon-mob">
           <a href="/chats" class="t_anchor_tag t_h3_J">
             <p style="margin-right: 20px;font-size: 14px;text-decoration: none;" id="t_h3_J">Chats</p>
           </a>
+        </li>
+        <li style="margin-left: 200px" id="chatsicon-desk">
+          <a class="dropbtn" href="/chats"
+          ><i class="far fa-bell fa-2x"></i
+          ><span class="badge">3</span></a
+        >
         </li>
       </ul>
     </div>
@@ -497,6 +511,101 @@
       </div>
     </div>
   </div>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    
+    .footer {
+      background-color: #333;
+      color: #fff;
+      padding: 20px 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    
+    .footer-section {
+      flex: 1;
+      margin: 0 10px;
+    }
+    
+    .footer-section h3 {
+      margin-top: 0;
+    }
+    
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .footer-section ul li {
+      margin-bottom: 5px;
+    }
+    
+    .footer-section ul li a {
+      color: #fff;
+      text-decoration: none;
+    }
+    
+    /* Media Query for responsiveness */
+    @media (max-width: 768px) {
+      .footer-section {
+        flex-basis: 100%;
+        margin: 10px 0;
+      }
+    }
+    
+      </style>
+      <footer class="footer" style="margin-top: 10px;">
+        <div class="container">
+          <div class="footer-content">
+            <div class="footer-section">
+              <h3>Contact Us</h3>
+              <p>Email: <a href="mailto:contact@example.com" style="color: white;">contact@example.com</a></p>
+              <p>Phone: <a href="tel:7974378884" style="color: white;">7974378884</a></p>
+            </div>
+            <div class="footer-section">
+              <h3>Important Links</h3>
+              <ul>
+                <li><a href="/about-us" >About Us</a></li>
+                <li><a href="/services" >Services</a></li>
+                <li><a href="/faqs" >FAQs</a></li>
+              </ul>
+            </div>
+            <div class="footer-section">
+              <h3>Follow Us</h3>
+              <ul>
+                <li><a href="/facebook">Facebook</a></li>
+                <li><a href="/facebook">Twitter</a></li>
+                <li><a href="/facebook">Instagram</a></li>
+              </ul>
+            </div>
+            <div class="footer-section">
+              <h3>Checkout our apps</h3>
+              <div>
+                <img src="https://static.naukimg.com/s/0/0/i/new-homepage/android-app.png" alt="">
+            </div>
+            <div>
+                <img src="https://static.naukimg.com/s/0/0/i/new-homepage/ios-app.png" alt="">
+            </div>
+            </div>
+          </div>
+        </div>
+      </footer>
 <script>
           document.getElementById("searchalljobs").addEventListener('input', function(event){
             // alert(event.target.value)
