@@ -139,7 +139,8 @@ def search_jobs():
                 "$or": [
                     {"job_title": {"$regex": searched_for, "$options": "i"}},
                     {"job_description": {"$regex": searched_for, "$options": "i"}},
-                    {"job_type": {"$regex": searched_for, "$options": "i"}}
+                    {"job_type": {"$regex": searched_for, "$options": "i"}},
+                    {"job_topics": {"$regex": searched_for, "$options": "i"}}
                 ]
             }
         },
@@ -698,6 +699,7 @@ def onboarding():
                     purpose = onboarding_details.get("purpose")
                     session['purpose'] = purpose
                     data = {"onboarded": True}
+                    onboarding_details['status'] = "active"
                     if purpose and purpose == "candidate":
                         onboarding_details['phase'] = "1"
                         onboarding_details['build_status'] = "introduction"
