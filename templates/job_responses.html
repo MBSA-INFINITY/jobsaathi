@@ -40,7 +40,45 @@
   <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
   <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
 </head>
-
+<style>
+  .pagination {
+    display: flex;
+    overflow-x: auto;
+  }
+  
+  .pagination a {
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  
+  .pagination a.active {
+    background-image: linear-gradient(310deg, #7928CA 0%, #FF0080 100%);
+    color: white;
+    border-radius: 5px;
+  }
+  
+  .pagination a:hover:not(.active) {
+    background-color: #ddd;
+    border-radius: 5px;
+  }
+  
+  .pagination::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .pagination-container {
+    width: 50%;
+    display: flex;
+    align-items: center;
+  }
+  
+  .arrow {
+    cursor: pointer;
+    padding: 8px;
+  }
+  </style>
 <body class="g-sidenav-show  bg-gray-100">
   <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-white" id="sidenav-main">
     <div class="sidenav-header">
@@ -160,6 +198,7 @@
             </div>
             <div class="card-body px-0 pt-0 pb-2">
               <div class="table-responsive p-0">
+                {% if all_responses!=[] %}
                 <table class="table align-items-center mb-0">
                     <thead>
                       <tr>
@@ -172,7 +211,7 @@
                         <!-- <th class="text-secondary opacity-7"></th> -->
                       </tr>
                     </thead>
-                    {% if all_responses!=[] %}
+                    
                     <tbody>
                         {% for responses in all_responses %}
                       <tr>
@@ -245,12 +284,29 @@
                     </tbody>
                     {% else %}
                     <p class="text-center">No Responses</p>
-                    {% endif %}
                   </table>
-              </div>
+      
+                  {% endif %}
+                    <div class="pagination-container" style="margin-top: 17px;">
+                      <div class="arrow" id="leftArrow">&laquo;</div>
+                      <div class="pagination">
+                        {% for num in range(total_pages) %}
+                        {% if page_number == num+1 %}
+                        <a href="/responses/job/{{job_id}}?pageno={{page_number}}" class="active">{{num+1}}</a>
+                        {% else %}
+                        <a href="/responses/job/{{job_id}}?pageno={{num+1}}">{{num+1}}</a>
+                        {% endif %}
+                        {% endfor %}
+                      </div>
+                      <div class="arrow" id="rightArrow">&raquo;</div>
+                    </div>
+                </div>
+              
             </div>
+      
           </div>
         </div>
+      
       </div>
 
       <footer class="footer pt-3  ">

@@ -963,7 +963,16 @@ def change_job_status(candidate_user_id):
 @is_hirer
 @is_onboarded
 def job_responses(job_id):
-    pipeline = [
+    if job_details := jobs_details_collection.find_one({"job_id": job_id},{"_id": 0, "job_title" :1, "mode_of_work": 1}):
+        pageno = request.args.get("pageno")
+        page_number = 1  # The page number you want to retrieve
+        if pageno is not None:
+            page_number = int(pageno)
+        page_size = 7   # Number of documents per page
+        total_elements = len(list(candidate_job_application_collection.find({"job_id": job_id})))
+        total_pages = calculate_total_pages(total_elements, page_size)
+        skip = (page_number - 1) * page_size
+        pipeline = [
             {
                 "$match": {"job_id": job_id}
             },
@@ -988,12 +997,13 @@ def job_responses(job_id):
             '_id': 0, 
             'user_details._id': 0,
             'candidate_details._id': 0,
-        }
-    }
+        },
+    },
+        {"$skip": skip},  # Skip documents based on the calculated skip value
+        {"$limit": page_size}  # Limit the number of documents per page
         ]
-    if job_details := jobs_details_collection.find_one({"job_id": job_id},{"_id": 0, "job_title" :1, "mode_of_work": 1}):
         all_responses = list(candidate_job_application_collection.aggregate(pipeline))
-        return render_template("job_responses.html", job_id=job_id, all_responses=all_responses, job_details=job_details)
+        return render_template("job_responses.html", job_id=job_id, all_responses=all_responses, job_details=job_details, total_pages=total_pages, page_number=page_number)
     
 
 @app.route("/chats", methods=['GET'], endpoint='all_chats')
