@@ -156,7 +156,7 @@
 
     .navibarr {
       margin: auto;
-      width: 90vw;
+      width: 100vw;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -167,7 +167,7 @@
       z-index: 1;
       background-color: white;
       height: 10vh;
-      margin-top: 15px;
+      font-family:Satoshi, sans-serif
 
     }
 
@@ -214,7 +214,7 @@
     .t_h3_J {
       font-size: 15px;
       line-height: 20px;
-      color: #8C9CBB;
+      color: #4a4f59;
       font-weight: 500;
       font-weight: lighter;
 
@@ -240,7 +240,9 @@
 #jobCardsContainer{
       width: 100%;
     }
-
+    #chatsicon-mob{
+  display: none;
+}
 /* Media query for smaller screens */
 @media (max-width: 790px) {
     .hamburger-menu {
@@ -248,7 +250,7 @@
     /* margin: 22em; */
     float: right;
     margin-left: auto;
-    margin-right: 1rem;
+    margin-right: 2rem;
     /* justify-content: flex-end; */
     }
 
@@ -288,7 +290,12 @@
     #main{
       width: 100vw;
     }
- 
+    #chatsicon-mob{
+    display: block;
+  }
+    #chatsicon-desk{
+    display: none;
+  }
 }
 
 
@@ -297,7 +304,7 @@
 </head>
 
 <body>
-  <div class="navibarr" style="border-radius: 10px">
+  <div class="navibarr">
     <div class="t_logo"><a href="/"><img src="static/images/mbsalogo.png" alt="Error" id="mainpagepaileja" height="60"
           width="250"></a></div>
     <div class="t_elements">
@@ -327,6 +334,16 @@
             <h3 style="margin-right: 20px;font-size: 14px;text-decoration: none;" id="t_h3_J"><u>Profile</u></h3>
           </a>
         </li>
+        <li class="t_elements_li" id="chatsicon-mob">
+          <a href="/chats" class="t_anchor_tag t_h3_J">
+            <p style="margin-right: 20px;font-size: 14px;text-decoration: none;" id="t_h3_J">Chats</p>
+          </a>
+        </li>
+        <li style="margin-left: 200px" id="chatsicon-desk">
+          <a class="dropbtn" href="/chats"
+          ><i class="far fa-bell fa-2x"></i
+          ><span class="badge">3</span></a
+        >
 
       </ul>
     </div>
@@ -350,7 +367,7 @@
     <div>
       <!-- <div id="statistics">placeholder</div> -->
       <div id="jobCardsContainer">
-        <div class="card" id="" style="display: block;">
+        <div class="card" id="" style="display: block;border-radius: 20px;">
           {% if 'profile_pic' in profile_details %}
           <img src="{{profile_details['profile_pic']}}" alt="" width="140" height="140" class="bd-placeholder-img rounded-circle my-3" id="profile_pic_link">
           {% endif %}
@@ -437,6 +454,17 @@
   </div>
 </div>
 <hr>
+<h6 class="my-3">Update Resume</h6>
+{% if 'resume_link' in profile_details %}
+<a href="{{profile_details['resume_link']}}" class="mb-2" target="_blank">Current Resume</a>
+{% endif %}
+<form action="/update_resume" method="post" enctype="multipart/form-data" onsubmit="return updateResume()">
+  <input type="file" id="resume" name="resume" accept=".pdf" required style="font-size: 0.7em;">
+  <br>
+  <br>
+  <button class="btn btn-primary" type="submit">Upload</button>
+</form>
+<hr>
 <h6 class="my-3">Candidate's Intro Video</h6>
 <form action="/upload_intro_candidate" method="post" enctype="multipart/form-data" onsubmit="return uploadIntroVideo()">
   <input type="file" id="videoInput" name="intro_video" accept="video/*" required style="font-size: 0.7em;">
@@ -450,22 +478,24 @@
   </video> <br>
   <button class="btn btn-primary" type="submit">Upload</button>
 </form>
+
+
         </div>
       </div>
     </div>
   </div>
   <div id="featured">
-    <div id="recmd-reg" style="border-radius: 10px;">
+    <div id="recmd-reg" style="border-radius: 20px;">
       <div class="d-flex" >
-        <h4>Use our AI to build your resume in seconds.</h4>
+        <h4>Checkout your public profile</h4>
         <img src="https://static.naukri.com/s/7/109/assets/images/register.e0bc10df.png" alt="" height="60px" />
       </div>
       <p>
-        Click on the button below and access our revolutionary chatbot called "Billbot" to build resume using normal chats.
+        Click on the button below and access our public profile to checkout how interviewers will see your profile.
       </p>
-      <button><a href="/billbot" style="text-decoration: none;color: white;">BillBot</a></button>
+      <button style="border-radius: 20px;"><a href="/public/candidate/{{user_id}}" style="text-decoration: none;color: white;">My Public Profile </a></button>
     </div>
-    <div id="featured-comp" style="border-radius: 10px;">
+    <div id="featured-comp" style="border-radius: 20px;">
       <h4>See 232 jobs in Featured Companies</h4>
       <div id="company-container">
         <img src="https://img.naukri.com/fc_images/v2/18166.gif">
@@ -478,7 +508,101 @@
     </div>
   </div>
   </div>
-
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    
+    .footer {
+      background-color: #333;
+      color: #fff;
+      padding: 20px 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    
+    .footer-section {
+      flex: 1;
+      margin: 0 10px;
+    }
+    
+    .footer-section h3 {
+      margin-top: 0;
+    }
+    
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .footer-section ul li {
+      margin-bottom: 5px;
+    }
+    
+    .footer-section ul li a {
+      color: #fff;
+      text-decoration: none;
+    }
+    
+    /* Media Query for responsiveness */
+    @media (max-width: 768px) {
+      .footer-section {
+        flex-basis: 100%;
+        margin: 10px 0;
+      }
+    }
+    
+      </style>
+      <footer class="footer" style="margin-top: 10px; font-size: medium;">
+        <div class="container">
+          <div class="footer-content">
+            <div class="footer-section">
+              <h5>Contact Us</h5>
+              <p>Email: <a href="mailto:contact@example.com" style="color: white;">contact@example.com</a></p>
+              <p>Phone: <a href="tel:7974378884" style="color: white;">7974378884</a></p>
+            </div>
+            <div class="footer-section">
+              <h5>Important Links</h5>
+              <ul>
+                <li><a href="/about-us" >About Us</a></li>
+                <li><a href="/services" >Services</a></li>
+                <li><a href="/faqs" >FAQs</a></li>
+              </ul>
+            </div>
+            <div class="footer-section">
+              <h5>Follow Us</h5>
+              <ul>
+                <li><a href="/facebook">Facebook</a></li>
+                <li><a href="/facebook">Twitter</a></li>
+                <li><a href="/facebook">Instagram</a></li>
+              </ul>
+            </div>
+            <div class="footer-section">
+              <h5>Checkout our apps</h5>
+              <div class="my-1">
+                <img src="https://static.naukimg.com/s/0/0/i/new-homepage/android-app.png" alt="">
+            </div>
+            <div>
+                <img src="https://static.naukimg.com/s/0/0/i/new-homepage/ios-app.png" alt="">
+            </div>
+            </div>
+          </div>
+        </div>
+      </footer>
  <script>
   document.addEventListener('DOMContentLoaded', function() {
     const hamburgerMenu = document.querySelector('.hamburger-menu');
@@ -490,9 +614,15 @@
 });
  </script>
 </body>
+
 <script>
   function uploadIntroVideo(){
     let a = confirm("Are you sure you want to upload the intro video in your profile?")
+    if(a) return true;
+    else return false;
+  }
+  function updateResume(){
+    let a = confirm("Are you sure you want to upload the resume in your profile?")
     if(a) return true;
     else return false;
   }

@@ -1,7 +1,8 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret, initial_html
-from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection, saved_jobs_collection
-from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf
+from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection, saved_jobs_collection, chat_details_collection, connection_details_collection
+from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf, outbound_messages, next_build_status, updated_build_status, text_to_html, calculate_total_pages
+from jitsi import create_jwt
 import os
 from datetime import datetime
 import requests
@@ -12,6 +13,15 @@ from pip._vendor import cachecontrol
 import google.auth.transport.requests
 import uuid
 import time
+import pusher
+
+pusher_client = pusher.Pusher(
+  app_id='1725786',
+  key='18cc355939b16cafdc10',
+  secret='4b641fb23ac4f16955f4',
+  cluster='ap2',
+  ssl=True
+)
 
 app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET']
@@ -101,13 +111,40 @@ def start():
     
 @app.route("/searchJobs",methods = ['GET'])   
 def search_jobs():
+    searched_for = request.args.get("search")
     logged_in = True
     if session.get('google_id') is None:
         logged_in = False
     if logged_in:
         return redirect("/dashboard")
+    # pipeline = [
+    #     {
+    #         '$lookup': {
+    #             'from': 'jobs_details', 
+    #             'localField': 'job_id', 
+    #             'foreignField': 'job_id', 
+    #             'as': 'job_details'
+    #         }
+    #     }, 
+    #     {
+    #         '$project': {
+    #             '_id': 0,
+    #             'job_details._id': 0
+    #         }
+    #     }
+    # ]
     pipeline = [
         {
+            "$match": {
+                "$or": [
+                    {"job_title": {"$regex": searched_for, "$options": "i"}},
+                    {"job_description": {"$regex": searched_for, "$options": "i"}},
+                    {"job_type": {"$regex": searched_for, "$options": "i"}},
+                    {"job_topics": {"$regex": searched_for, "$options": "i"}}
+                ]
+            }
+        },
+         {
             '$lookup': {
                 'from': 'jobs_details', 
                 'localField': 'job_id', 
@@ -122,6 +159,7 @@ def search_jobs():
             }
         }
     ]
+    
     all_jobs = list(jobs_details_collection.aggregate(pipeline))
     return render_template('job_search.html', all_jobs=all_jobs, logged_in=logged_in)
 
@@ -147,6 +185,14 @@ def alljobs():
     resume_built = onboarding_details.get("resume_built")
     if not resume_built: 
         return redirect("/billbot")
+    pageno = request.args.get("pageno")
+    page_number = 1  # The page number you want to retrieve
+    if pageno is not None:
+        page_number = int(pageno)
+    page_size = 7   # Number of documents per page
+    total_elements = len(list(jobs_details_collection.find({},{"_id": 0})))
+    total_pages = calculate_total_pages(total_elements, page_size)
+    skip = (page_number - 1) * page_size
     pipeline = [
         {
             '$lookup': {
@@ -169,11 +215,13 @@ def alljobs():
                 '_id': 0,
                 'job_details._id': 0
             }
-        }
+        },
+        {"$skip": skip},  # Skip documents based on the calculated skip value
+        {"$limit": page_size}  # Limit the number of documents per page
     ]
     all_jobs = list(jobs_details_collection.aggregate(pipeline))
     # return all_applied_jobs
-    return render_template('candidate_alljobs.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+    return render_template('candidate_alljobs.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs, total_pages=total_pages,page_number=page_number)
 
 
 @app.route("/dashboard", methods = ['GET'], endpoint='dashboard')
@@ -190,8 +238,33 @@ def dashboard():
     if purpose == 'hirer':
         approved_by_admin = onboarding_details.get('approved_by_admin')
         if approved_by_admin:
-            all_jobs = list(jobs_details_collection.find({"user_id": user_id},{"_id": 0}))
-            return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs)
+            pageno = request.args.get("pageno")
+            page_number = 1  # The page number you want to retrieve
+            if pageno is not None:
+                page_number = int(pageno)
+            page_size = 7   # Number of documents per page
+            total_elements = len(list(jobs_details_collection.find({"user_id": user_id},{"_id": 0})))
+            total_pages = calculate_total_pages(total_elements, page_size)
+            skip = (page_number - 1) * page_size
+            pipeline = [
+                   {'$match': {"user_id": user_id} },
+                    {
+                        '$project': {
+                            '_id': 0,
+                        }
+                    },
+                    {"$skip": skip},  # Skip documents based on the calculated skip value
+                    {"$limit": page_size}  # Limit the number of documents per page
+                ]
+            all_jobs = list(jobs_details_collection.aggregate(pipeline))
+            all_published_jobs = list(jobs_details_collection.find({"user_id": user_id, "status":"published"},{"_id": 0}))
+            total_selected_candidates = list(candidate_job_application_collection.find({"hirer_id": user_id, "status":"Accepted"},{"_id": 0}))
+            stats = {
+                "total_jobs" : len(all_jobs),
+                "total_published_jobs" : len(all_published_jobs),
+                "total_selected_candidates" : len(total_selected_candidates)
+            }
+            return render_template('hirer_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_jobs, stats=stats, total_pages=total_pages, page_number=page_number)
         else:
             return render_template('admin_approval_pending.html')
     else:
@@ -207,6 +280,32 @@ def dashboard():
             regex_patterns.append(skill_pattern)
         regex_pattern = '|'.join(regex_patterns)
         print(regex_pattern)
+        length_pipeline = [
+                 {
+        '$match': {
+            'status': 'published',
+               '$or': [
+                {'job_title': {'$regex': regex_pattern, '$options': 'i'}},
+                {'job_description': {'$regex': regex_pattern, '$options': 'i'}},
+                {'job_topics': {'$regex': regex_pattern, '$options': 'i'}},
+            ]
+        }
+    }, 
+            {
+                '$project': {
+                    '_id': 0
+                }
+            }
+        ]
+
+        pageno = request.args.get("pageno")
+        page_number = 1  # The page number you want to retrieve
+        if pageno is not None:
+            page_number = int(pageno)
+        page_size = 7   # Number of documents per page
+        total_elements = len(list(jobs_details_collection.aggregate(length_pipeline)))
+        total_pages = calculate_total_pages(total_elements, page_size)
+        skip = (page_number - 1) * page_size
         pipeline = [
                  {
         '$match': {
@@ -238,8 +337,11 @@ def dashboard():
                 '$project': {
                     '_id': 0
                 }
-            }
+            },
+        {"$skip": skip},  # Skip documents based on the calculated skip value
+        {"$limit": page_size}  # Limit the number of documents per page
         ]
+
         all_jobs = list(jobs_details_collection.aggregate(pipeline))
         all_updated_jobs = []
         for idx, job in enumerate(all_jobs):
@@ -248,7 +350,7 @@ def dashboard():
             else:
                 all_updated_jobs.append(job)
         profile_details = profile_details_collection.find_one({"user_id": user_id},{"_id": 0})
-        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_updated_jobs, profile_details=profile_details)
+        return render_template('candidate_dashboard.html', user_name=user_name, onboarding_details=onboarding_details, all_jobs=all_updated_jobs, profile_details=profile_details, total_pages=total_pages, page_number=page_number)
     
 @app.route("/applied_jobs", methods = ['GET'], endpoint='applied_jobs')
 @login_is_required
@@ -263,6 +365,22 @@ def applied_jobs():
     resume_built = onboarding_details.get("resume_built")
     if not resume_built: 
         return redirect("/billbot")
+    pageno = request.args.get("pageno")
+    page_number = 1  # The page number you want to retrieve
+    if pageno is not None:
+        page_number = int(pageno)
+    page_size = 7   # Number of documents per page
+    length_pipeline = [
+                {"$match": {"user_id": user_id}},
+        {
+            '$project': {
+                '_id': 0
+            }
+        }
+    ]
+    total_elements = len(list(candidate_job_application_collection.aggregate(length_pipeline)))
+    total_pages = calculate_total_pages(total_elements, page_size)
+    skip = (page_number - 1) * page_size
     pipeline = [
                 {"$match": {"user_id": user_id}},
         {
@@ -287,11 +405,13 @@ def applied_jobs():
                 'job_details._id': 0,
                 'user_details._id': 0
             }
-        }
+        },
+        {"$skip": skip},  # Skip documents based on the calculated skip value
+        {"$limit": page_size}  # Limit the number of documents per page
     ]
     all_applied_jobs = list(candidate_job_application_collection.aggregate(pipeline))
     # return all_applied_jobs
-    return render_template('applied_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_applied_jobs=all_applied_jobs)
+    return render_template('applied_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_applied_jobs=all_applied_jobs, total_pages=total_pages, page_number=page_number)
 
 @app.route("/saved_jobs", methods = ['GET', 'POST'], endpoint='saved_jobs')
 @login_is_required
@@ -308,6 +428,22 @@ def saved_jobs():
     resume_built = onboarding_details.get("resume_built")
     if not resume_built: 
         return redirect("/billbot")
+    pageno = request.args.get("pageno")
+    page_number = 1  # The page number you want to retrieve
+    if pageno is not None:
+        page_number = int(pageno)
+    page_size = 7   # Number of documents per page
+    length_pipeline = [
+                    {"$match": {"user_id": user_id}},
+            {
+                '$project': {
+                    '_id': 0
+                }
+            }
+        ]
+    total_elements = len(list(saved_jobs_collection.aggregate(length_pipeline)))
+    total_pages = calculate_total_pages(total_elements, page_size)
+    skip = (page_number - 1) * page_size
     pipeline = [
                     {"$match": {"user_id": user_id}},
             {
@@ -332,11 +468,13 @@ def saved_jobs():
                     'job_details._id': 0,
                     'user_details._id': 0
                 }
-            }
+            },
+            {"$skip": skip},  # Skip documents based on the calculated skip value
+        {"$limit": page_size}  # Limit the number of documents per page
         ]
     all_saved_jobs = list(saved_jobs_collection.aggregate(pipeline))
     # return all_applied_jobs
-    return render_template('saved_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_saved_jobs=all_saved_jobs)
+    return render_template('saved_jobs.html', user_name=user_name, onboarding_details=onboarding_details, all_saved_jobs=all_saved_jobs,total_pages=total_pages, page_number=page_number)
 
 
 @app.route("/profile", methods=['GET', 'POST'], endpoint='profile_update')
@@ -359,7 +497,7 @@ def profile_update():
         return redirect('/profile')
     if profile_details := profile_details_collection.find_one({"user_id": user_id},{"_id": 0}):
         if purpose == 'candidate':
-            return render_template('candidate_profile.html', profile_details=profile_details) 
+            return render_template('candidate_profile.html', profile_details=profile_details, user_id=user_id) 
         elif purpose == 'hirer':
             return render_template('hirer_profile.html', profile_details=profile_details)
         else:
@@ -370,7 +508,24 @@ def profile_update():
 
 @app.route("/public/candidate/<string:user_id>", methods=['GET', 'POST'], endpoint='public_candidate_profile')
 def public_candidate_profile(user_id):
-    if profile_details := profile_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+    pipeline = [
+            {"$match": {"user_id": user_id}},
+            {
+                '$lookup': {
+                    'from': 'resume', 
+                    'localField': 'user_id', 
+                    'foreignField': 'user_id', 
+                    'as': 'resume_details'
+                }
+            }, 
+            {
+                '$project': {
+                    '_id': 0,
+                    'resume_details._id': 0
+                }
+            }
+        ]
+    if profile_details := list(profile_details_collection.aggregate(pipeline)):
         return render_template('public_candidate_profile.html', profile_details=profile_details) 
     else:
         abort(500, {"message": f"DB Error: Profile Details for user_id {user_id} not found."})
@@ -406,6 +561,10 @@ def login():
 def mbsa():
     return render_template('mbsa.html')
 
+@app.route("/mbsai", methods = ['GET'])
+def mbsa1():
+    return render_template('mbsa1.html')
+
 @app.route("/logout", methods = ['GET'])
 def logout():
     if "google_id" not in session:
@@ -416,23 +575,53 @@ def logout():
     return redirect("/")
 
 @app.route("/billbot", methods = ['GET', 'POST'], endpoint='chatbot')
+@login_is_required
 @is_candidate
 def chatbot():
     user_id = session.get("google_id")
     if onboarding_details := onboarding_details_collection.find_one({"user_id": user_id}, {"_id": 0}):
         phase = onboarding_details.get('phase')
+        build_status = onboarding_details.get('build_status')
         if phase == "1":
-            messages = list(chatbot_collection.find({},{"_id": 0}))
+            # messages = list(chatbot_collection.find({},{"_id": 0}))
+            resume_uploaded = False
+            if profile_details := profile_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+                if 'resume_link' in profile_details:
+                    resume_link = profile_details['resume_link']
+                    resume_uploaded = True
+            if resume_uploaded:
+                messages = [{"user": "billbot","msg": "Hi, I am BillBot."}, {"user": "billbot", "msg": f"I see you have already uploaded a <a href={resume_link} target=_blank>Resume</a>. Click Yes, if you want to upload another resume and hit no to use BillBot to develope a resume using AI!"}]
+            else:           
+                messages = [{"user": "billbot","msg": "Hi, I am BillBot."}, {"user": "billbot", "msg": "Do you have a pre-built resume?"}]
             return render_template('chatbot.html', messages=messages)
         elif phase == "2":
-            messages = [{"user":"billbot","msg": "Hi, The right side of your screen will display your resume. You can give me instruction to build it in the chat."},{"user":"billbot","msg": "You can give me information regarding your inroduction, skills, experiences, achievements and projects. I will create a professional resume for you!"}]
+            messages = outbound_messages(build_status)
+            nxt_build_status = next_build_status(build_status)
+            print(nxt_build_status)
+            # messages = [{"user":"billbot","msg": "Hi, The right side of your screen will display your resume. You can give me instruction to build it in the chat."},{"user":"billbot","msg": "You can give me information regarding your inroduction, skills, experiences, achievements and projects. I will create a professional resume for you!"}]
             if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
                 resume_html = resume_details.get("resume_html")
                 resume_built = session.get("resume_built")
-                return render_template('resume_builder.html', messages=messages, resume_html=resume_html, resume_built=resume_built) 
+                return render_template('resume_builder.html', messages=messages, resume_html=resume_html, resume_built=resume_built, nxt_build_status=nxt_build_status) 
             else:
                 abort(500,{"message":"Something went wrong! Contact ADMIN!"})
-        
+
+@app.route("/edit/mdresume", methods=['GET','POST'], endpoint="edit_mdresume")
+@is_candidate
+def edit_mdresume():
+    user_id = session.get("google_id")
+    if request.method == 'POST':
+        form_data = dict(request.form)
+        resume_html = form_data.get("resume_html")
+        user_id = session.get("google_id")
+        resume_details_collection.update_one({"user_id": user_id},{"$set": {"resume_html": resume_html}})
+        analyze_resume(user_id)
+        return redirect("/edit/mdresume")
+    if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+        markdown = resume_details.get("resume_html")
+        return render_template('resume_edit.html', markdown=markdown) 
+    else:
+        abort(500, {"messages": f"Resume Deatails for user_id {user_id} unavailable! Contact Admin!"})
 
 @app.route("/resume_build", methods = ['POST'], endpoint='resume_build')
 @is_candidate
@@ -440,9 +629,22 @@ def resume_build():
     user_id = session.get("google_id")
     form_data = dict(request.form)
     userMsg = form_data.get("msg")
-    html_code = query_update_billbot(user_id, userMsg)
+    nxt_build_status = form_data.get("nxt_build_status")
+    updated_build_status(user_id, nxt_build_status)
+    nxt_build_status_ = next_build_status(nxt_build_status)
+    html_code = query_update_billbot(user_id, userMsg, nxt_build_status_)
     add_html_to_db(user_id, html_code)
-    return str(html_code)
+    return {"html_code" :str(html_code), "nxt_messages": outbound_messages(nxt_build_status), "nxt_build_status": nxt_build_status_}
+
+@app.route("/current_build_status", methods = ['POST'], endpoint='current_build_status')
+@is_candidate
+def current_build_status():
+    user_id = session.get("google_id")
+    if onboarding_details := onboarding_details_collection.find_one({"user_id": user_id}):
+        current_build_status = onboarding_details.get("build_status")
+        return next_build_status(str(current_build_status))
+    else:
+        abort(500)
 
 @app.route("/resume_built", methods = ['POST'], endpoint='resume_built')
 @is_candidate
@@ -474,6 +676,25 @@ def resume_upload():
         resume_text = extract_text_pdf(resume)
         analyze_resume(user_id, resume_text)
         return redirect("/dashboard")
+    
+@app.route('/update_resume',methods = ['POST'], endpoint='update_resume')
+@is_candidate
+def update_resume():
+    user_id = session.get("google_id")
+    if 'resume' in request.files:
+        resume = request.files['resume']
+        resume_link = upload_file_firebase(resume, f"{user_id}/resume.pdf")
+        data = {"resume_link": resume_link}
+        if resume_details := resume_details_collection.find_one({"user_id": user_id},{"_id": 0}):
+            print("user exists resume_details_collection")
+            resume_details_collection.update_one({"user_id": user_id},{"$set": data})
+        else:
+            print("user does not exists resume_details_collection")
+            resume_details_collection.insert_one({"user_id": user_id, "resume_link": resume_link})
+        profile_details_collection.update_one({"user_id": user_id},{"$set": data})
+        resume_text = extract_text_pdf(resume)
+        analyze_resume(user_id, resume_text)
+        return redirect("/profile")
   
 @app.route("/have_resume", methods = ['POST'], endpoint='have_resume')
 @is_candidate
@@ -571,8 +792,10 @@ def onboarding():
                     purpose = onboarding_details.get("purpose")
                     session['purpose'] = purpose
                     data = {"onboarded": True}
+                    onboarding_details['status'] = "active"
                     if purpose and purpose == "candidate":
                         onboarding_details['phase'] = "1"
+                        onboarding_details['build_status'] = "introduction"
                         onboarding_details['resume_built'] = False
                         session['resume_built'] = False
                         profile_data = {
@@ -681,15 +904,19 @@ def remove_saved_job(job_id):
 def apply_job(job_id):
     user_id = session.get("google_id")
     if request.method == 'POST':
-        job_apply_data = {
-            "job_id": job_id,
-            "user_id": user_id,
-            "applied_on": datetime.now(),
-            "status": "Applied",
-        }
-        candidate_job_application_collection.insert_one(job_apply_data)
-        flash("Successfully Applied for the Job. Recruiters will get back to you soon, if you are a good fit.")
-        return redirect(f'/apply/job/{job_id}')
+        if job_details := jobs_details_collection.find_one({"job_id": job_id},{"_id": 0}):
+            job_apply_data = {
+                "job_id": job_id,
+                "hirer_id": job_details.get("user_id"),
+                "user_id": user_id,
+                "applied_on": datetime.now(),
+                "status": "Applied",
+            }
+            candidate_job_application_collection.insert_one(job_apply_data)
+            flash("Successfully Applied for the Job. Recruiters will get back to you soon, if you are a good fit.")
+            return redirect(f'/apply/job/{job_id}')
+        else:
+            abort(500,{"messages": f"Job with Job Id {job_id} doesn't exist! "})
     pipeline = [
               {"$match": {"job_id": str(job_id)}},
                 {
@@ -736,7 +963,16 @@ def change_job_status(candidate_user_id):
 @is_hirer
 @is_onboarded
 def job_responses(job_id):
-    pipeline = [
+    if job_details := jobs_details_collection.find_one({"job_id": job_id},{"_id": 0, "job_title" :1, "mode_of_work": 1}):
+        pageno = request.args.get("pageno")
+        page_number = 1  # The page number you want to retrieve
+        if pageno is not None:
+            page_number = int(pageno)
+        page_size = 7   # Number of documents per page
+        total_elements = len(list(candidate_job_application_collection.find({"job_id": job_id})))
+        total_pages = calculate_total_pages(total_elements, page_size)
+        skip = (page_number - 1) * page_size
+        pipeline = [
             {
                 "$match": {"job_id": job_id}
             },
@@ -761,9 +997,169 @@ def job_responses(job_id):
             '_id': 0, 
             'user_details._id': 0,
             'candidate_details._id': 0,
+        },
+    },
+        {"$skip": skip},  # Skip documents based on the calculated skip value
+        {"$limit": page_size}  # Limit the number of documents per page
+        ]
+        all_responses = list(candidate_job_application_collection.aggregate(pipeline))
+        return render_template("job_responses.html", job_id=job_id, all_responses=all_responses, job_details=job_details, total_pages=total_pages, page_number=page_number)
+    
+
+@app.route("/chats", methods=['GET'], endpoint='all_chats')
+@login_is_required
+def all_chats():
+    user_id = session.get("google_id")
+    purpose = session.get("purpose")
+    key = "hirer_id" if purpose == "hirer" else "candidate_id"
+    localField = "hirer_id" if purpose == "candidate" else "candidate_id"
+    localAs = "hirer_details" if purpose == "candidate" else "candidate_details"
+    pipeline = [
+         {
+                "$match": {key: user_id}
+            },
+         {
+                '$lookup': {
+                    'from': 'onboarding_details', 
+                    'localField': localField, 
+                    'foreignField': 'user_id', 
+                    'as': localAs
+                }
+            },
+         {
+                '$lookup': {
+                    'from': 'jobs_details', 
+                    'localField': "job_id", 
+                    'foreignField': 'job_id', 
+                    'as': "job_details"
+                }
+            },
+            
+           {
+        '$project': {
+            '_id': 0, 
+            f'{localAs}._id': 0,
+            'job_details._id': 0,
         }
     }
+    ]
+    all_connections = list(connection_details_collection.aggregate(pipeline))
+    return render_template("chatservice/index.html", purpose=purpose, all_connections=all_connections)
+
+import time
+@app.route("/chat/<string:incoming_user_id>/<string:job_id>", methods=['GET', 'POST'], endpoint='specific_chat')
+@login_is_required
+def specific_chat(incoming_user_id, job_id):
+    user_id = session.get("google_id")
+    purpose = session.get("purpose")
+    if request.method == 'POST':
+        msg = dict(request.json).get('msg')
+        chat_details = {
+            "hirer_id": user_id if purpose == "hirer" else incoming_user_id,
+            "candidate_id": user_id if purpose == "candidate" else incoming_user_id,
+            "job_id": job_id,
+            "sent_by": purpose,
+            "sent_on": datetime.now(),
+            "msg": msg,
+        }
+        chat_details_collection.insert_one(chat_details)
+        channel_id = f"{user_id}_{incoming_user_id}_{job_id}" if purpose == "candidate" else f"{incoming_user_id}_{user_id}_{job_id}"
+        pusher_client.trigger(channel_id, purpose, {'msg': msg})
+        return {"status": "saved"}
+    hirer_id = incoming_user_id if purpose == "candidate" else user_id
+    candidate_id = user_id if purpose == "candidate" else incoming_user_id
+    if onboarding_details := onboarding_details_collection.find_one({"user_id": incoming_user_id},{"_id": 0}):
+        name = onboarding_details.get("company_name") if purpose == "candidate" else onboarding_details.get("candidate_name")
+        pipeline = [
+            {"$match": {"hirer_id": hirer_id, "candidate_id": candidate_id, "job_id": job_id}},
+            {"$project": {"_id": 0}}
         ]
-    if job_details := jobs_details_collection.find_one({"job_id": job_id},{"_id": 0, "job_title" :1, "mode_of_work": 1}):
-        all_responses = list(candidate_job_application_collection.aggregate(pipeline))
-        return render_template("job_responses.html", job_id=job_id, all_responses=all_responses, job_details=job_details)
+        all_chats = list(chat_details_collection.aggregate(pipeline))
+        channel_id = f"{user_id}_{incoming_user_id}_{job_id}" if purpose == "candidate" else f"{incoming_user_id}_{user_id}_{job_id}"
+        job_details = jobs_details_collection.find_one({"job_id": job_id},{"_id": 0,"job_title": 1})
+        meet_details = {
+            "meetLink": f"http://127.0.0.1:5000/meet/{channel_id}"
+        }
+        return render_template("chatservice/message.html",incoming_user_id=incoming_user_id, purpose=purpose, all_chats=all_chats, name=name, channel_id=channel_id, job_id=job_id, job_details=job_details, meet_details=meet_details, text_to_html=text_to_html)
+    else:
+        abort(500, {"message": "User Not Found!"})
+
+@app.route("/initiate_chat", methods =['POST'], endpoint="initiate_chat")
+@login_is_required
+@is_hirer
+def initiate_chat():
+    user_id = session.get("google_id")
+    form_data = dict(request.form)
+    candidate_id = form_data.get("candidate_id")
+    job_id = form_data.get("job_id")
+    if connection_details := connection_details_collection.find_one({"candidate_id": candidate_id, "hirer_id": user_id},{"_id": 0}):
+        pass
+    else:
+        if _ := candidate_job_application_collection.find_one({"user_id": candidate_id, "hirer_id": user_id, "job_id": job_id},{"_id": 0}):
+            connection_details = {
+            "created_on": datetime.now(),
+            "hirer_id": user_id,
+            "candidate_id": candidate_id,
+            "job_id": job_id
+            }
+            connection_details_collection.insert_one(connection_details)
+            candidate_job_application_collection.update_one({"user_id": candidate_id, "hirer_id": user_id, "job_id": job_id},{"$set": {"chat_initiated": True}})
+        else:
+            abort(500, {"message": "Either job_id or candidate_id is wrong!"})
+    return redirect(f"/chat/{candidate_id}/{job_id}")
+    
+@app.route("/meet/<string:channel_id>", methods=['GET'], endpoint='meeting')
+@login_is_required
+def meeting(channel_id):
+    purpose = session.get("purpose")
+    candidate_id, hirer_id, job_id = channel_id.split("_")
+    hirer_pipeline = [
+           {
+                "$match": {"user_id": hirer_id}
+            },
+         {
+                '$lookup': {
+                    'from': 'user_details', 
+                    'localField': "user_id", 
+                    'foreignField': 'user_id', 
+                    'as': "user_details"
+                }
+            }
+    ]
+    candidate_pipeline = [
+           {
+                "$match": {"user_id": candidate_id}
+            },
+         {
+                '$lookup': {
+                    'from': 'user_details', 
+                    'localField': "user_id", 
+                    'foreignField': 'user_id', 
+                    'as': "user_details"
+                }
+            }
+    ]
+    if onboarding_details := list(onboarding_details_collection.aggregate(hirer_pipeline)):
+        company_name = onboarding_details[0].get("company_name")
+        hirer_email = onboarding_details[0].get("user_details")[0]['email']
+    else:
+        abort(500, {"message": "Invalid Channel ID"})
+    if onboarding_details := list(onboarding_details_collection.aggregate(candidate_pipeline)):
+        candidate_name = onboarding_details[0].get("candidate_name")
+        candidate_email = onboarding_details[0].get("user_details")[0]['email']
+    else:
+        abort(500, {"message": "Invalid Channel ID"})
+    if job_details := jobs_details_collection.find_one({"job_id": job_id}, {"_id": 0, "job_title": 1}):
+        if purpose == "hirer":
+                jwt = create_jwt(company_name, hirer_email, True)
+        else:
+                jwt = create_jwt(candidate_name, candidate_email, False)
+        meet_details = {
+            "roomName": f"vpaas-magic-cookie-c1b5084297244909bc3d1d4dc2b51775/{channel_id}",
+            "jwt": jwt,
+            "meetLink": f"http:127.0.0.1:5000/meet/{channel_id}"
+        }
+        return render_template('videoservice/main.html', meet_details=meet_details, job_details=job_details, onboarding_details=onboarding_details)
+    else:
+        abort(500, {"message": "Invalid Channel ID"})
+
