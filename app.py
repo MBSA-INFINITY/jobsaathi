@@ -270,7 +270,7 @@ def dashboard():
     else:
         if not resume_built: 
             return redirect("/billbot")
-        resume_skills_string = resume_details_collection.find_one({'user_id': user_id}, {'skills': 1})['skills']
+        resume_skills_string = resume_details_collection.find_one({'user_id': user_id}, {'skills': 1}).get("skilld")
         resume_skills = [skill.strip().lower() for skill in resume_skills_string.split(',')]
         print(resume_skills)
         regex_patterns = []
