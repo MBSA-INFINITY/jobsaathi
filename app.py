@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, abort, session, flash, make_response
 from client_secret import client_secret, initial_html
 from db import user_details_collection, onboarding_details_collection, jobs_details_collection, candidate_job_application_collection, chatbot_collection, resume_details_collection, profile_details_collection, saved_jobs_collection, chat_details_collection, connection_details_collection
-from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf, outbound_messages, next_build_status, updated_build_status, text_to_html, calculate_total_pages
+from helpers import  query_update_billbot, add_html_to_db, analyze_resume, upload_file_firebase, extract_text_pdf, outbound_messages, next_build_status, updated_build_status, text_to_html, calculate_total_pages, mbsambsasmbsa
 from jitsi import create_jwt
 import os
 from datetime import datetime
@@ -557,9 +557,9 @@ def login():
         return redirect("/")
 
 
-# @app.route("/mbsa", methods = ['GET'])
-# def mbsa():
-#     return str(mbsambsasmbsa())
+@app.route("/mbsa", methods = ['GET'])
+def mbsa():
+    return str(mbsambsasmbsa())
 
 @app.route("/mbsai", methods = ['GET'])
 def mbsa1():

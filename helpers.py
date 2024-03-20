@@ -152,6 +152,6 @@ def text_to_html(text):
 def calculate_total_pages(total_elements, page_size):
     return math.ceil(total_elements / page_size)
 
-# def mbsambsasmbsa():
-#     html_code = llm_chain.run({"html": str(""), "statement": "I AM M b sai aditya. I am a final year student at NIT Karnataka."}) 
-#     return html_code
+def mbsambsasmbsa():
+    html_code = llm_chain.run({"html": str(""), "statement": "I AM M b sai aditya. I am a final year student at NIT Karnataka."}) 
+    return html_code
