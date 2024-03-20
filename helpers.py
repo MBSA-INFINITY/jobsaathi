@@ -29,7 +29,9 @@ storage = firebase.storage()
 OPENAIKEY=os.environ['OPENAIKEY']
 
 
-llm = OpenAI(openai_api_key=OPENAIKEY,  max_tokens=-1)
+llm = OpenAI(openai_api_key=OPENAIKEY, model_name="gpt-3.5-turbo-instruct",  max_tokens=-1)
+
+# llm = OpenAI(openai_api_key=OPENAIKEY,  max_tokens=-1)
 
 template = """You are a chatbot who helps people to build their resume/portfolio. This is the Markdonwn of the portfolio {html}. Analyze the Markdown properly.The following statement "{statement}" would be an instruction or information related to skills, achievements, education, projects or any other section in the resume. Analyze the statement and update the Markdown code according to statement. You are free to add or remove a section as per the scenario. Make the portfolio attractive in styling. Keep the sections of the resume one after another in vertical format. Return me only the Markdown Code.
 """
@@ -149,3 +151,7 @@ def text_to_html(text):
 
 def calculate_total_pages(total_elements, page_size):
     return math.ceil(total_elements / page_size)
+
+# def mbsambsasmbsa():
+#     html_code = llm_chain.run({"html": str(""), "statement": "I AM M b sai aditya. I am a final year student at NIT Karnataka."}) 
+#     return html_code
