@@ -557,9 +557,9 @@ def login():
         return redirect("/")
 
 
-@app.route("/mbsa", methods = ['GET'])
-def mbsa():
-    return render_template('mbsa.html')
+# @app.route("/mbsa", methods = ['GET'])
+# def mbsa():
+#     return str(mbsambsasmbsa())
 
 @app.route("/mbsai", methods = ['GET'])
 def mbsa1():
