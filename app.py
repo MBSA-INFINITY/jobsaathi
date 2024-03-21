@@ -559,7 +559,7 @@ def login():
 
 @app.route("/mbsa", methods = ['GET'])
 def mbsa():
-    return str(mbsambsasmbsa())
+    return render_template("mbsa.html")
 
 @app.route("/mbsai", methods = ['GET'])
 def mbsa1():
