@@ -7,6 +7,8 @@
     <title>Contact | JobSaathi</title>
     <link rel="stylesheet" href="{{url_for('static', filename='new/Naya tropical/Landing Page by Nandlal/homep.css')}}" />
     <link rel="stylesheet" href="{{url_for('static', filename='new/Naya tropical/navbar/t_navbar.css')}}" />
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body{
             margin: 0;
@@ -194,8 +196,14 @@ display: none;
 #skills{
     width: 715px;
 }
+#bottom_navbar{
+        display: none;
+    }
 /* Media query for smaller screens */
 @media (max-width: 790px) {
+  #bottom_navbar{
+        display: block;
+    }
   .r_right{
          /* border: 1px solid teal; */
          width: 100%;
@@ -300,11 +308,50 @@ display: none;
 }
 
 }
+.navbar {
+    font-family: "Varela Round", sans-serif;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    padding: 10px 0;
+    z-index: 100;
+    box-shadow: 10px 10px 20px #c7c7c7, 
+                -10px -10px 20px #ffffff;
+}
+
+.navbar ul {
+    list-style-type: none;
+    text-align: center;
+}
+
+.navbar ul li {
+    display: inline-block;
+}
+
+.navbar ul li a {
+    text-decoration: none;
+    color: #000;
+    padding: 0px 40px;
+    display: block;
+}
+
+.navbar ul li a:hover {
+  background-color: #eee6e6;
+}
 
 </style>
 </head>
 <body>
     <!-- THIS IS THE DIV BELONGS TO NAVBAR OF THE REGISTER PAGE -->
+    <nav class="navbar" id="bottom_navbar" >
+      <ul>
+          <li><a href="/"><i class="fa fa-home" style="font-size:24px"></i> <br>Home</a></li>
+          <li><a href="/about-us"><i class="fa fa-user" style="font-size:24px"></i> <br>About</a></li>
+          <li><a href="/contact-us"><i class="fa fa-phone" style="font-size:24px"></i> <br>Contact</a></li>
+      </ul>
+  </nav>
     <div class="navibarr">
       <div class="t_logo"><a href="/"><img src="static/images/final_logo.png" alt="Error" id="mainpagepaileja" height="60"
         width="230"></a></div>
@@ -334,8 +381,8 @@ display: none;
           <div class="bar"></div>
       </div>
         <div class="t_button">
-          <a href="/billbot"><button class="t_button_3">AI Resume Builder</button></a>
-          <a href="/login"><button class="t_button_2">Login</button></a>
+          <a href="/billbot"><button class="t_button_3" style="font-family: 'Varela Round', sans-serif;">AI Resume Builder</button></a>
+          <a href="/login"><button class="t_button_2" style="font-family: 'Varela Round', sans-serif;">Login</button></a>
         </div>
         <div class="t_foremployers_container">
     
@@ -370,15 +417,15 @@ display: none;
             <br>
             <form class="t_reg_form" action="/contact-us" method="post">
                 <label for="Name">Full Name</label><br>
-                <input type="text" placeholder="What is your name?" id="t_fullname" style="border-radius: 10px;"><br><br>
+                <input type="text" placeholder="What is your name?" id="t_fullname" style="border-radius: 10px;width: 90%;"><br><br>
                 <label for="Email">Email Id</label><br>
-                <input type="email" placeholder="Tell us your Email ID" style="border-radius: 10px;"><br>
+                <input type="email" placeholder="Tell us your Email ID" style="border-radius: 10px;width: 90%;"><br>
                 <br>
                 <label for="phone">Mobile Number</label><br>
-                <input type="number" value="+91" placeholder="Mobile Number" style="border-radius: 10px;"><br>
+                <input type="number" value="+91" placeholder="Mobile Number" style="border-radius: 10px;width: 90%;"><br>
                 <br>
                 <label for="phone">Your Query</label><br>
-                <textarea name="" id="" cols="30" rows="10" style="border-radius: 10px;width: 50vw;" ></textarea>
+                <textarea name="" id="" cols="30" rows="10" style="border-radius: 10px;width: 50vw;width: 90%;" ></textarea>
                 
 
                 <br>

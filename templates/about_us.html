@@ -12,6 +12,7 @@
       type="image/x-icon"
     />
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;600&display=swap"
       rel="stylesheet"
@@ -27,6 +28,7 @@
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"
@@ -78,8 +80,14 @@
     #skills{
         width: 715px;
     }
+    #bottom_navbar{
+        display: none;
+    }
     /* Media query for smaller screens */
     @media (max-width: 790px) {
+        #bottom_navbar{
+        display: block;
+    }
     .hamburger-menu {
       display: block;
       /* margin: 22em; */
@@ -176,9 +184,48 @@
     }
     
     }
+    .navbar {
+    font-family: "Varela Round", sans-serif;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    padding: 10px 0;
+    z-index: 100;
+    box-shadow: 10px 10px 20px #c7c7c7, 
+                -10px -10px 20px #ffffff;
+}
+
+.navbar ul {
+    list-style-type: none;
+    text-align: center;
+}
+
+.navbar ul li {
+    display: inline-block;
+}
+
+.navbar ul li a {
+    text-decoration: none;
+    color: #000;
+    padding: 0px 40px;
+    display: block;
+}
+
+.navbar ul li a:hover {
+    background-color: #eee6e6;
+}
     
     </style>
 <!-- <a href="/servieces.html/servieces.html"></a> -->
+<nav class="navbar" id="bottom_navbar" >
+    <ul>
+        <li><a href="/"><i class="fa fa-home" style="font-size:24px"></i> <br>Home</a></li>
+        <li><a href="/about-us"><i class="fa fa-user" style="font-size:24px"></i> <br>About</a></li>
+        <li><a href="/contact-us"><i class="fa fa-phone" style="font-size:24px"></i> <br>Contact</a></li>
+    </ul>
+</nav>
 <div class="navibarr">
     <div class="t_logo"><a href="/"><img src="static/images/final_logo.png" alt="Error" id="mainpagepaileja" height="60"
         width="230"></a></div>
@@ -208,8 +255,8 @@
       <div class="bar"></div>
   </div>
     <div class="t_button">
-      <a href="/billbot"><button class="t_button_3">AI Resume Builder</button></a>
-      <a href="/login"><button class="t_button_2">Login</button></a>
+        <a href="/billbot"><button class="t_button_3" style="font-family: 'Varela Round', sans-serif;">AI Resume Builder</button></a>
+        <a href="/login"><button class="t_button_2" style="font-family: 'Varela Round', sans-serif;">Login</button></a>
     </div>
     <div class="t_foremployers_container">
 

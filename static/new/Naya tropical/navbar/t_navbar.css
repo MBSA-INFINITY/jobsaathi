@@ -31,12 +31,12 @@ body{
 }
 .t_container h3{
     font-size: 20px;
-    font-family: "Inter",sans-serif;
+    font-family: 'Varela Round', sans-serif;
 }
 .t_container h5{
     font-size: 15px;
     font-weight: lighter;
-    font-family: "Inter",sans-serif;
+    font-family: 'Varela Round', sans-serif;
 }
 .t_elements_li{
     padding: 8px;
@@ -161,7 +161,7 @@ ul.t_elements_container>li:nth-child(4):hover .t_element_mega{
     border-bottom: 5px solid #FF7555;
 }
 .t_foremployers{
-    font-family: "Inter",sans-serif;
+    font-family: 'Varela Round', sans-serif;
     margin-right: 20px;
   color: #445578;;
     box-sizing: border-box;
@@ -236,7 +236,7 @@ ul.t_elements_container>li:nth-child(4):hover .t_element_mega{
         }
 }
 .t_foremployers_container{
-   font-family: monospace;  
+    font-family: 'Varela Round', sans-serif;
 }
 .t_ul{
     list-style: none;
