@@ -86,14 +86,55 @@ display: none;
 #bottom_navbar{
     display: none;
 }
+
 /* Media query for smaller screens */
 @media (max-width: 790px) {
+
     body{
         overflow-x: hidden;
+    }
+    .websitewla{
+        font-size: small;
+    }
+    .aboutwala{
+        font-size: small;
+    }
+    .get_on_google{
+        display: none;
+    }
+    .Firsuuiut{
+        width: 100vw;
+    }
+    .slidergridwala{
+        display: none;
+    }
+    .items_hai{
+        width: 100vw;
+    }
+    .thirdhai{
+        width: 55vw;
     }
     #bottom_navbar{
         display: block;
     }
+    .Rokau2 > p:first-child {
+  color: #1b2437;
+  max-width: 175px;
+  font-size: small;
+  line-height: 22px;
+  font-weight: 500;
+  margin-left: 20px;
+  text-align: start;
+}
+    .ROkau3rdhhai > p{
+ 
+  font-size: small;
+  text-align: center;
+  
+}
+.image_wlah{
+    display: none;
+}
 .hamburger-menu {
   display: block;
   /* margin: 22em; */
@@ -542,24 +583,7 @@ display: none;
             </div>
         </div>
     </div>
-    <div class="Rokau2">
-        <p>Manufacturing ></p>
-        <p>163 are actively hiring</p>
-        <div class="image_wlah">
-            <div>
-                <img src="https://img.naukimg.com/logo_images/groups/v1/2500.gif" alt="">
-            </div>
-            <div>
-                <img src="https://img.naukimg.com/logo_images/groups/v1/7982.gif" alt="">
-            </div>
-            <div>
-                <img src="https://img.naukimg.com/logo_images/groups/v1/20302.gif" alt="">
-            </div>
-            <div>
-                <img src="https://img.naukimg.com/logo_images/groups/v1/395896.gif" alt="">
-            </div>
-        </div>
-    </div>
+
     <div class="Rokau2">
         <p>FMCG & Retail ></p>
         <p>31 are actively hiring</p>
@@ -1331,8 +1355,8 @@ management company</p>
 $('.slider').slick({
 
 
-infinite: false,
-speed: 600,
+infinite: true,
+speed: 400,
 slidesToShow: 5,
 slidesToScroll: 5,
 responsive: [
@@ -1370,7 +1394,7 @@ responsive: [
 
           
             $('.items_hai').slick({
-   infinite: false,
+   infinite: true,
    lazyLoad: 'ondemand',
    slidesToShow: 4,
    slidesToScroll: 4

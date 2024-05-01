@@ -609,7 +609,7 @@ border:1px solid  #EAF1F5;
 #footka {
   margin: auto;
   margin-top: 80px;
-  width: 100%;
+  width: 100vw;
   height: 300px;
   background: #ffffff;
   border: 1px solid #eaf1f5;
