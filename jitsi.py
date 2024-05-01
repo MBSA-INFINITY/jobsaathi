@@ -180,11 +180,11 @@ def create_jwt(user_name, mail_id, is_moderator):
             jaasJwt = JaaSJwtBuilder()
 
             token = jaasJwt.withDefaults() \
-                .withApiKey("vpaas-magic-cookie-c1b5084297244909bc3d1d4dc2b51775/6c286b") \
+                .withApiKey(os.environ['JITSI_API_KEY']) \
                     .withUserName(user_name) \
                         .withUserEmail(mail_id) \
                             .withModerator(is_moderator) \
-                                .withAppID("vpaas-magic-cookie-c1b5084297244909bc3d1d4dc2b51775") \
+                                .withAppID(os.environ['JITSI_APP_ID']) \
                                         .signWith(reader.read())
 
             return str(token)[2:-1]
