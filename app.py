@@ -16,10 +16,10 @@ import time
 import pusher
 
 pusher_client = pusher.Pusher(
-  app_id='1725786',
-  key='18cc355939b16cafdc10',
-  secret='4b641fb23ac4f16955f4',
-  cluster='ap2',
+  app_id=os.environ['PUSHER_APP_ID'],
+  key=os.environ['PUSHER_KEY'],
+  secret=os.environ['PUSHER_SECRET'],
+  cluster=os.environ['PUSHER_CLUSTER'],
   ssl=True
 )
 

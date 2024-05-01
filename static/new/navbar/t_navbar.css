@@ -197,7 +197,7 @@ ul.t_elements_container>li:nth-child(4):hover .t_element_mega{
     font-weight: 600;
     color: white;
     border-radius:20px;
-    background-color: #FF7555;
+    background-color: #b68d63;
     border: 1px solid transparent;
     cursor: pointer;
 }
@@ -206,12 +206,12 @@ ul.t_elements_container>li:nth-child(4):hover .t_element_mega{
     padding: 12px;
     width: 11vw;
     font-weight: 600;
-    color: rgb(42, 184, 240);
+    color: #0548aa;
     border-radius:20px;
   
     cursor: pointer;
     background: #FFFFFF;
-    border: 1px solid #88ADFF;
+    border: 1px solid #0548aa;
     border-radius: 100px;
   
 }
