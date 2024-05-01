@@ -11,15 +11,83 @@
     href="static/images/favicon.png"
     type="image/x-icon"
   />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
     <style>
+        #bottom_navbar{
+    display: none;
+}
+#login_navbar{
+    margin: auto;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    /* overflow: hidden; */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: white;
+    height: 10vh;
+}
 .t_login_container{
     border:1px solid transparent;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 
-    width:30vw;
+    width:40vw;
     /* margin: auto; */
     padding: 50px;
 }
+@media (max-width: 790px) {
+    #bottom_navbar{
+        display: block;
+    }
+    .t_elements{
+        display: none;
+    }
+    .t_button{
+        display: none;
+    }
+    .t_login_left_container{
+        display: none;
+    }
+    .t_login_container{
+        width: 100vw;
+    }
+}
+        .navbar {
+    font-family: "Varela Round", sans-serif;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    padding: 10px 0;
+    z-index: 100;
+    box-shadow: 10px 10px 20px #c7c7c7, 
+                -10px -10px 20px #ffffff;
+}
+
+.navbar ul {
+    list-style-type: none;
+    text-align: center;
+}
+
+.navbar ul li {
+    display: inline-block;
+}
+
+.navbar ul li a {
+    text-decoration: none;
+    color: #000;
+    padding: 0px 20px;
+    display: block;
+}
+
+.navbar ul li a:hover {
+    background-color: #eee6e6;
+}
+
 .t_login_div1 div:nth-child(1){
    display: flex;
    justify-content: space-between;
@@ -95,22 +163,18 @@
 .t_login_left_container1{
     margin: 50px 0 0 70px;
 }
-#login_navbar{
-    margin: auto;
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-    /* overflow: hidden; */
-    position: -webkit-sticky;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background-color: white;
-    height: 10vh;
-}
+
     </style>
 </head>
 <body>
+    <nav class="navbar" id="bottom_navbar" >
+        <ul>
+            <li><a href="/"><i class="fa fa-home" style="font-size:24px"></i> <br>Home</a></li>
+            <li><a href="/about-us"><i class="fa fa-user" style="font-size:24px"></i> <br>About</a></li>
+            <li><a href="/contact-us"><i class="fa fa-phone" style="font-size:24px"></i> <br>Contact</a></li>
+            <li><a href="/login"><i class="fa fa-sign-in" style="font-size:24px"></i> <br>Login</a></li>
+        </ul>
+    </nav>
     <div id="login_navbar">    <div class="t_logo"><a href="#"><img src="static/images/mbsalogo.png" alt="Error" id="mainpagepaileja" height="60" width="250"></a></div>
     <div class="t_elements">
         <ul class="t_elements_container">
@@ -164,7 +228,7 @@
             <div class="t_login_div1">
                 <div>
                     <h2 style="font-family: Arial, Helvetica, sans-serif;">Login</h2>
-                    <a href="./t_register.html" style="text-decoration: none;font-family: Arial, Helvetica, sans-serif;color: #457EFF;"></a>
+                    <a href="./login" style="text-decoration: none;font-family: Arial, Helvetica, sans-serif;color: #457EFF;"></a>
                 </div>
                 <p>Login to JobSaathi to see and apply for all the jobs!</p>
           <br><br>
