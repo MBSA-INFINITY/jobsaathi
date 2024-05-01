@@ -42,9 +42,7 @@
     <!-- <link id="pagestyle" href="static/assets/css/soft-ui-dashboard.css?v=1.0.7" rel="stylesheet" /> -->
   </head>
   <style>
-    *{
-        overflow: hidden;
-    }
+
     .t_elements_container {
     display: flex;
     margin-left: 0;
@@ -90,6 +88,9 @@ display: none;
 }
 /* Media query for smaller screens */
 @media (max-width: 790px) {
+    body{
+        overflow-x: hidden;
+    }
     #bottom_navbar{
         display: block;
     }
