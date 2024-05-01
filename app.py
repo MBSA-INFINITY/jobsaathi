@@ -563,7 +563,7 @@ def mbsa():
 
 @app.route("/mbsai", methods = ['GET'])
 def mbsa1():
-    return render_template('mbsa1.html')
+    return render_template('mbsa.html')
 
 @app.route("/logout", methods = ['GET'])
 def logout():
