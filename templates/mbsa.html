@@ -378,7 +378,7 @@ display: none;
 
 .slide1 {
   flex: 0 0 auto;
-  width: calc(100% / 3); /* Adjust the width based on the number of visible items */
+  width: calc(100% / 6); /* Adjust the width based on the number of visible items */
   padding: 20px;
   text-align: center;
 }
@@ -408,7 +408,7 @@ button {
 
 .slide2 {
   flex: 0 0 auto;
-  width: calc(100% / 4); /* Adjust the width based on the number of visible items */
+  width: calc(100% / 7); /* Adjust the width based on the number of visible items */
   padding: 20px;
   text-align: center;
 }
@@ -430,12 +430,66 @@ button {
 .next2 {
   right: 0;
 }
+.t_button{
+    margin-right: -190px;
+}
+.t_button_1{
+    margin-right: 18px;
+    padding: 12px;
+    width: 5vw;
+    font-weight: 600;
+    color: rgb(42, 184, 240);
+    border-radius:20px;
+  
+    cursor: pointer;
+    background: #FFFFFF;
+    border: 1px solid #88ADFF;
+    border-radius: 100px;
+  
+}
+.t_button_2{
+    padding: 12px;
+    width: 7vw;
+    font-weight: 600;
+    color: white;
+    border-radius:20px;
+    background-color: #b68d63;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+.t_button_3{
+    margin-right: 18px;
+    padding: 12px;
+    width: 11vw;
+    font-weight: 600;
+    color: #0548aa;
+    border-radius:20px;
+  
+    cursor: pointer;
+    background: #FFFFFF;
+    border: 1px solid #0548aa;
+    border-radius: 100px;
+  
+}
 
 /* Media query for smaller screens */
 @media (max-width: 790px) {
   body{
         overflow-x: hidden;
     }
+    .slide1 {
+  flex: 0 0 auto;
+  width: calc(100% / 3); /* Adjust the width based on the number of visible items */
+  padding: 20px;
+  text-align: center;
+}
+.slide2 {
+  flex: 0 0 auto;
+  width: calc(100% / 2); /* Adjust the width based on the number of visible items */
+  padding: 20px;
+  text-align: center;
+}
+
     .Firsuuiut{
         width: 75vw;
     }
@@ -610,10 +664,7 @@ button {
 
    <!-- THIS THE CONTAINER WHICH CONTAINS THE REMAINING ELEMENTS OF THE REGISTER PAGE -->
 
-   <h2>Vision of A2ZRecruit</h2>
- <div class="container" style="width: 80vw;margin: auto;">
-    <p style="text-align: center; color: gray;font-size: 20px;">At A2ZRecruit, our vision is to revolutionize the way individuals navigate their professional journeys, transforming the landscape of employment by fostering meaningful connections between job seekers and employers. We envision a world where every individual is empowered to discover their true potential and pursue fulfilling career opportunities with confidence and ease.</p>
-  </div>
+   <h2 >What A2ZRecruit Offers?</h2>
   <div class="carousel-container">
     <div class="carousel1">
       <div class="slide1">  <div class="ROkau">
@@ -641,7 +692,7 @@ button {
         <p>Recruitment Support</p>
         <!-- <p>9.5K+jobs</p> -->
     </div></div>
-      <div class="slide"> <div class="ROkau">
+      <div class="slide1"> <div class="ROkau">
         <img src="https://static.naukimg.com/s/0/0/i/trending-naukri/marketing.svg" alt="">
         <p>Smooth Onboarding</p>
         <!-- <p>2.3K+jobs</p> -->
@@ -665,15 +716,37 @@ button {
     <button class="prev1">&#10094;</button>
     <button class="next1">&#10095;</button>
   </div>
-  <div class="container" style="width: 80vw;margin: auto;">
-    <p style="text-align: center; color: gray;font-size: 20px;">Our platform is built on the belief that finding the right job should not be a daunting task, but rather an exciting and empowering experience. We strive to create a seamless, user-friendly interface that streamlines the job search process, providing personalized recommendations and valuable insights tailored to each user's unique skills, preferences, and aspirations.</p>
- </div>
- <h2>Our clients</h2>
 
+    <div id="mainhi">
+      <h1>Land your dream job with A2ZRecruit</h1>
+      <p class="jaab">3 lakh+jobs for you to explore</p>
+    </div>
+    
+    <form action="/searchJobs" style="all:unset">
+    <div id="suggestionhaiya">
+      <img
+        src="https://static.naukimg.com/s/7/103/i/search.9ec0e1ac.svg"
+        class="searchIc"
+      />
+      <div id="pehla">
+        <input
+          class="suggestor-input"
+          type="text"
+          placeholder="Enter skills / designations / companies"
+          tabindex="0"
+          value=""
+          id="skills"
+          name="search"
+        />
+      </div>
 
-<div class="container" style="width: 80vw;margin: auto;">
-    <p style="text-align: center; color: gray;font-size: 20px;">At A2ZRecruit, we value our clients and partners as integral contributors to our shared mission of connecting talent with opportunity..</p>
- </div>
+      <div class="fourthh">
+        <button id="qsbSubmit" type="submit" onclick="return checkSubmit()" style="background-color: #0548aa;">Search</button>
+      </div>
+    </form>
+    </div>
+    <br>
+    <h2>Featured companies actively hiring</h2>
  <div class="carousel-container" style="margin-bottom: 5em;">
   <div class="carousel2">
     <div class="slide2">   <div class="ROkau3rdhhai">
