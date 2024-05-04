@@ -52,8 +52,8 @@
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
             width: 95%;
             margin: auto;
-            height: 168vh;
-            margin-bottom: 15px;
+            height: 100vh;
+            margin-bottom: 2px;
         }
         .r_right_bottom{
             /* border: 1px solid rgb(109, 15, 250); */
@@ -199,10 +199,46 @@ display: none;
 #bottom_navbar{
         display: none;
     }
+    .navbar {
+    font-family: "Varela Round", sans-serif;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 110vw;
+    background-color: #fff;
+    /* padding: 10px 0; */
+    z-index: 100;
+    box-shadow: 10px 10px 20px #c7c7c7, 
+                -10px -10px 20px #ffffff;
+}
+
+.navbar ul {
+    list-style-type: none;
+    text-align: center;
+    float: left;
+}
+
+.navbar ul li {
+    display: inline-block;
+}
+
+.navbar ul li a {
+    text-decoration: none;
+    color: #000;
+    padding: 0px 20px;
+    display: block;
+}
+
+.navbar ul li a:hover {
+  background-color: #eee6e6;
+}
 /* Media query for smaller screens */
 @media (max-width: 790px) {
   body{
         overflow-x: hidden;
+    }
+    #map-container{
+      display: none;
     }
   .t_resume-btn1{
             width: 15vw;
@@ -316,39 +352,7 @@ display: none;
 }
 
 }
-.navbar {
-    font-family: "Varela Round", sans-serif;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #fff;
-    /* padding: 10px 0; */
-    z-index: 100;
-    box-shadow: 10px 10px 20px #c7c7c7, 
-                -10px -10px 20px #ffffff;
-}
 
-.navbar ul {
-    list-style-type: none;
-    text-align: center;
-    float: left;
-}
-
-.navbar ul li {
-    display: inline-block;
-}
-
-.navbar ul li a {
-    text-decoration: none;
-    color: #000;
-    padding: 0px 20px;
-    display: block;
-}
-
-.navbar ul li a:hover {
-  background-color: #eee6e6;
-}
 
 </style>
 </head>
