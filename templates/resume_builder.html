@@ -235,6 +235,13 @@
     const resume_html = data['html_code'];
     const nxt_messages = data['nxt_messages'];
     nxt_build_status = data['nxt_build_status'];
+    if (nxt_build_status == "contactinfo"){
+    document.getElementById("resume_md").style.display = 'none'
+  }
+  else{
+    document.getElementById("resume_md").style.display = ''
+
+  }
     resume_section.innerHTML = resume_html
     appendMessage(BOT_NAME, BOT_IMG, "left", "Resume Updated!");
     for (let i = 0; i < nxt_messages.length; i++) {
